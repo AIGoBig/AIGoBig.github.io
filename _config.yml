@@ -13,7 +13,7 @@ future: true
 
 # SNS settings
 RSS: false
-weibo_username:     
+weibo_username:     孙庆虎_DeepLearning
 zhihu_username:     Tigerking
 github_username:    sunqinghu
 twitter_username:   
@@ -78,7 +78,7 @@ ga_domain: huangxuan.me
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "For the dream and faith<br>努力"
+sidebar-about-description: "For the dream and faith <br>思考每一刻过的是否有意义, 不甘于平凡"
 sidebar-avatar: /img/portfolio.png      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
