@@ -1,10 +1,10 @@
 # Site settings
 title: SunQH Blog
-SEOTitle: 孙庆虎 personal website 
+SEOTitle: 孙庆虎的个人网站 | SunQH personal website
 header-img: img/home-bg.jpg
 email: qinghu.sun@outlook.com
-description: "关于程序与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。"
-keyword: "孙庆虎, SunQH, sunqinghu, python, pytorch, 深度学习, mac, 西电, 人工智能, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
+description: "关于算法设计、python、健身与学习爱好者 | 孙庆虎，DeepLearning & python Lover，want to be a Algorithm Engineer，Fitness master | 这里是 @孙庆虎 的个人博客，与你一起发现更大的世界。"
+keyword: "孙庆虎, SunQH, sunqinghu, 西安电子科技大学,  人工智能, 青岛科技大学, 青科, 西电, python, pytorch, 深度学习, mac, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
 #url: "https://huangxuan.me"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
@@ -18,7 +18,7 @@ zhihu_username:     Tigerking
 github_username:    sunqinghu
 twitter_username:   
 #facebook_username:  huxpro
-linkedin_username:   sunqinghu   #firstname-lastname-idxxxx
+linkedin_username:   in/庆虎-孙   #firstname-lastname-idxxxx
 
 
 
@@ -78,8 +78,8 @@ ga_domain: huangxuan.me
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "For the next quantum leap<br>远离自己的舒适区"
-sidebar-avatar: /img/avatar-hux-ny.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-about-description: "For the dream and faith<br>努力"
+sidebar-avatar: /img/portfolio.png      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
@@ -117,20 +117,5 @@ friends: [
     },{
         title: "Ebn's Blog",
         href: "http://ebnbin.com/"
-    },{
-        title: "SmdCn's Blog",
-        href: "http://blog.smdcn.net"
-    },{
-        title: "JiyinYiyong",
-        href: "http://tiye.me/"
-    },{
-        title: "David's Game",
-        href: "https://www.ruoyaowu.com/"
-    },{
-        title: "DHong Say",
-        href: "http://dhong.co"
-    },{
-        title: "尹峰以为",
-        href: "http://ingf.github.io/"
     }
 ]
