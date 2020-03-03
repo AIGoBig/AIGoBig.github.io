@@ -1,11 +1,11 @@
 # Site settings
-title: Hux Blog
-SEOTitle: 黄玄的博客 | Hux Blog
+title: SunQH Blog
+SEOTitle: 孙庆虎 personal website 
 header-img: img/home-bg.jpg
-email: huxpro@gmail.com
+email: qinghu.sun@outlook.com
 description: "关于程序与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。"
-keyword: "黄玄, Hux黄玄, Hux, 鬼栈, huxpro, @huxpro, 黄玄的博客, Hux Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, 设计"
-url: "https://huangxuan.me"              # your host, for absolute URL
+keyword: "孙庆虎, SunQH, sunqinghu, python, pytorch, 深度学习, mac, 西电, 人工智能, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
+#url: "https://huangxuan.me"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 # Publish posts or collection documents with a future date.
@@ -13,12 +13,12 @@ future: true
 
 # SNS settings
 RSS: false
-weibo_username:     huxpro
-zhihu_username:     huxpro
-github_username:    huxpro
-twitter_username:   huxpro
+weibo_username:     
+zhihu_username:     Tigerking
+github_username:    sunqinghu
+twitter_username:   
 #facebook_username:  huxpro
-#linkedin_username:  firstname-lastname-idxxxx
+linkedin_username:   sunqinghu   #firstname-lastname-idxxxx
 
 
 
@@ -59,7 +59,7 @@ kramdown:
 
 
 # Disqus settings
-disqus_username: hux
+disqus_username:    # hux
 
 # Netease settings
 netease_comment: false
@@ -78,7 +78,7 @@ ga_domain: huangxuan.me
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "For the next quantum leap<br>离开世界之前，一切都是过程"
+sidebar-about-description: "For the next quantum leap<br>远离自己的舒适区"
 sidebar-avatar: /img/avatar-hux-ny.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
