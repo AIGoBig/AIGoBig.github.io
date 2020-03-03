@@ -9,7 +9,13 @@ tags:
   - Emacs
 ---
 
-![](assets/img/post-f-f-weibo-3246006.png)
+![img](../img/in-post/post-kuaidi-1.jpg)
+
+![img](img/in-post/post-kuaidi-1.jpg)
+
+![img](/img/in-post/post-kuaidi-1.jpg)
+
+![img](./img/in-post/post-kuaidi-1.jpg)
 
 Emacs tend to provide a good support for functional programming languages. Indeed, many FP language community exclusively use Emacs and give only first-party IDE supports to Emacs, such as Coq, Agda, Standard ML, Clojure, etc.
 
