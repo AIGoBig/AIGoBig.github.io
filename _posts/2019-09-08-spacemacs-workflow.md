@@ -9,6 +9,8 @@ tags:
   - Emacs
 ---
 
+![](assets/img/post-f-f-weibo-3246006.png)
+
 Emacs tend to provide a good support for functional programming languages. Indeed, many FP language community exclusively use Emacs and give only first-party IDE supports to Emacs, such as Coq, Agda, Standard ML, Clojure, etc.
 
 For the purpose of programming Coq with Proof General, I started to try with Emacs. I quickly found Spacemacs a good alternatives for me...someone had get used to Vim keybindings and want to get some thing useful ASAP w/o configuring a long list as my `.vimrc`.
