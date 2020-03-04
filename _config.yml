@@ -13,8 +13,8 @@ future: true
 
 # SNS settings
 RSS: false
-weibo_username:     孙庆虎_DeepLearning
-zhihu_username:     Tigerking
+weibo_username:     https://weibo.com/p/1005053244215083
+zhihu_username:     tigerking-28
 github_username:    sunqinghu
 twitter_username:   
 #facebook_username:  huxpro
