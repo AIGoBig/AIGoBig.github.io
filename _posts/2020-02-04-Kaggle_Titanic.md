@@ -1,3 +1,16 @@
+---
+layout: post
+title: "Kaggle_Titanic project Programming"
+subtitle: ''
+author: "Sun"
+header-style: text
+tags:
+  - Kaggle
+  - Project
+---
+
+
+
 ```python
 # 多行输出
 from IPython.core.interactiveshell import InteractiveShell 
