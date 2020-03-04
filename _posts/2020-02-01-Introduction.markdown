@@ -1,8 +1,9 @@
 ---
 layout: post
 title:  "Self Introduction"
-date:   2020-02-1 12:01:01 +0530
-categories: Record
+author: "Sun"
+header-style: text
+tags: Record
 ---
 |                              |                                     |
 | ---------------------------- | ----------------------------------- |
