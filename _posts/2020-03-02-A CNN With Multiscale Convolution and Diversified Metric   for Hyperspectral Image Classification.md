@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification"
+title: "论文学习 A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification"
 subtitle: 'DPP-DML-MS-CNN'
 author: "Sun"
 header-style: text
@@ -13,15 +13,23 @@ tags:
 
 # Abstract
 
-* IEEE Transactions on Geoscience and Remote Sensing, 2019, 57(6): 3599-3618.	
-
-## index
+## Index
 
 MS-CNN → multi-scale feature
 
 determinantal point process (DPP) 
 
-deep metric learning(DML) 
+deep metric learning(DML)
+
+## Reference
+
+A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification, 
+
+IEEE Transactions on Geoscience and Remote Sensing, 2019, 57(6): 3599-3618.	
+
+### Structured Loss:
+
+[结构化损失的理解(Structural Risk)](jianshu.com/p/228606144383) 
 
 ## 提出原因
 
@@ -33,15 +41,11 @@ deep metric learning(DML)
 * DPP-DML-MS-CNN
   ![image-20200302104353207](/img/in-post/20_03/image-20200302104353207.png)
 
-## 
-
 # MS-CNN
 
 在本文中，提出了具有多尺度卷积（MS-CNN）的新型卷积神经网络，通过将多尺度滤波器组合并到CNN中, 从高光谱图像中**提取深层多尺度特征**。
 
 设计了如下三种类型的MS-CNN结构:
-
-> 分别为1D MS-CNN, 2D MS-CNN, 3D MS-CNN
 
 <!--分别为1D MS-CNN, 2D MS-CNN, 3D MS-CNN-->
 
@@ -51,7 +55,37 @@ deep metric learning(DML)
 
 ![image-20200302112517053](/img/in-post/20_03/image-20200302112517053.png)
 
-# DPP prior based DML
+> Notice:
+>
+> 分别为1D MS-CNN, 2D MS-CNN, 3D MS-CNN
+>
+> 1D: 通过把多尺度卷积的结构合并到1D-CNN里形成的, 然后使每一个尺度的卷积结果有**相同通道**数, 最后**concat**到一起
+>
+> 2D: 由于空间结构的破坏, 仍然不能很好利用**邻域特征**,降低模型表示能力  
+>
+> 3D: 1*1，3\*3 多尺度滤波器组提取多尺度特征
+>
+> 1D - 3D: 也可以看出度量转换(metric transformation) 在本文被实现为全连接层
+
+# DPP prior-based Structured Loss DML
+
+本文将会使用**结构化损失的深度度量学习方法**来**联合**训练前面提出的分类模型.
+
+但是在度量变换中，一般的结构化损失使得学习到的度量参数因子之间存在**相似性**, 会负面影响**深度度量模型的表示能力**.
+
+为了使学习到的**度量参数因子多样化**，并进一步提高深度度量的表示能力，提出了一种**基于DPP的结构化损失**, 对学习到的度量参数因子施加**确定性点过程（DPP）先验**，以**鼓励学习到的度量因子相互排斥**。
+
+在本文中，使用这种**具有特殊结构损失的深度度量学习方法**，以**联合训练**所提出的模型。
+
+```mermaid
+graph LR
+	A(结构化损失的深度度量方法) -. 为了使度量参数因子多样化 .-> B(使用基于DPP的结构损失)
+
+	M(在度量转化中学习 Metric Parameter Factors) -.使用一般的structured loss.-> O(学习到的deep factors间具有相似性)
+	M -.施加 DPP Prior.-> N(diversified Metric Factors) 
+```
+
+
 
 ## **Deep metric learning** (DML)
 
