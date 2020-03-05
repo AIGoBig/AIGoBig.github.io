@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification"
-subtitle: 'From Vim to Spacemacs'
+subtitle: 'DPP-DML-MS-CNN'
 author: "Sun"
 header-style: text
 tags:
@@ -42,8 +42,6 @@ deep metric learning(DML)
 设计了如下三种类型的MS-CNN结构:
 
 > 分别为1D MS-CNN, 2D MS-CNN, 3D MS-CNN
-
-
 
 <!--分别为1D MS-CNN, 2D MS-CNN, 3D MS-CNN-->
 
