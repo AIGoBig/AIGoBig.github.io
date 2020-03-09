@@ -14,11 +14,25 @@ tags: Record
 
 
 
+# 研究生期间
+
+## Course
+
+高光谱图像分类(英文授课) | 自然语言处理 | 工程优化 | 矩阵论 | 计算智能
+
 ## Reward
 
-**2019——2020年研究生期间：**
-
 研究生奖学金三等奖
+
+## Project Experience
+
+Hyperspectral Classification实验分析
+
+
+
+# 本科期间
+
+## Reward
 
 **2015——2018年本科期间：**
 
@@ -32,15 +46,7 @@ tags: Record
 
  “优秀学生”称号，“优秀团员”等称号多次
 
-
-
 ## Project Experience
-
-**研究生期间**
-
-Hyperspectral Classification实验分析
-
-**本科期间**
 
 **Software Programming**：
 
@@ -65,8 +71,6 @@ FPGA 6层高速电路板绘制
 温控风扇，胎温监测报警系统
 
 智能车主板pcb绘制
-
-
 
 ## Professional Skill
 
