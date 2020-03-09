@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "论文学习 A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification"
+title: "论文学习 (19TGRS)A CNN With Multiscale Convolution and Diversified Metric for Hyperspectral Image Classification"
 subtitle: 'DPP-DML-MS-CNN'
 author: "Sun"
 header-style: text
@@ -28,16 +28,6 @@ deep metric learning(DML)
 [结构化损失的理解(Structural Risk)](jianshu.com/p/228606144383) 
 
 [DPP在文本摘要中的应用:  << Improving the Similarity Measure of Determinantal Point Processes for Extractive Multi-Document Summarization>>](https://arxiv.org/abs/1906.00072v1)
-
-
-
-## 收获
-
-**神经网络做度量学习**, 在人脸识别中应用的比较多了, 
-
-1. 有资料可供研究, 利于迁移到自然图像学习
-2. 加上其他方法
-3. 使用DPP先验等
 
 ## 提出原因
 
@@ -298,7 +288,7 @@ A: ①核矩阵K 可以表示相关性 ②选取相关性低的factors来对HSI�
 
 基于DPP的结构化损失L相对于度量因子B的梯度可以计算为: 
 
-![image-20200302123016706](/img/in-post/20_03/image-20200302123016706.png)
+
 
 # Summary
 
