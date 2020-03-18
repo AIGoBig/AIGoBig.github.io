@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "16_tgrs_(3dcnn)Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks"
-subtitle: ''
+title: "(3dcnn)Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks"
+subtitle: '16_tgrs'
 author: "Sun"
 header-style: text
 tags:
