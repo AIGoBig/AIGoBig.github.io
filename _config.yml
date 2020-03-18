@@ -49,7 +49,7 @@ plugins: [jekyll-paginate]
 markdown: kramdown
 kramdown:
   input: GFM                            # use Github Flavored Markdown !important
-  syntax_highlighter_opts:
+  syntax_highlighter_opts: 
     span:
       line_numbers: false
     block:
@@ -59,7 +59,7 @@ kramdown:
 
 
 # Disqus settings
-disqus_username:    # hux
+disqus_username:  Qinghu Sun
 
 # Netease settings
 netease_comment: false
