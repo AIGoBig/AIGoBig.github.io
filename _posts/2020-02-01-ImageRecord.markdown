@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title:  "照片存档"
 author: "Sun"
 header-style: text
