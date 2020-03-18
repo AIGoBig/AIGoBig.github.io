@@ -1,6 +1,7 @@
 ---
 layout: post
 comments: true
+mathjax: true
 title: "(3dcnn)Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks"
 subtitle: '16_tgrs'
 author: "Sun"
