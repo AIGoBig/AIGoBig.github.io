@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks"
+title: "16_tgrs_(3dcnn)Deep Feature Extraction and Classification of Hyperspectral Images Based on Convolutional Neural Networks"
 subtitle: ''
 author: "Sun"
 header-style: text
@@ -19,7 +19,7 @@ tags:
 
 在第$i$层第$j$个特征图的位置$(x,y,z)$处神经元的值$v_{i,j}^{xyz}$
 
-![image-20200312104532915](/img/in-post/20_03/image-20200312104532915.png)
+<img src="/img/in-post/20_03/image-20200312104532915.png" alt="image-20200312104532915" style="zoom:50%;" />
 
 ![image-20200312103201477](/img/in-post/20_03/image-20200312103201477.png)
 
@@ -56,7 +56,8 @@ Although there are many other methods that can generate the virtual samples, the
 
 2. Mixture-Based Virtual Samples
    ==Because of the long distance between the object and the sensor, mixture is very common in remote sensing.???== Inspired by the phenomenon, it is possible to generate a virtual sample yk from two given samples of the same class with proper ratios
-   ![image-20200312153238697](/img/in-post/20_03/image-20200312153238697.png)
+
+3. <img src="/img/in-post/20_03/image-20200312153238697.png" alt="image-20200312153238697" style="zoom:50%;" />
 
    > $x_i$and $x_j$are two training samples from the same class
 
@@ -68,13 +69,13 @@ Although there are many other methods that can generate the virtual samples, the
 
 
 
-![image-20200312155215988](/img/in-post/20_03/image-20200312155215988.png)
+<img src="/img/in-post/20_03/image-20200312155215988.png" alt="image-20200312155215988" style="zoom:50%;" />
 
 > 第一层6个1*8卷积核, (a)随机初始化的权重, (b)学习到的权重
 
 
 
-![image-20200312155440092](/img/in-post/20_03/image-20200312155440092.png)
+<img src="/img/in-post/20_03/image-20200312155440092.png" alt="image-20200312155440092" style="zoom:50%;" />
 
 > (a)学习到的第二层卷积核权重,  12个卷积核, 每个卷积核包含6\*7个权重
 > (b)学习到的第三层卷积核权重, 24个卷积核, 每个卷积核包含12\*8个权重
@@ -86,7 +87,7 @@ Q: 为什么6个1*8的核
 
 经过convolution和pooling提取特征后的波段信息:
 
-![image-20200312154506275](/img/in-post/20_03/image-20200312154506275.png)
+<img src="/img/in-post/20_03/image-20200312154506275.png" alt="image-20200312154506275" style="zoom:50%;" />
 
 #### 2D-CNN convolution kernal in HSI
 
@@ -101,8 +102,8 @@ Q: 为什么6个1*8的核
 
 #### 特征提取
 
-![image-20200312190736709](/img/in-post/20_03/image-20200312190736709.png)
+<img src="/img/in-post/20_03/image-20200312190736709.png" alt="image-20200312190736709" style="zoom:50%;" />
 
 ### Result
 
-<img src="/img/in-post/20_03/image-20200312231340782.png" alt="image-20200312231340782" style="zoom:67%;" />
+<img src="/img/in-post/20_03/image-20200312231340782.png" alt="image-20200312231340782" style="zoom: 50%;" />
