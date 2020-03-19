@@ -16,7 +16,7 @@ RSS: false
 weibo_username:     https://weibo.com/u/3244215083/
 zhihu_username:     tigerking-28
 github_username:    sunqinghu
-twitter_username:   
+twitter_username:   QinghuSun
 #facebook_username:  huxpro
 linkedin_username:   庆虎-孙   #firstname-lastname-idxxxx
 
@@ -71,8 +71,8 @@ netease_comment: false
 # ba_track_id: [your track id]
 
 # Google Analytics
-ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: huangxuan.me
+ga_track_id: # 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+ga_domain: # huangxuan.me
 
 
 
