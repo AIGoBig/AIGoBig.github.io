@@ -74,7 +74,7 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 
 它不仅优于此前的所有工作，也优于最新的对比自监督学习算法，而且结构更加简单：**既不需要专门的架构，也不需要特殊的存储库。**
 
-<img src="/img/in-post/20_03/image-20200319091344678.png" alt="image-20200319091344678" style="zoom:50%;" />
+<img src="/img/in-post/20_03/image-20200319091344678-5893504.png" alt="image-20200319091344678" style="zoom:50%;" />
 
 > *SimCLR 与此前各类自监督方法在 ImageNet 上的 Top-1 准确率对比（以 ImageNet 进行预训练），以及 ResNet-50 的有监督学习效果（灰色×）*
 
@@ -93,7 +93,7 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 - 一个小的**神经网络投射头（projection head）$g(·)$**，**将表示映射到对比损失的空间**；
 - 为对比预测任务定义的**对比损失函数**。
 
-<img src="https://image.jiqizhixin.com/uploads/editor/f4bfa740-d1e5-4f61-bc64-bbca43f25686/640.png" alt="img" style="zoom:67%;" />
+<img src="/img/in-post/20_03/640.png" alt="img" style="zoom:67%;" />
 
 论文的作者之一，谷歌资深研究科学家 Mohammad Norouzi 的**简化总结**: 
 
@@ -106,7 +106,7 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 
 SimCLR 的主要**学习算法**如下：
 
-<img src="https://image.jiqizhixin.com/uploads/editor/6d605f25-111c-4c07-8d5e-920a101e60d5/640.jpeg" alt="img"  />
+<img src="/img/in-post/20_03/640.jpeg" alt="img"  />
 
 注意: 
 
@@ -134,7 +134,7 @@ SimCLR 的主要**学习算法**如下：
 
 随机裁剪
 
-<img src="https://image.jiqizhixin.com/uploads/editor/7fc95486-9729-4459-ab38-904fa3de8e57/640.png" alt="img" style="zoom:50%;" />
+<img src="/img/in-post/20_03/640-20200403135840952.png" alt="img" style="zoom:50%;" />
 
 
 
@@ -146,23 +146,23 @@ SimCLR 的主要**学习算法**如下：
 
 ==颜色增强的重要性???, 如下调整了颜色的强度==
 
-<img src="https://image.jiqizhixin.com/uploads/editor/a1350b5a-59e3-4562-80ae-ba6199c70b6b/640.jpeg" alt="img" style="zoom: 33%;" />
+<img src="/img/in-post/20_03/640-20200403135845024.jpeg" alt="img" style="zoom: 33%;" />
 
 **随参数增加Top1变换**
 
 如图 7 所示，增加深度和宽度都可以提升性能。监督学习也同样适用这一规律。但我们发现，随着模型规模的增大，监督模型和在无监督模型上训练的线性分类器之间的差距会缩小。这表明，与监督模型相比，无监督学习能从更大规模的模型中得到更多收益。
 
-<img src="https://image.jiqizhixin.com/uploads/editor/caf6b2b5-fb26-4011-9fda-19a1b580ffc0/640.jpeg" alt="img" style="zoom:50%;" />
+<img src="/img/in-post/20_03/640-20200403135849439.jpeg" alt="img" style="zoom:50%;" />
 
 **非线性的投射头**可以改善之前的层的表示质量，图 8 展示了使用三种不同投射头架构的线性评估结果。
 
-<img src="https://image.jiqizhixin.com/uploads/editor/b3d4e578-c2b3-4bba-a76c-a156b9528cd5/640.png" alt="img" style="zoom:50%;" />
+<img src="/img/in-post/20_03/640-20200403135852808.png" alt="img" style="zoom:50%;" />
 
  **损失函数和批大小**
 
 可调节温度的归一化交叉熵损失比其他方法更佳。研究者对比了 NT-Xent 损失和其他常用的对比损失函数，比如 logistic 损失、margin 损失。==表 2 展示了**目标函数和损失函数输入的梯度**????。==
 
-![640](https://image.jiqizhixin.com/uploads/editor/b6cfc463-c1cd-484f-a7fb-9c1a75e93f2e/640.jpeg)
+![640](/img/in-post/20_03/640-20200403135856064.jpeg)
 
 对比学习（Contrastive learning）**能从更大的批大小和更长时间的训练中受益更多**。图 9 展示了在模型在不同 Epoch 下训练时，不同批大小所产生的影响。 
 
@@ -180,23 +180,15 @@ SimCLR 的主要**学习算法**如下：
 
 下表 7 显示了 SimCLR 与之前方法在**半监督学习**方面的对比。从表中可以看出，无论是**使用 1% 还是 10% 的标签**，本文提出的方法都显著优于之前的 SOTA 模型。
 
-<img src="https://image.jiqizhixin.com/uploads/editor/8336d657-a4d2-4d13-b5a1-958b230f6057/640.jpeg" alt="img" style="zoom:50%;" />
+<img src="/img/in-post/20_03/640-20200403135859669.jpeg" alt="img" style="zoom:50%;" />
 
 **迁移学习**
 
 研究者在 12 个自然图像数据集上评估了**模型的迁移学习性能**。下表 8 显示了使用 ResNet-50 的结果，与监督学习模型 ResNet-50 相比，SimCLR 显示了良好的迁移性能——两者成绩互有胜负。
 
-![img](https://image.jiqizhixin.com/uploads/editor/86321c8b-362f-44e2-8106-389259185911/640.jpeg)
-
- 
+![img](/img/in-post/20_03/640-20200403135903014.jpeg)
 
 
-
-的对比。此外，上文中的表 1 展示了不同方法之间更多的数值比较。从表中可以看出，用 SimCLR 方
-
-
-
-的对比。此外，上文中的表 1 展示了不同方法之间更多的数值比较。从表中可以看出，用 SimCLR 方
 
 ## Reference
 
