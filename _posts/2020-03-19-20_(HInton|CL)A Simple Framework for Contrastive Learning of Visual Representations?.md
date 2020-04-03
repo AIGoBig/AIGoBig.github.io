@@ -4,20 +4,25 @@ comments: true
 title: "(Hinton|CL)A Simple Framework for Contrastive Learning of Visual Representations"
 subtitle: '20_CVPR_Deep Learning先驱Hinton最新论文学习及对SimCLR解读'
 author: "Sun"
+mathjax: true
 header-style: text
 tags:
   - Contrastive Learning
+  - metric
   - Master
   - VR
   - CVPR
-
+  - data augmentation
+  - paper
 ---
-
-**Contrastive Learning** 
 
 20_CVPR_(Hinton|CL)A Simple Framework for Contrastive Learning of Visual Representations
 
-视觉表示
+## Index
+
+**Contrastive Learning**
+
+Visual Representation 
 
 ## 收获
 
@@ -31,7 +36,6 @@ tags:
 
 1. 随机裁剪
 2. ==颜色增强==
-3. 
 
 
 
@@ -54,7 +58,17 @@ tags:
 
 通过结合这些发现，我们能够大大胜过ImageNet上用于自我监督和半监督学习的先前方法。 **使用通过Sim-CLR学习到的自监督表示来训练线性分类器**，可达到76.5％的top-1准确性，与以前的最新技术相比，相对**提高了7％**，==与监督的ResNet-50的性能相匹配。当**使用1％的标签进行微调时**，我们的top-5准确性达到了85.8％，比AlexNet少了100倍的标签?????==
 
-## 优势
+#### Q: 到底使用了多少标签和准确率
+
+#### Q: 自监督和无监督的区别
+
+#### Q: 怎么理解"**既不需要专门的架构，也不需要特殊的存储库。**"
+
+#### ==Q: 无监督表示学习??/啥意思==
+
+A: 只是学习一个视觉表示, 然后再用线性分类器分类?
+
+## 评价
 
 SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视觉表示，而且可以达到有监督学习的准确度。
 
@@ -76,8 +90,8 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 
 - **随机数据增强模块**，可随机转换任何给定的数据示例，从而**产生同一示例的两个相关视图，分别表示为 $x_i$ 和 $x_j$，我们将其视为正对**；
 - 一个**基本的神经网络编码器 $f(·)$**，从增强数据中==**提取表示向量**(类似度量因子???)；==
-- 一个小的**神经网络投射头（projection head）$g(·)$**，将表示映射到对比损失的空间；
-- 为对比预测任务定义的对比损失函数。
+- 一个小的**神经网络投射头（projection head）$g(·)$**，**将表示映射到对比损失的空间**；
+- 为对比预测任务定义的**对比损失函数**。
 
 <img src="https://image.jiqizhixin.com/uploads/editor/f4bfa740-d1e5-4f61-bc64-bbca43f25686/640.png" alt="img" style="zoom:67%;" />
 
@@ -94,11 +108,11 @@ SimCLR 的主要**学习算法**如下：
 
 <img src="https://image.jiqizhixin.com/uploads/editor/6d605f25-111c-4c07-8d5e-920a101e60d5/640.jpeg" alt="img"  />
 
-> 注意: 
->
-> 不同且独立的增强函数$t(x)$
->
-> 编码器网络(encoder network) $f(·)$, ==**投射头网络（projection head）$g(·)$**???==为可训练的神经网络, 其中每个 f 和每个 g 都是一样的
+注意: 
+
+不同且独立的增强函数$t(x)$
+
+编码器网络(encoder network) $f(·)$, ==**投射头网络（projection head）$g(·)$**???==为可训练的神经网络, 其中每个 f 和每个 g 都是一样的
 
 ==**利用对比损失来最大化一致性(maximize agreement)训练f, g**, 训练完成后，我们将投影头g 拿走，并使用**编码器网络f**和represention **h** 进行后面阶段的任务。==
 
@@ -106,9 +120,11 @@ SimCLR 的主要**学习算法**如下：
 
 作者将训练批大小 N 分为 256 到 8192 不等。批大小为 8192 的情况下，增强视图中每个正对（positive pair）都有 16382 个反例。当使用标准的 SGD/动量和线性学习率扩展时，大批量的训练可能不稳定。为了使得训练更加稳定，研究者在所有的批大小中都采用了 ==LARS 优化器???==。==**他们使用 Cloud TPU 来训练模型**，根据批大小的不同，使用的核心数从 32 到 128 不等/。==
 
-> ==我们的服务器规模好像不够, 可以使用降维或者什么操作??==
+#### Q: 我们的服务器规模好像不够, 可以使用降维或者什么操作??==
 
+#### Q: 提取表示向量, 类似度量因子???
 
+#### Q: ==LARS 优化器???==
 
 **数据增强**
 
@@ -122,7 +138,9 @@ SimCLR 的主要**学习算法**如下：
 
 
 
-多种数据增强操作的组合是学习良好表示的关键。多种数据增强操作的组合是学习良好表示的关键。
+#### Q: 将预测任务与其他组件（如神经网络架构）解耦????。
+
+## 多种数据增强操作的组合是学习良好表示的关键
 
 <img src="https://image.jiqizhixin.com/uploads/editor/8b86985a-f53a-4826-8dd5-291d10db8022/640.jpeg" alt="img" style="zoom: 50%;" />
 
@@ -162,7 +180,7 @@ SimCLR 的主要**学习算法**如下：
 
 下表 7 显示了 SimCLR 与之前方法在**半监督学习**方面的对比。从表中可以看出，无论是**使用 1% 还是 10% 的标签**，本文提出的方法都显著优于之前的 SOTA 模型。
 
-![img](https://image.jiqizhixin.com/uploads/editor/8336d657-a4d2-4d13-b5a1-958b230f6057/640.jpeg)
+<img src="https://image.jiqizhixin.com/uploads/editor/8336d657-a4d2-4d13-b5a1-958b230f6057/640.jpeg" alt="img" style="zoom:50%;" />
 
 **迁移学习**
 
