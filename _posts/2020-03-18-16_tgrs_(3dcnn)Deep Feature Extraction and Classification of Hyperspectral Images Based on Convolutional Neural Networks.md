@@ -10,6 +10,7 @@ tags:
   - 3D-CNN
   - Dropout
   - Regularization
+  - data augmentation
   - Paper
 ---
 

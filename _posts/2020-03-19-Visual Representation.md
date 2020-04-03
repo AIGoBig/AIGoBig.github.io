@@ -8,6 +8,7 @@ header-style: text
 tags:
   - VR
   - 综述
+  - Representation learning
 ---
 
 # 深度学习中的计算机视觉
@@ -98,6 +99,8 @@ R-CNN 的第一个升级版本是 Fast R-CNN，通过使用了 2 次增强，大
 
 ## Visual Representation
 
+深度学习中的表示学习_Representation Learninghttps://blog.csdn.net/u010417185/article/details/83089882
+
 #### 图像特征提取（Feature Extraction）和视觉信息表示（Visual Representation）的区别
 
 图像特征提取（Feature Extraction）和视觉信息表示（Visual Representation）实际上是一回事情，特征提取更多的是指传统的方法，而视觉信息表示是深度学习来临之后的流行说法
@@ -111,4 +114,8 @@ R-CNN 的第一个升级版本是 Fast R-CNN，通过使用了 2 次增强，大
 第2个问题：分类任务和人为的标准本身有很多模棱两可的情况，而且跟最终最终应用不一定相关。
 
 第3个问题：通过静态的图像分类来学习到的视觉信息表示，可能会缺乏一些结构化和动态的信息。
+
+# representation learning 
+
+to learn representations of data that make it easier to extract useful information when building classifiers or other predictors
 
