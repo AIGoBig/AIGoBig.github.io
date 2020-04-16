@@ -82,6 +82,12 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 
 无监督学习的快速发展让科学家们看到了新的希望，==DeepMind 科学家 Oriol Vinyals 表示：感谢对比损失函数，无监督学习正在逼近监督学习！==
 
+#### Q: 线性评估是什么
+
+A:  在训练好的基础网络上训练一个线性分类器, 将测试精度作为学习到的表征的质量
+
+> where a linear classifier is trained on top of the frozen base net- work, and test accuracy is used as a proxy for representation quality. Beyond linear evaluation, we also compare against state-of-the-art on semi-supervised and transfer learning.
+
 
 
 ## 整体流程
@@ -187,6 +193,26 @@ SimCLR 的主要**学习算法**如下：
 研究者在 12 个自然图像数据集上评估了**模型的迁移学习性能**。下表 8 显示了使用 ResNet-50 的结果，与监督学习模型 ResNet-50 相比，SimCLR 显示了良好的迁移性能——两者成绩互有胜负。
 
 ![img](/img/in-post/20_03/640-20200403135903014.jpeg)
+
+## 附录 -- 方法
+
+### 线性评估
+
+我们用预训练网络上提取到的特征训练 $l2$ 正则化的多项式逻辑回归分类器, 使用L-BFGS来优化softmax交叉熵损失, 
+
+#### Q: L-BFGS是什么
+
+[简书_L-BFGS算法介绍](https://www.jianshu.com/p/148228431122)
+
+解无约束非线性规划问题最常用的方法, 收敛速度快内存开销小. 
+
+L-BFGS和梯度下降、SGD干的同样的事情，但收敛速度更快
+
+
+
+### 微调
+
+我们**使用预训练网络的权值作为初始化**，对整个网络进行了微调。我们使用带有Nesterov动量的SGD进行了20000步的批量训练，其动量参数为0.9。我们将批量标准化统计的动量参数设置为max(1 10s, 0.9)，其中s为每个epoch的步数。作为微调期间的数据扩充，我们只执行随机裁剪与调整大小和翻转;与训练前相比，我们没有进行色彩增强或模糊处理。在测试时，我们沿着短边将图像大小调整为256像素
 
 
 
