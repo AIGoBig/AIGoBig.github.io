@@ -333,3 +333,33 @@ Identity Mappings in Deep Residual Networks
 
 <img src="/img/in-post/20_03/image-20200318133124770.png" alt="image-20200318133124770" style="zoom:67%;" />
 
+
+
+## Self-supervised + Hyperspectral Image Restoration + structual prior
+
+19_arxiv_(0)Self-supervised Hyperspectral Image Restoration using Separable Image Prior(利用可分图像先验进行自监督高光谱图像复原)
+
+### Abstract
+
+用于图像恢复的监督学习深度学习方法取得了很好的效果, 但是其在像HSI这种非灰度/彩色图像上效果不佳. 
+
+我们提出了一个新型的自监督学习策略, 其通过一个被破坏图像自动产生一个训练集, 并使用干净图片生成一个去噪网络, 
+
+另一个值得注意的地方是我们方法中使用了一个可分离的卷积层, 实验证明其可以获得更多的HSI先验用以进行图像恢复
+
+
+
+19_IS_(77)Hyperspectral image unsupervised classification by robust manifold matrix factorization(基于鲁棒流形矩阵分解的高光谱图像无监督分类)
+
+Information Science: 5.5
+
+
+
+19_TGRS_(37)Learning Compact and Discriminative Stacked Autoencoder for Hyperspectral Image Classification(学习紧凑而有区别的堆叠式自动编码器，用于高光谱图像分类)
+
+TGRS: 5.7
+
+
+
+19_TGRS_(55)Deep Learning for Hyperspectral Image Classification- An Overview
+
