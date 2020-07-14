@@ -20,11 +20,21 @@
 
 ## Reward
 
+**进行中:** 
+
+2020年项目**6207020586，面向个性化辅助学习跨域推荐的演化图神经网络**
+
+![image-20200416210744669](/img/in-post/20_03/image-20200416210744669.png)
+
+通过并参加了创新工场DeeCamp2020人工智能夏令营，参与量化交易项目
+
+
+
 **2019——2020年研究生期间：**
 
-研究生奖学金三等奖
+华为云软件精英挑战赛 -- 64强
 
-**进行中:** 
+
 
 2020年"中兴捧月"算法精英挑战赛初赛第一名(100分) -- 免笔试
 
@@ -32,17 +42,19 @@
 
 ![image-20200420150545250](/img/in-post/20_03/image-20200420150545250.png)
 
+通过华为云NAIE 服务实战营并获得华为云社会实践职业认证
 
+参加华为云垃圾分类项目并获得华为云人工智能技能认证
 
-2020年项目**6207020586，面向个性化辅助学习跨域推荐的演化图神经网络**
+![image-20200714235021299](/img/in-post/20_07/image-20200714235021299.png)
 
-![image-20200416210744669](/img/in-post/20_03/image-20200416210744669.png)
-
-
+研究生奖学金三等奖
 
 **2015——2018年本科期间：**
 
 全国大学生电子设计大赛山东赛区一等奖，全国大学生电子设计大赛校内赛一等奖，全国大学生恩智浦智能车竞赛校内赛一等奖
+
+![image-20200714234951472](/img/in-post/20_07/image-20200714234951472.png)
 
 国家励志奖学金**1次**，省政府励志奖学金**1次**，大学生科技创新奖学金**1次**
 
@@ -66,7 +78,9 @@ Hyperspectral Classification实验分析
 
 基于MATLAB的图像预处理和人脸识别
 
-基于pytorch的神经网络搭建和CIFAR-10数据集训练和测试
+![image-20200714235215968](/img/in-post/20_07/image-20200714235215968.png)
+
+基于pytorch的神经网络搭建
 
 基于字符串模糊匹配的销售数据处理和校正
 
@@ -84,13 +98,9 @@ FPGA 6层高速电路板绘制
 
 温控风扇，胎温监测报警系统
 
-智能车主板pcb绘制
-
-
-
-## Professional Skills
+智能车主板pcb绘制Professional Skills
 
 学生对**深度学习，CNN，机器学习，图像处理**相关理论知识和程序进行过较多的学习。学生学习过**Python语言，**可以使用python及**pytorch框架**进行简单的神经网络搭建，对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程。接触过用**Verilog** **HDL**编写FPGA程序。
 
-主要居住在西安或青岛，线上日常出没于[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)、[Github](https://github.com/sunqinghu)
+主要居住在西安和青岛，线上出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
 
