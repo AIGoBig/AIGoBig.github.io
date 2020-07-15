@@ -1,3 +1,5 @@
+> 
+>
 > 你准备为世界留下些什么。
 
 |                              |                                     |
@@ -11,12 +13,12 @@
 
 > __从左到右__ 为喜欢程度，__从上到下__ 为了解程度。
 
-|      | ❤️              | ❤️❤️                  | ❤️❤️❤️     |
-| ---- | -------------- | ------------------- | ------- |
-| 😅    |                | Java                |         |
-| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS | pytorch |
-| 😏    |                | AD, C++             | python3 |
-| 🤓    |                |                     |         |
+|      | ❤️              | ❤️❤️                  | ❤️❤️❤️              |
+| ---- | -------------- | ------------------- | ---------------- |
+| 😅    |                | Java                |                  |
+| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS |                  |
+| 😏    |                | AD, C++             | python3, pytorch |
+| 🤓    |                |                     |                  |
 
 ## Reward
 
@@ -26,7 +28,7 @@
 
 ![image-20200416210744669](/img/in-post/20_03/image-20200416210744669.png)
 
-通过并参加了创新工场DeeCamp2020人工智能夏令营，参与量化交易项目
+通过并参加了创新工场DeeCamp2020人工智能夏令营及基于人工智能赋能的商业辅助决策项目
 
 
 
@@ -42,7 +44,7 @@
 
 ![image-20200420150545250](/img/in-post/20_03/image-20200420150545250.png)
 
-通过华为云NAIE 服务实战营并获得华为云社会实践职业认证
+通过华为云NAIE 服务实战营并获得华为云社会实践职业认证，熟练使用ModelArts、AutoML、NAIE等平台。
 
 参加华为云垃圾分类项目并获得华为云人工智能技能认证
 
@@ -100,7 +102,7 @@ FPGA 6层高速电路板绘制
 
 智能车主板pcb绘制Professional Skills
 
-学生对**深度学习，CNN，机器学习，图像处理**相关理论知识和程序进行过较多的学习。学生学习过**Python语言，**可以使用python及**pytorch框架**进行简单的神经网络搭建，对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程。接触过用**Verilog** **HDL**编写FPGA程序。
+学生熟悉使用**深度学习方法、机器学习方法的图像或数据的处理及**相关理论和程序实现。熟练使用**Python**，较熟练使用**C++、 Matlab**进行图像或数据的处理分析，熟练使用**pytorch**及能够使用**TensorFlow**框架进行神经网络系统设计，可以使用python进行UI构建。对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程，可以使用**Verilog** **HDL**编写FPGA程序。
 
 主要居住在西安和青岛，线上出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
 
