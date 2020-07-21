@@ -16,7 +16,7 @@
 |      | ❤️              | ❤️❤️                  | ❤️❤️❤️              |
 | ---- | -------------- | ------------------- | ---------------- |
 | 😅    |                | Java                |                  |
-| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS |                  |
+| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS | re,              |
 | 😏    |                | AD, C++             | python3, pytorch |
 | 🤓    |                |                     |                  |
 
@@ -102,7 +102,11 @@ FPGA 6层高速电路板绘制
 
 智能车主板pcb绘制Professional Skills
 
-学生熟悉使用**深度学习方法、机器学习方法的图像或数据的处理及**相关理论和程序实现。熟练使用**Python**，较熟练使用**C++、 Matlab**进行图像或数据的处理分析，熟练使用**pytorch**及能够使用**TensorFlow**框架进行神经网络系统设计，可以使用python进行UI构建。对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程，可以使用**Verilog** **HDL**编写FPGA程序。
+学生熟悉使用**深度学习方法、机器学习方法的图像或数据的处理及**相关理论和程序实现。熟练使用**Python**，较熟练使用**C++、 Matlab**进行图像或数据的处理分析，熟练使用**pytorch**及能够使用**TensorFlow**框架进行神经网络系统设计，可以使用python进行UI构建。对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。
+
+可以使用Python进行GUI编程，熟练使用正则表达式编程及re库使用，对ModelArts等AI平台熟悉，较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程，可以使用**Verilog** **HDL**编写FPGA程序。
+
+
 
 主要居住在西安和青岛，线上出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
 
