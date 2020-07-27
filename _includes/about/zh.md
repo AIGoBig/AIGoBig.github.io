@@ -13,6 +13,10 @@
 
 <embed src="https://sunqinghu.github.io/resume/孙庆虎个人简历.pdf" type="application/pdf" />
 
+```HTML
+<a href="sunqinghu.github.io/resume/孙庆虎个人简历.pdf" target="_blank">PDF.</a>
+```
+
 ## Personal Skills
 
 > __从左到右__ 为喜欢程度，__从上到下__ 为了解程度。
