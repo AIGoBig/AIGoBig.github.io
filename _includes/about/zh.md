@@ -11,11 +11,7 @@
 
 ## Resume
 
-<embed src="https://sunqinghu.github.io/resume/孙庆虎个人简历.pdf" type="application/pdf" />
-
-```HTML
-<a href="sunqinghu.github.io/resume/孙庆虎个人简历.pdf" target="_blank">PDF.</a>
-```
+<a href="sunqinghu.github.io/resume/孙庆虎个人简历.pdf" target="_blank">孙庆虎个人简历查看及下载</a>
 
 ## Personal Skills
 
