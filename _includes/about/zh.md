@@ -13,6 +13,8 @@
 
 <a href="resume/孙庆虎个人简历.pdf" target="_blank">孙庆虎个人简历查看及下载</a>
 
+<a href="../resume/孙庆虎个人简历.pdf" target="_blank">孙庆虎个人简历查看及下载</a>
+
 ## Personal Skills
 
 > __从左到右__ 为喜欢程度，__从上到下__ 为了解程度。
