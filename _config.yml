@@ -5,7 +5,7 @@ header-img: img/home-bg.jpg
 email: qinghu.sun@outlook.com
 description: "关于算法设计、python、健身与学习爱好者 | 孙庆虎，DeepLearning & python Lover，want to be a Algorithm Engineer，Fitness master | 这里是 @孙庆虎 的个人博客，与你一起发现更大的世界。"
 keyword: "孙庆虎, SunQH, sunqinghu, 西安电子科技大学,  人工智能, 青岛科技大学, 青科, 西电, python, pytorch, 深度学习, mac, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
-#url: "https://huangxuan.me"              # your host, for absolute URL
+url: "https://sunqinghu.github.io"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 # Publish posts or collection documents with a future date.
@@ -71,8 +71,8 @@ netease_comment: false
 # ba_track_id: [your track id]
 
 # Google Analytics
-ga_track_id: # 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: # huangxuan.me
+ga_track_id:  'UA-174987010-1'            # Format: UA-xxxxxx-xx
+ga_domain:  sunqinghu.github.io
 
 
 
