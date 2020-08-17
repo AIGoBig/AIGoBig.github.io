@@ -102,6 +102,14 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 使用基于梯度下降的搜索算法来有效地找到在验证数据集上评估的最佳深度结构。
 
+# 可用方法
+
+## 网络相关
+
+### 预训练模型 , 如Bert(NLP方法)
+
+==使用多的数据进行预训练, 迁移学习到其他数据上..==
+
 ## 解决样本少
 
 ### 迁移学习
