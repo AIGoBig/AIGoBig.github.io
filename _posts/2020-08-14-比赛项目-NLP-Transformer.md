@@ -57,18 +57,6 @@ NLP=NLU+NLG
 
 
 
-<img src="/img/in-post/20_07/image-20200817222650621.png" alt="image-20200817222650621" style="zoom:50%;" />
-
-<img src="/img/in-post/20_07/image-20200817222728605.png" alt="image-20200817222728605" style="zoom:50%;" />
-
-<img src="/img/in-post/20_07/image-20200817222828941.png" alt="image-20200817222828941" style="zoom:50%;" />
-
-![image-20200817222909371](/img/in-post/20_07/image-20200817222909371.png)
-
-资料推荐
-
-![image-20200817223331474](/img/in-post/20_07/image-20200817223331474.png)
-
 ## 技术演化路径
 
 ### Word2vec
@@ -84,6 +72,42 @@ NLP=NLU+NLG
 > 
 
 
+
+![image-20200818000802966](/img/in-post/20_07/image-20200818000802966.png)
+
+### 预训练模型
+
+![image-20200818001101464](/img/in-post/20_07/image-20200818001101464.png)
+
+
+
+![image-20200818001246858](/img/in-post/20_07/image-20200818001246858.png)
+
+> bert 用的是encoder
+>
+> GPT用的decoder, 去掉了中间一层
+>
+> bert 用的 masked Language Modeling的结构(隐藏中间并预测这个辅助任务), 前向后相都考虑了
+>
+> gpt 只能从左到右
+>
+> ELMo concat了左到右和右到左
+>
+> 
+
+## 学习路径
+
+<img src="/img/in-post/20_07/image-20200817222650621.png" alt="image-20200817222650621" style="zoom:50%;" />
+
+<img src="/img/in-post/20_07/image-20200817222728605.png" alt="image-20200817222728605" style="zoom:50%;" />
+
+<img src="/img/in-post/20_07/image-20200817222828941.png" alt="image-20200817222828941" style="zoom:50%;" />
+
+<img src="/img/in-post/20_07/image-20200817222909371.png" alt="image-20200817222909371" style="zoom:50%;" />
+
+资料推荐
+
+![image-20200817223331474](/img/in-post/20_07/image-20200817223331474.png)
 
 
 
