@@ -134,6 +134,20 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 ### 修改Dropout丢弃概率
 
+#### 增加多样性方式:(数据增强)
+
+embading多样性和样本多样性, 如dropout![image-20200819205814238](/img/in-post/20_07/image-20200819205814238.png)
+
+![image-20200819210218654](/img/in-post/20_07/image-20200819210218654.png)
+
+> ==使用了3层的dropout, 可以对向量预测多次, 对多次结果求平均. 最后优化整个loss, 可以加速模型收敛, 提高泛化能力==
+
+
+
+
+
+
+
 
 
 ## 解决样本少
