@@ -134,6 +134,20 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 ==使用多的数据进行预训练, 迁移学习到其他数据上..==
 
+### 能不能用TFIDF , 统计特征的重要性
+
+TF-IDF: 
+
+1. N-gram , 是一种语言模型, 利用滑窗思想统计频率
+
+2. Countvectorizer, 将文本编码并统计, 统计词的数量(对应CV中特征的数量)
+
+3. 模型和公式:
+   ![image-20200826173729123](/img/in-post/20_07/image-20200826173729123.png)
+   ![image-20200826173751785](/img/in-post/20_07/image-20200826173751785.png)
+
+   
+
 ### 修改Dropout丢弃概率
 
 #### 增加多样性方式:(数据增强)
