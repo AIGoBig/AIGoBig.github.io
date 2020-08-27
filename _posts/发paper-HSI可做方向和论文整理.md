@@ -34,6 +34,12 @@ tags:
 
 ## 学习队列
 
+### 三元组的方法, 相似的放在一起, 不相似的远离
+
+输入为3D块好还是1D好?
+
+
+
 ### 光谱聚类
 
 ### 表示学习
@@ -78,6 +84,22 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 ### 波段选择
 
 ### ==零样本学习 — 新添加的类别的学习==  — 避免分类精度过高无法提升
+
+![image-20200827132928253](/img/in-post/20_07/image-20200827132928253.png)
+
+![image-20200827133027050](/img/in-post/20_07/image-20200827133027050.png)
+
+法1: 见过, 直接预测 ; 没见过, 用欠拟合的模型进行预测
+
+> 见过没见过: feature map距离和测试集里样本的feature map 距离远近判断
+>
+> 
+
+法2:  用已有字体生成没见过的字体
+
+
+
+
 
 ### /基于FCN  的图像分割
 
@@ -130,23 +152,41 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 ## 网络相关
 
-### 预训练模型 , 如Bert(NLP方法)
+### 预训练模型 , 如Bert(NLP方法), 作为初始化, 可以有效避免过拟合  
 
 ==使用多的数据进行预训练, 迁移学习到其他数据上..==
+
+==测试集和训练集一起加入预训练==
+
+![image-20200827001524190](/img/in-post/20_07/image-20200827001524190.png)
+
+### 加入word2vec , 转化为向量的形式, 进行分类
+
+### 伪标签的方法,提升成绩 
+
+用大量测试集当做训练集输入..
 
 ### 能不能用TFIDF , 统计特征的重要性
 
 TF-IDF: 
 
 1. N-gram , 是一种语言模型, 利用滑窗思想统计频率
-
 2. Countvectorizer, 将文本编码并统计, 统计词的数量(对应CV中特征的数量)
-
 3. 模型和公式:
    ![image-20200826173729123](/img/in-post/20_07/image-20200826173729123.png)
    ![image-20200826173751785](/img/in-post/20_07/image-20200826173751785.png)
 
-   
+### 利用fasttext等, 输出前面最相近类别的类别
+
+对测试集加标签, 找前十个最相近的类别, 当做标签
+
+test_pred = [train_df.iloc[np.argsort(x)[::-1][:10]]['label'].value_counts().index[0] for x in ids[:]]
+
+主要是用相似度判断时要结合多个样本的标签
+
+### ==三元组的方法, 相似的放在一起, 不相似的远离==
+
+![image-20200827125655093](/img/in-post/20_07/image-20200827125655093.png)
 
 ### 修改Dropout丢弃概率
 
@@ -185,6 +225,8 @@ embading多样性和样本多样性, 如dropout![image-20200819205814238](/img/i
 
 
 ### 对比学习,使用数据增强,
+
+![image-20200827002631781](/img/in-post/20_07/image-20200827002631781.png)
 
 
 
