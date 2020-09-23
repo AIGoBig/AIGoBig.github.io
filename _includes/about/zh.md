@@ -32,7 +32,7 @@
 
 
 
-2020年"中兴捧月"算法精英挑战赛初赛第一名(100分) -- 免笔试
+2020年"中兴捧月"算法精英挑战赛(免笔试)
 
 
 
@@ -60,49 +60,21 @@
 
 2020年项目**6207020586，面向个性化辅助学习跨域推荐的演化图神经网络**
 
-![image-20200416210744669](/img/in-post/20_03/image-20200416210744669.png)
+
 
 通过并参加了**创新工场DeeCamp2020人工智能夏令营**及基于人工智能赋能的商业辅助决策项目
 
-![image-20200725224021008](/img/in-post/20_07/image-20200725224021008.png)
-
-Hyperspectral Classification实验分析
+<img src="/img/in-post/20_07/image-20200725224021008.png" alt="image-20200725224021008" style="zoom:20%;" />
 
 
 
-**本科期间**
-
-**Software Programming**：
-
-基于MATLAB的图像预处理和人脸识别
-
-![image-20200714235215968](/img/in-post/20_07/image-20200714235215968.png)
-
-基于pytorch的神经网络搭建
+基于CNN的图像预处理和人脸识别系统
 
 基于字符串模糊匹配的销售数据处理和校正
 
-环形公路堵车模拟
+FPGA 6层高速电路板绘制及基于FPGA的自适应滤波器系统设计
 
-**Hardware Design：**
+全国大学生“恩智浦”智能车挑战赛
 
-FPGA 6层高速电路板绘制
-
-基于FPGA的自适应滤波器系统设计
-
-10位DDS数模转换电路，信号产生采样电路系统
-
-基于FSK调制的红外模拟数字通信电路
-
-温控风扇，胎温监测报警系统
-
-智能车主板pcb绘制Professional Skills
-
-学生熟悉使用**深度学习方法、机器学习方法的图像或数据的处理及**相关理论和程序实现。熟练使用**Python**，较熟练使用**C++、 Matlab**进行图像或数据的处理分析，熟练使用**pytorch**及能够使用**TensorFlow**框架进行神经网络系统设计，可以使用python进行UI构建。对机器学习各个方向进行过学习和了解，使用过sklearn机器学习库。
-
-可以使用Python进行GUI编程，熟练使用正则表达式编程及re库使用，对ModelArts等AI平台熟悉，较为熟练的使用**MATLAB**构建GUI界面、使用其**深度学习工具箱**构建CNN。熟练使用**Altium Designer**，可以设计较高难度多层板，高速板。会使用**MATLAB, Modelsim, Filter pro**及熟练使用**Multisim**等仿真软件对电路参数等进行仿真模拟。大学期间掌握了**C语言**，会使用C语言进行ARM编程，可以使用**Verilog** **HDL**编写FPGA程序。
-
-
-
-主要居住在西安和青岛，线上出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
+主要居住在西安或青岛，线上可能出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
 
