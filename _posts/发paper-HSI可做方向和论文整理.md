@@ -26,19 +26,31 @@ tags:
 
 
 
-
-
-
-
-
-
 ## 学习队列
 
 ### 三元组的方法, 相似的放在一起, 不相似的远离
 
 输入为3D块好还是1D好?
 
+### SNE降维后分类 — 找代码实现
 
+降维后精度比较高, 但时间复杂度比较高, 
+
+==可创新== — 
+
+​	==1.可以用来提升精度,然后尽量在其他方法上创新==
+
+​	==2.能不能使复杂度降低 — 大创新==
+
+t-sne cnn
+
+![IMG_96C99F638D56-1](/img/in-post/20_07/IMG_96C99F638D56-1.jpeg)
+
+![image-20201007192744520](/img/in-post/20_07/image-20201007192744520.png)
+
+> 组合性方法要把每一个小方法都单独拎出来然后对比,才能分析出到底是那部分在起作用
+
+![IMG_2158](/img/in-post/20_07/IMG_2158.PNG)
 
 ### 光谱聚类
 
@@ -58,8 +70,6 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 使用基于梯度下降的搜索算法来有效地找到在验证数据集上评估的最佳深度结构。
 
-
-
 ![image-20200818023310727](/img/in-post/20_07/image-20200818023310727.png)
 
 
@@ -68,8 +78,6 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 
 1. 论文用marginnote, 在上面做好**重点和大纲的标注**, 加上**标签,** 方便后期可以按类别阅读
 2. 笔记在markdown上写好, 尤其要写**创新点和自己能做的地方**, 随时可以回来看
-
-
 
 ## HSI可做方向
 
