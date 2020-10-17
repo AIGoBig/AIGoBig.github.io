@@ -9,21 +9,19 @@ tags:
   - 
 
 
+
 ---
 
 # Reference
 
-<算法小抄pdf>
+<<算法小抄pdf>>
 
 [九章算法视频](https://www.bilibili.com/video/BV1i64y1u7Me/)
 
+
 # 分类刷题
 
-
-
 <img src="/img/in-post/20_07/v2-58b8892ba8db8bb452db88ec329e1dcd_1440w-20200808155245207.jpg" alt="img" style="zoom: 67%;" />
-
-
 
 1、√ 建议未刷过题的新人按着顺序来。 
 
@@ -58,14 +56,12 @@ tags:
 ```python
 Tree(root) :
     if (root == null) return
-    
+
     # ...     your task
 
     plusOne(root.left)
     plusOne(root.right)
 ```
-
-
 
 ## 动态规划框架
 
