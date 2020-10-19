@@ -7,7 +7,7 @@ header-style: text
 tags: Record
 ---
 
-**网盘数码照片**
+**照片记录**
 
 [8.08游玩照片](https://pan.baidu.com/s/1unDWMlnZcZMS_p8NiAur6w)
 

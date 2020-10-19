@@ -15,32 +15,30 @@
 
 > __从左到右__ 为喜欢程度，__从上到下__ 为了解程度。
 
-|      | ❤️              | ❤️❤️                  | ❤️❤️❤️          |
-| ---- | -------------- | ------------------- | ------------ |
-| 😅    |                | Java                |              |
-| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS | re,          |
-| 😏    |                | AD,                 | pytorch, C++ |
-| 🤓    |                |                     | python3      |
+|      | ❤️              | ❤️❤️                  | ❤️❤️❤️              |
+| ---- | -------------- | ------------------- | ---------------- |
+| 😅    |                | Java                |                  |
+| 🧐    | C, Verilog HDL | MATLAB, Multisim,PS | re,C++           |
+| 😏    |                | AD,                 | python3,pytorch, |
+| 🤓    |                |                     |                  |
+
+## Grade
+
+研究生课程平均分90.34，排名2/94（其中学位课平均分89.55,排名6/94）。
+
+所选课程包括计算智能（97分）、工程优化方法及应用（99分）、图像识别算法与系统设计（97分）等。
 
 ## Reward
 
-**2019——2020年期间：**
+ 科大讯飞AI开发者大赛温度预测挑战赛获“算法菁英奖” (排名6/1635)
 
-华为云软件精英挑战赛西北赛区三等奖
+华为软件精英挑战赛西北赛区获得“三等奖”（64强）
 
-2020年"中兴捧月"算法精英挑战赛(免笔试)
+天池大数据竞赛新闻文本分类赛 (69/2782)
 
-通过华为云NAIE 服务实战营并获得华为云社会实践证书，熟练使用ModelArts、AutoML、NAIE等平台。
+2020年"中兴捧月"算法精英挑战赛 (免笔试)
 
-<img src="/img/in-post/20_07/%E5%8D%8E%E4%B8%BA%E7%A4%BE%E4%BC%9A%E5%AE%9E%E8%B7%B5%E8%AF%81%E4%B9%A6.png" alt="华为社会实践证书" style="zoom:50%;" />
-
-参加华为云垃圾分类项目并获得华为云人工智能技能认证
-
-![image-20200714235021299](/img/in-post/20_07/image-20200714235021299.png)
-
-**2015——2018年期间：**
-
-全国大学生电子设计大赛山东赛区一等奖，全国大学生电子设计大赛校内赛一等奖，全国大学生恩智浦智能车竞赛校内赛一等奖
+全国大学生电子设计大赛山东赛区一等奖，全国大学生恩智浦智能车竞赛校内赛一等奖
 
 ![image-20200714234951472](/img/in-post/20_07/image-20200714234951472.png)
 
@@ -50,17 +48,37 @@
 
 ## Project Experience
 
-6207020586，面向个性化辅助学习跨域推荐的演化图神经网络
+面向个性化辅助学习跨域推荐的演化图神经网络 (6207020586)
 
-通过并参加了**创新工场DeeCamp2020人工智能夏令营**及基于人工智能赋能的商业辅助决策项目(外汇预测赛题)
+通过并参加了创新工场DeeCamp2020人工智能夏令营及基于人工智能赋能的商业辅助决策项目(外汇预测题目)
 
-基于CNN的图像预处理和人脸识别系统
-
-基于字符串模糊匹配的销售数据处理和校正
+基于CNN的人脸识别系统
 
 FPGA 6层高速电路板绘制及基于FPGA的自适应滤波器系统设计
 
-全国大学生“恩智浦”智能车挑战赛
+## Academic performance
 
-主要居住在西安或青岛，线上可能出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、[Twitter](https://twitter.com/Huxpro/)
+| [IEEE WCNC 2021](https://edas.info/index.php?c=27682) | [*Clustering-Based Data Collection Using Concurrent Transmission in Wireless Sensor Network*](https://edas.info/showPaper.php?m=1570682628) |
+| ----------------------------------------------------- | ------------------------------------------------------------ |
+|                                                       |                                                              |
+
+## Practice
+
+通过华为云NAIE 服务实战营并获得华为云社会实践证书，熟练使用ModelArts、AutoML、NAIE等平台。
+
+<img src="/img/in-post/20_07/%E5%8D%8E%E4%B8%BA%E7%A4%BE%E4%BC%9A%E5%AE%9E%E8%B7%B5%E8%AF%81%E4%B9%A6.png" alt="华为社会实践证书" style="zoom: 33%;" />
+
+参加了创新工场DeeCamp2020人工智能夏令营
+
+担任西安电子科技大学华为创新协会部（组）长
+
+参加了2019年全国高校人工智能学院院长/系主任论坛
+
+参加华为云垃圾分类项目并获得华为云人工智能技能认证
+
+![image-20200714235021299](/img/in-post/20_07/image-20200714235021299.png)
+
+
+
+主要居住在西安或青岛，线上可能出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、Twitter
 
