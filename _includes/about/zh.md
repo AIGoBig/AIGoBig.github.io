@@ -7,9 +7,7 @@
 | **英  语**：CET 6            | **住   址**：青岛市 \| 西安市       |
 | **学  校**：西安电子科技大学 | **邮   箱**：qinghu.sun@outlook.com |
 
-## Resume
-
-<a href="../resume/孙庆虎个人简历.pdf" target="_blank">孙庆虎个人简历查看及下载</a>
+<a href="../resume/孙庆虎个人简历.pdf" target="_blank">孙庆虎个人简历</a>
 
 ## Personal Skills
 
