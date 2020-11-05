@@ -147,10 +147,36 @@ clf.fit(X_train, y_train)
 
 
 
+## nn.conv3d()
+
+```java
+class torch.nn.Conv3d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
+```
 
 
 
+```cpp
+in_channels(int) – 输入信号的通道，就是输入中每帧图像的通道数
+out_channels(int) – 卷积产生的通道，就是输出中每帧图像的通道数
+kernel_size(int or tuple) - 过滤器的尺寸，假设为(a,b,c)，表示的是过滤器每次处理 a 帧图像，该图像的大小是b x c。
+stride(int or tuple, optional) - 卷积步长，形状是三维的，假设为(x,y,z)，表示的是三维上的步长是x，在行方向上步长是y，在列方向上步长是z。
+padding(int or tuple, optional) - 输入的每一条边补充0的层数，形状是三维的，假设是(l,m,n)，表示的是在输入的三维方向前后分别padding l 个全零二维矩阵，在输入的行方向上下分别padding m 个全零行向量，在输入的列方向左右分别padding n 个全零列向量。
+dilation(int or tuple, optional) – 卷积核元素之间的间距，这个看看空洞卷积就okay了
+groups(int, optional) – 从输入通道到输出通道的阻塞连接数；没用到，没细看
+bias(bool, optional) - 如果bias=True，添加偏置；没用到，没细看
+```
 
+
+
+## 正则化方法
+
+### `nn.LocalResponseNorm()-Local Response Normalization`
+
+在由几个输入平面组成的输入信号上应用本地响应归一化，其中通道占据第二维。跨通道应用标准化。
+$$
+b_{c} = a_{c}\left(k + \frac{\alpha}{n}
+        \sum_{c'=\max(0, c-n/2)}^{\min(N-1,c+n/2)}a_{c'}^2\right)^{-\beta}
+$$
 
 
 
