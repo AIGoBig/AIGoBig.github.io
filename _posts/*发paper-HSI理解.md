@@ -12,9 +12,46 @@ tags:
 
 # HSI数据
 
-## Indian_1
+## Indian Pines
 
 10249像素
+
+| #    | Class                        | Samples |
+| ---- | ---------------------------- | ------- |
+| 1    | Alfalfa                      | 46      |
+| 2    | Corn-notill                  | 1428    |
+| 3    | Corn-mintill                 | 830     |
+| 4    | Corn                         | 237     |
+| 5    | Grass-pasture                | 483     |
+| 6    | Grass-trees                  | 730     |
+| 7    | Grass-pasture-mowed          | 28      |
+| 8    | Hay-windrowed                | 478     |
+| 9    | Oats                         | 20      |
+| 10   | Soybean-notill               | 972     |
+| 11   | Soybean-mintill              | 2455    |
+| 12   | Soybean-clean                | 593     |
+| 13   | Wheat                        | 205     |
+| 14   | Woods                        | 1265    |
+| 15   | Buildings-Grass-Trees-Drives | 386     |
+| 16   | Stone-Steel-Towers           | 93      |
+
+## Pavia University
+
+42776像素
+
+| #    | Class                | Samples |
+| ---- | -------------------- | ------- |
+| 1    | Asphalt              | 6631    |
+| 2    | Meadows              | 18649   |
+| 3    | Gravel               | 2099    |
+| 4    | Trees                | 3064    |
+| 5    | Painted metal sheets | 1345    |
+| 6    | Bare Soil            | 5029    |
+| 7    | Bitumen              | 1330    |
+| 8    | Self-Blocking Bricks | 3682    |
+| 9    | Shadows              | 947     |
+
+
 
 # 评价指标
 
@@ -23,6 +60,12 @@ tags:
 ![img](/img/in-post/20_07/Center.jpeg)
 
 ## 混淆矩阵
+
+![img](/img/in-post/20_07/v2-026440fdfe0a0a799a135cc534cb61e2_1440w.jpg)
+
+![img](https://pic4.zhimg.com/80/v2-87311fed72faca24c38a9f7ac394e3e4_1440w.jpg?source=1940ef5c)
+
+
 
 *混淆矩阵*也称误差*矩阵*，是表示精度评价的一种标准格式，用n行n列的*矩阵*形式来表示。
 
@@ -99,14 +142,14 @@ TN：真负，被模型分类正确的负样本 【预测为0 实际为0】
 
  **（二） 例：** 单位/像素（pixel）
 
-| class    | 水体  | 林地  | 耕地  | 未利用地 | 居民地 | 总计       |
-| -------- | ----- | ----- | ----- | -------- | ------ | ---------- |
-| 水体     | 25792 | 0     | 0     | 2        | 44     | 25838      |
-| 林地     | 80    | 16825 | 297   | 684      | 1324   | 19210      |
-| 耕地     | 519   | 60    | 27424 | 38       | 11542  | 39583      |
-| 未利用地 | 31    | 0     | 0     | 9638     | 487    | 10156      |
-| 居民地   | 323   | 0     | 49    | 133      | 30551  | 31056      |
-| 总计     | 26745 | 16885 | 27770 | 10495    | 43948  | **125843** |
+| class    | 水体  | 林地      | 耕地  | 未利用地 | 居民地 | 总计       |
+| -------- | ----- | --------- | ----- | -------- | ------ | ---------- |
+| 水体     | 25792 | 0         | 0     | 2        | 44     | 25838      |
+| 林地     | 80    | **16825** | 297   | 684      | 1324   | 19210      |
+| 耕地     | 519   | **60**    | 27424 | 38       | 11542  | 39583      |
+| 未利用地 | 31    | 0         | 0     | 9638     | 487    | 10156      |
+| 居民地   | 323   | 0         | 49    | 133      | 30551  | 31056      |
+| 总计     | 26745 | 16885     | 27770 | 10495    | 43948  | **125843** |
 
 | 林地                | Predicted as Positive | Predicted as Negative |
 | ------------------- | --------------------- | --------------------- |
@@ -135,7 +178,109 @@ K = 0.8396
 
 \- - - - - - - - - - - - - - - - - - - - - - -- - - -- - - - - - - - - - - - - - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# 方法积累
+## 自己算一下
+
+Confusion matrix :
+[[ 6227     0    26     3     0     0    83    86     6]  —> 6431 (全部测试集)
+ [ 1376 15298     6   307     0  1462     0     0     0]  —> 18449  
+ [   93     0  1773     0     0     0     0    33     0] —> 
+ [   37     4     4  2816     2     0     0     1     0] 
+ [    0     0     0     0  1145     0     0     0     0]
+ [    0    84     0     2     0  4729     0    14     0]
+ [   21     0     0     0     0     0  1109     0     0]
+ [   14     0    12     1     0    11     0  3442     2]
+ [    0     0     0     1     0     0     0     0   746]]---
+
+Accuracy : 90.992% 
+
+---
+
+F1 scores :
+	Asphalt: 0.877
+	Meadows: 0.904
+	Gravel: 0.953
+	Trees: 0.940
+	Painted metal sheets: 0.999
+	Bare Soil: 0.857
+	Bitumen: 0.955
+	Self-Blocking Bricks: 0.975
+
+​	Shadows: 0.994
+
+---
+
+Kappa: 0.883
+
+
+
+| 类别\预测 | 1           | 2     | 3    | 4    | 5    | 6        | 7    | 8    | 9    | 总数  | P          | F1          |
+| --------- | ----------- | ----- | ---- | ---- | ---- | -------- | ---- | ---- | ---- | ----- | ---------- | ----------- |
+| 1         | 6227        | 0     | 26   | 3    | 0    | 0        | 83   | 86   | 6    | 6431  | 0.96827865 | 0.877104021 |
+| 2         | ==1376==    | 15298 | 6    | 307  | 0    | ==1462== | 0    | 0    | 0    | 18449 |            |             |
+| 3         | 93          | 0     | 1773 | 0    | 0    | 0        | 0    | 33   | 0    | 1899  |            |             |
+| 4         | 37          | 4     | 4    | 2816 | 2    | 0        | 0    | 1    | 0    | 2864  |            |             |
+| 5         | 0           | 0     | 0    | 0    | 1145 | 0        | 0    | 0    | 0    | 1145  |            |             |
+| 6         | 0           | 84    | 0    | 2    | 0    | 4729     | 0    | 14   | 0    | 4829  |            |             |
+| 7         | 21          | 0     | 0    | 0    | 0    | 0        | 1109 | 0    | 0    | 1130  |            |             |
+| 8         | 14          | 0     | 12   | 1    | 0    | 11       | 0    | 3442 | 2    | 3482  |            |             |
+| 9         | 0           | 0     | 0    | 1    | 0    | 0        | 0    | 0    | 746  | 747   |            |             |
+| R         | 0.801622039 |       |      |      |      |          |      |      |      | 40976 |            |             |
+
+Accuracy:  37285/40976 =   0.909922882                      
+
+Overall Accuracy    
+
+# 数据预处理方法积累
+
+## 数据集划分
+
+```python
+X_train,X_test, y_train, y_test = sklearn.model_selection.train_test_split(train_data,train_target,test_size=0.4, random_state=0,stratify=y_train)
+```
+
+**arrays：**可以是列表、numpy数组、scipy稀疏矩阵或pandas的数据框
+
+***test_size：***可以为浮点、整数或None，默认为None
+
+①若为浮点时，表示测试集占总样本的百分比
+
+②若为整数时，表示测试样本样本数
+
+③若为None时，test size自动设置成0.25
+
+***train_size：***可以为浮点、整数或None，默认为None
+
+**①若为浮点时，表示训练集占总样本的百分比**
+
+**②若为整数时，表示训练样本的样本数**
+
+③若为None时，train_size自动被设置成0.75
+
+***random_state：***可以为整数、RandomState实例或None，默认为None
+
+①若为None时，每次生成的数据都是随机，可能不一样
+
+②若为整数时，每次生成的数据都相同
+
+***stratify：***可以为类似数组或None
+
+①若为None时，划分出来的测试集或训练集中，其类标签的比例也是随机的
+
+②若不为None时，划分出来的测试集或训练集中，其类标签的比例同输入的数组中类标签的比例相同，可以用于处理不均衡的数据集
+
+## 虚拟样本增强
+
+### A. Changing Radiation-Based Virtual Samples
+
+<img src="/img/in-post/20_07/image-20201106170354783.png" alt="image-20201106170354783" style="zoom:50%;" />
+
+> <chen>
+
+### xB. Mixture-Based Virtual Samples
+
+<img src="/img/in-post/20_07/image-20201106170414304.png" alt="image-20201106170414304" style="zoom:50%;" />
+
+# 网络方法积累
 
 ## 网格搜索法(SVM_grid)
 
@@ -145,15 +290,11 @@ clf = sklearn.model_selection.GridSearchCV(clf, SVM_GRID_PARAMS, verbose=5, n_jo
 clf.fit(X_train, y_train)
 ```
 
-
-
 ## nn.conv3d()
 
 ```java
 class torch.nn.Conv3d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
 ```
-
-
 
 ```cpp
 in_channels(int) – 输入信号的通道，就是输入中每帧图像的通道数
@@ -166,8 +307,6 @@ groups(int, optional) – 从输入通道到输出通道的阻塞连接数；没
 bias(bool, optional) - 如果bias=True，添加偏置；没用到，没细看
 ```
 
-
-
 ## 正则化方法
 
 ### `nn.LocalResponseNorm()-Local Response Normalization`
@@ -178,10 +317,30 @@ b_{c} = a_{c}\left(k + \frac{\alpha}{n}
         \sum_{c'=\max(0, c-n/2)}^{\min(N-1,c+n/2)}a_{c'}^2\right)^{-\beta}
 $$
 
+# 网络层函数
 
+## 权重初始化方法
 
+```python
+@staticmethod
+def weight_init(m):
+  if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
+    init.kaiming_uniform_(m.weight)
+    init.zeros_(m.bias)
 
+# 网络权重初始化方式
+self.apply(self.weight_init) # ???
+```
 
+## 并行模块拼接方式—  torch.cat()
+
+```python
+def forward(self, x):
+    # Inception module
+    x_3x3 = self.conv_3x3(x)
+    x_1x1 = self.conv_1x1(x)
+    x = torch.cat([x_3x3, x_1x1], dim=1)  # 两个并行模块的拼接方式
+```
 
 
 

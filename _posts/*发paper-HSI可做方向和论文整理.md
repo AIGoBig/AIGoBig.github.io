@@ -323,6 +323,12 @@ embading多样性和样本多样性, 如dropout![image-20200819205814238](/img/i
 
 # 按文章总结收获和创新点
 
+在保证准确率的条件下, 尝试对网络进行修改创新
+
+1. 找到精度/小样本下效果都比较好的网络
+
+
+
 ## MS-CNN+Diversified Metric(DPP+DML)+MS+
 
 笔记:  [19_TGRS_A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification](/blog/_posts/2020-03-02-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification.md)
@@ -371,75 +377,7 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 
 ![image-20200302123432385](/img/in-post/20_03/image-20200302123432385.png)
 
-## 3D-CNN
 
- [17_rs_3DCNN Spectral–Spatial Classification of Hyperspectral Imagery with 3D Convolutional Neural Network.pdf](../../Users/king/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/论文/经典网络等/17_rs_3DCNN Spectral–Spatial Classification of Hyperspectral Imagery with 3D Convolutional Neural Network.pdf) 
-
-笔记: [HSI Classification基于深度学习.md](/blog/_posts/2020-03-09-HSI Classification基于深度学习.md)
-
-需要50%的训练样本, 可以达到99的accuracy, 需要的训练集太多
-
-### 优势
-
-1. 无需预处理
-2. 更少的参数
-   1. lighter
-   2. less likely to over-fit
-   3. easiler to train
-
-### 收获和点子
-
-**解决分辨率低: 不使用池化操作的原因**: Reducing the spatial resolution in HSI
-
-**Pixel-level**: 在HSI的卷积操作相对于其他的3D-CNN的应用
-
-`**解决样本少的问题:  研究基于3D-CNN的无监督和半监督**分类方法的集成. 研究可以利用未标记样本的3D-CNN的HSI分类技术, 可以解决高光谱图像标记样本难以获取的问题.` (与度量学习目的同, 度量学习算是啥? )
-
-
-
-## Code+Contextual CNN+MS+ResNet+FCN
-
-17_TIP_Going Deeper with Contextual CNN for Hyperspectral Image Classification
-
-**IEEE Transactions on Image Processing(Impact factor 6.79)**
-
-**实现:**
-
-[paperwithcode-pytorch](https://paperswithcode.com/paper/going-deeper-with-contextual-cnn-for#code)
-
-### 收获和点子
-
-1. `考虑利于FCN进行HSI图像分割`
-   1. 笔记: [FCN](/blog/_posts/2020-03-07-CNN知识点总结.md)
-   2. 能不能通过FCN使用少数标记点(结合语义分割)来标记其他像素点进行训练
-   3. `看语义分割能不能转化为像素点分类`
-
-2. 为了避免过拟合，**作者对patch做了水平和竖直方向及对角线方向的镜像**，从而实现了4倍率的augmentation。
-
-### 优势
-
-1. **multi-scale: 实现了deeper and wider** than other existing deep networks for hyperspectral image classification
-2. `FCN: 使用1*1卷积替代全连接网络, 其实就是对**将卷积核上同一点的所有channel进行FC操作**。`
-   1. 能不能通过FCN使用少数标记点(结合语义分割)来标记其他像素点进行训练
-   2. `看语义分割能不能转化为像素点分类`
-   3. 声称是第一次用比较**深的网络**来进行高光谱分类
-
-### 整体流程
-
-<img src="https://img-blog.csdnimg.cn/20190320194547550.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"  />
-
-较深的网络:
-
-![img](https://img-blog.csdnimg.cn/20190320202016861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
-训练方法:
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190320211214652.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
-
-
-
-200 training samples
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190320211517900.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
 
 ## CONTEXTUAL CNN+FCN
 
@@ -522,28 +460,6 @@ International Geoscience and Remote Sensing Symposium**(0.5??)**
 ### Result
 
 <img src="/img/in-post/20_03/image-20200312231340782.png" alt="image-20200312231340782" style="zoom: 50%;" />
-
-## HSI-CNN+2D-CNN+code+XgBoost+CapsNet
-
-17_icpr_HSI-CNN: A Novel Convolution Neural Network for Hyperspectral Image
-
-<img src="/img/in-post/20_03/image-20200318092714752.png" alt="image-20200318092714752" style="zoom:67%;" />
-
-训练集需求多: 80%
-
-![image-20200318092913587](/img/in-post/20_03/image-20200318092913587-4494955.png)
-
-## M3D-DCNN+MS-CNN+3D-CNN
-
-MULTI-SCALE 3D DEEP CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIFICATION
-
-MS-CNN标准结构:
-
-<img src="/img/in-post/20_03/image-20200318093520333.png" alt="image-20200318093520333" style="zoom:50%;" />
-
-提出的结构M3D-DCNN:
-
-<img src="/img/in-post/20_03/image-20200318093535883.png" alt="image-20200318093535883" style="zoom:50%;" />
 
 ## band-selection(只看这点)
 
@@ -924,7 +840,31 @@ V. CONCLUSION
 运行结果
 如何实现 — 整体架构, 实现细节
 
+## 20_TGRS_Few-Shot Hyperspectral Image Classification With Unknown Classes Using Multit
 
+该论文针对未知类别的小样本高光谱图像分类问题，首次提出一种新颖的**多任务深度卷积网络分类方法。**
+
+`【代码链接】`https://sjliu.me/MDL4OW
+
+### 提出原因
+
+现有的高光谱图像分类方法都假设和预定义图像分类系统是封闭且完整的，并在不可见的数据中**没有未知的或新的图像类别**。然而，这个假设对于现实世界来说可能过于严格，在构建分类系统时，通常会忽略新的类别。分类系统的封闭性会迫使模型在给定新样本的情况下指定标签，并可能导致对已知样本的标签(如作物面积)的覆盖。为了解决这个问题，本文提出一种多任务深度学习方法，该方法**可以在未知类别可能存在的开放世界(MDL4OW)中同时进行分类和重构**。将重构数据与原始数据进行比较;且**未被重构的数据被认为是未知的**，并且由于缺少分类标签，这些重构数据在潜在特征中没有被很好地表示，故需要定义一个阈值来区分未知类别和已知类别；基于此，**本文提出了两种基于极值理论的策略，分别用于少样本和多样本学习场景**。该方法在真实高光谱图像上的测试结果获得了最优的结果，如在萨利纳斯数据的测试结果中使分类的整体精度提高了4.94%。通过考虑开放世界中未知类别的存在，该方法实现了在小样本背景下的更精确的高光谱图像分类。
+
+### 本文主要贡献如下
+
+1. 针对未知类别的高光谱图像分类问题，本文提出了一种新的**多任务深度卷积神经网络学习方法MDL4OW**。该方法能够识别未知小样本图像类别，**显著提高高光谱图像分类精度**； 
+2. 本文提出的方法使用**统计模型极值理论来估计所有数据的未知分数**，而不是使用基于质心的方法以分类的方式来估计未知分数。因此该方法在小样本高光谱图像分类方面优于现有的开放集图像分类方法； 
+3. 本文针对未知类别的高光谱图像分类精度问题，提出了一种新的评价指标—映射误差，这种度量指标对不平衡分类特别敏感，非常适用于高光谱图像分类问题。
+
+<img src="/img/in-post/20_07/image-20201109214401498.png" alt="image-20201109214401498" style="zoom:50%;" />
+
+![image-20201109215304855](/img/in-post/20_07/image-20201109215304855.png)
+
+
+
+### 可以创新的地方
+
+与对比学习结合, 度量学习结合, SimCLR
 
 # 程序实现
 
@@ -1119,6 +1059,162 @@ Self-Blocking Bricks       0.82      0.93      0.87      3645
  [   37     2     6     0     9     7    58    18   800]]
 ```
 
+## 11-07 17_rs_li_3DCNN Spectral–Spatial Classification of Hyperspectral Imagery with 3D Convolutional Neural Network 
+
+```
+----------------------------------------------------------------
+
+    Layer (type)        Output Shape     Param #
+
+======================================================
+
+      Conv3d-1    [-1, 16, 196, 3, 3]      1,024
+
+      Conv3d-2    [-1, 32, 196, 1, 1]     13,856
+
+      Linear-3          [-1, 17]     106,641
+```
+
+
+
+![image-20201107194912491](/img/in-post/20_07/image-20201107194912491.png)
+
+### 优势
+
+1. 完全**不依赖任何预处理或后处理**即可查看HSI多维数据集数据，从而有效地提取了深光谱空间组合特征
+2. 更少的参数
+   1. lighter
+   2. less likely to over-fit
+   3. easiler to train
+3. 网络层内可视化
+
+### 缺点
+
+需要50%的训练样本, 可以达到99的accuracy, 需要的训练集太多
+
+### 收获和点子
+
+**解决分辨率低: 不使用池化操作的原因**: Reducing the spatial resolution in HSI
+
+**Pixel-level**: 在HSI的卷积操作相对于其他的3D-CNN的应用
+
+`**解决样本少的问题:  研究基于3D-CNN的无监督和半监督**分类方法的集成. 研究可以利用未标记样本的3D-CNN的HSI分类技术, 可以解决高光谱图像标记样本难以获取的问题.` (与度量学习目的同, 度量学习算是啥? 
+
+## 15_JS_hu_1DCNN_Deep Convolutional Neural Networks for Hyperspectral Image Classification
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+            Conv1d-1              [-1, 20, 178]             480
+         MaxPool1d-2               [-1, 20, 35]               0
+            Linear-3                  [-1, 100]          70,100
+            Linear-4                   [-1, 17]           1,717
+```
+
+<img src="/img/in-post/20_07/image-20201108084557806.png" alt="image-20201108084557806" style="zoom:50%;" />
+
+
+
+
+
+## 17_icip _he_Multi-scale3DCNN_MULTI-SCALE 3D DEEP CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIFICATION
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+            Conv3d-1         [-1, 16, 64, 5, 5]           1,600
+            Conv3d-2         [-1, 16, 64, 5, 5]             272
+            Conv3d-3         [-1, 16, 64, 5, 5]             784
+            Conv3d-4         [-1, 16, 64, 5, 5]           1,296
+            Conv3d-5         [-1, 16, 64, 5, 5]           2,832
+            Conv3d-6         [-1, 16, 64, 5, 5]             272
+            Conv3d-7         [-1, 16, 64, 5, 5]             784
+            Conv3d-8         [-1, 16, 64, 5, 5]           1,296
+            Conv3d-9         [-1, 16, 64, 5, 5]           2,832
+           Conv3d-10         [-1, 16, 62, 4, 4]           3,088
+          Dropout-11                [-1, 15872]               0
+           Linear-12                   [-1, 17]         269,841
+```
+
+MS-CNN标准结构:
+
+<img src="/img/in-post/20_03/image-20200318093520333.png" alt="image-20200318093520333" style="zoom:50%;" />
+
+提出的结构M3D-DCNN:
+
+<img src="/img/in-post/20_03/image-20200318093535883.png" alt="image-20200318093535883" style="zoom:50%;" />
+
+### 效果 
+
+尽管没有任何手工功能或PCA，稀疏编码等预处理/后处理功能，但我们在标准数据集上获得了最先进的结果
+
+### 优势
+
+1. 提出**多尺度3-d卷积块**,以满足空间域中的多尺度目标
+2. 由于没有任何手工功能以及PCA，稀疏表示等前/后处理功能，我们提出的M3D-DCNN可以在标准数据集上实现最新的结果。 更重要的是，我们的方法完全是一种端到端的方法，有望在将来使用大规模数据集获得更好的结果
+
+### 还可以改进的地方
+
+把多尺度和强表示深度网络结合
+
+## 17_icpr_luo_3dcnn_HSI-CNN_ A Novel Convolution Neural Network for Hyperspectral Image
+
+感觉和3d卷积区别不大,但是画图好
+
+缺点: 训练集需求多: 80%
+
+![image-20200318092913587](/img/in-post/20_07/image-20200318092913587-4494955-4845695.png)
+
+
+
+![image-20201108222724685](/img/in-post/20_07/image-20201108222724685.png)
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================            
+						 Conv3d-1         [-1, 90, 20, 1, 1]          19,530
+            Conv2d-2           [-1, 64, 18, 88]             640
+            Linear-3                 [-1, 1024]     103,810,048
+            Linear-4                   [-1, 17]          17,425
+```
+
+## sharma
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+            Conv3d-1        [-1, 96, 1, 30, 30]         691,296
+       BatchNorm3d-2        [-1, 96, 1, 30, 30]             192
+         MaxPool3d-3        [-1, 96, 1, 15, 15]               0
+            Conv3d-4         [-1, 256, 1, 7, 7]         221,440
+       BatchNorm3d-5         [-1, 256, 1, 7, 7]             512
+         MaxPool3d-6         [-1, 256, 1, 3, 3]               0
+            Conv3d-7         [-1, 512, 1, 1, 1]       1,180,160
+            Linear-8                 [-1, 1024]         525,312
+           Dropout-9                 [-1, 1024]               0
+           Linear-10                   [-1, 17]          17,425
+```
+
+## 17_RSL_liu_A semi-supervised convolutional neural network for hyperspectral image classification
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+            Conv2d-1             [-1, 80, 7, 7]         144,080
+       BatchNorm2d-2             [-1, 80, 7, 7]             160
+         MaxPool2d-3             [-1, 80, 3, 3]               0
+            Linear-4                   [-1, 17]          12,257
+            Linear-5                  [-1, 720]         519,120
+            Linear-6                  [-1, 720]         519,120
+       BatchNorm1d-7                  [-1, 720]           1,440
+            Linear-8                 [-1, 3920]       2,826,320
+       BatchNorm1d-9                 [-1, 3920]           7,840
+           Linear-10                  [-1, 200]         784,200
+```
+
+![image-20201108224521605](/img/in-post/20_07/image-20201108224521605.png)
+
+![image-20201108224554518](/img/in-post/20_07/image-20201108224554518.png)
 
 
 
@@ -1130,6 +1226,104 @@ Self-Blocking Bricks       0.82      0.93      0.87      3645
 
 
 
+
+
+## boulch
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+            Conv1d-1              [-1, 32, 200]             128
+         MaxPool1d-2              [-1, 32, 100]               0
+              ReLU-3              [-1, 32, 100]               0
+       BatchNorm1d-4              [-1, 32, 100]              64
+            Conv1d-5              [-1, 16, 100]           1,552
+         MaxPool1d-6               [-1, 16, 50]               0
+              ReLU-7               [-1, 16, 50]               0
+       BatchNorm1d-8               [-1, 16, 50]              32
+            Conv1d-9               [-1, 16, 50]             784
+        MaxPool1d-10               [-1, 16, 25]               0
+             ReLU-11               [-1, 16, 25]               0
+      BatchNorm1d-12               [-1, 16, 25]              32
+           Conv1d-13               [-1, 16, 25]             784
+        MaxPool1d-14               [-1, 16, 12]               0
+             ReLU-15               [-1, 16, 12]               0
+      BatchNorm1d-16               [-1, 16, 12]              32
+           Conv1d-17               [-1, 16, 12]             784
+        MaxPool1d-18                [-1, 16, 6]               0
+             ReLU-19                [-1, 16, 6]               0
+      BatchNorm1d-20                [-1, 16, 6]              32
+           Conv1d-21                [-1, 16, 6]             784
+        MaxPool1d-22                [-1, 16, 3]               0
+             ReLU-23                [-1, 16, 3]               0
+      BatchNorm1d-24                [-1, 16, 3]              32
+           Conv1d-25                [-1, 16, 3]             784
+        MaxPool1d-26                [-1, 16, 1]               0
+             ReLU-27                [-1, 16, 1]               0
+      BatchNorm1d-28                [-1, 16, 1]              32
+           Conv1d-29                 [-1, 3, 1]             147
+             Tanh-30                 [-1, 3, 1]               0
+           Linear-31                   [-1, 17]              68
+           Linear-32                  [-1, 200]             800
+
+```
+
+## mou
+
+```
+        Layer (type)               Output Shape         Param #
+======================================================
+               GRU-1  [[-1, 2, 64], [-1, 2, 64]]               0
+       BatchNorm1d-2                [-1, 12800]          25,600
+              Tanh-3                [-1, 12800]               0
+            Linear-4                   [-1, 17]         217,617
+```
+
+
+
+## 17_TIP_DCNN_Contextual CNN+MS+ResNet+FCN
+
+**17_TIP_DCNN_Going Deeper with Contextual CNN for Hyperspectral Image Classification**
+
+**IEEE Transactions on Image Processing(Impact factor 6.79)**
+
+**实现:**
+
+[paperwithcode-pytorch](https://paperswithcode.com/paper/going-deeper-with-contextual-cnn-for#code)
+
+### 收获和点子
+
+1. `考虑利于FCN进行HSI图像分割`
+   1. 笔记: [FCN](/blog/_posts/2020-03-07-CNN知识点总结.md)
+   2. 能不能通过FCN使用少数标记点(结合语义分割)来标记其他像素点进行训练
+   3. `看语义分割能不能转化为像素点分类`
+
+2. `为了避免过拟合，**作者对patch做了水平和竖直方向及对角线方向的镜像**，从而实现了4倍率的augmentation。`
+
+### 优势
+
+1. **multi-scale: 实现了deeper and wider** than other existing deep networks for hyperspectral image classification
+2. `FCN: 使用1*1卷积替代全连接网络, 其实就是对**将卷积核上同一点的所有channel进行FC操作**。`
+   1. 能不能通过FCN使用少数标记点(结合语义分割)来标记其他像素点进行训练
+   2. `看语义分割能不能转化为像素点分类`
+   3. 声称是第一次用比较**深的网络**来进行高光谱分类
+
+### 整体流程
+
+<img src="https://img-blog.csdnimg.cn/20190320194547550.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"  />
+
+较深的网络:
+
+![img](https://img-blog.csdnimg.cn/20190320202016861.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
+训练方法:
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190320211214652.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
+
+
+
+200 training samples
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190320211517900.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zaGVybG9jay5ibG9nLmNzZG4ubmV0,size_16,color_FFFFFF,t_70)
 
 
 
@@ -1193,13 +1387,27 @@ Self-Blocking Bricks       0.82      0.93      0.87      3645
 
 
 
+# 出现的问题
+
+## [√]undefined有预测, 且准确率不够
+
+![f8839b69-9f1d-4ed4-b7ab-cbf4b5bcad02](/img/in-post/20_07/f8839b69-9f1d-4ed4-b7ab-cbf4b5bcad02.svg)
+
+![f71a8468-014d-406d-8f24-770fefdaf79b](/Volumes/StuFile/Sqh/HSIClassificationCode/%E9%97%AE%E9%A2%98/f71a8468-014d-406d-8f24-770fefdaf79b.svg)
+
+## padding方案问题
+
+https://github.com/eecn/Hyperspectral-Classification/issues/7
+
+> 打扰一下，这个工具箱里用到padding 的方法都有点问题，边缘像素分类结果全是黑色的背景，导致精度低，不知道有没有解决办法
+
+这个问题实际上是深度网络处理的常用方案，只是说高光谱数据对padding更敏感一些<理论上和实际实验中我都试过>，torch、numpy等也有其他的padding方案可以试一试效果。
 
 
 
+## 制约准确率的原因主要就是第二类meadows预测为第一类asphalt和第六类bare soil的原因
 
-
-
-
+![5634194f-7ea6-4aa3-9000-0a349d03572a](/img/in-post/20_07/5634194f-7ea6-4aa3-9000-0a349d03572a.svg)
 
 
 
