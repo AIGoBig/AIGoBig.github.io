@@ -14,6 +14,20 @@ tags:
 
 ## Indian Pines
 
+![visdom_image](/img/in-post/20_07/visdom_image.jpg)
+
+
+
+![b705b0ab-a55e-44d4-a026-2af98e9f56e9](/img/in-post/20_07/b705b0ab-a55e-44d4-a026-2af98e9f56e9.svg)
+
+<img src="/img/in-post/20_07/image-20201113232317705.png" alt="image-20201113232317705" style="zoom:50%;" />
+
+
+
+![3bd01627-671c-47fc-8c31-ddf293527312](/img/in-post/20_07/3bd01627-671c-47fc-8c31-ddf293527312.svg)
+
+<img src="/img/in-post/20_07/image-20201113232141091.png" alt="image-20201113232141091" style="zoom:50%;" />
+
 10249像素
 
 | #    | Class                        | Samples |
@@ -37,6 +51,16 @@ tags:
 
 ## Pavia University
 
+![visdom_image (1)](/img/in-post/20_07/visdom_image%20(1).jpg)
+
+![c260cc0d-1f47-47bf-b853-186660ebf8f6](/img/in-post/20_07/c260cc0d-1f47-47bf-b853-186660ebf8f6.svg)
+
+<img src="/img/in-post/20_07/image-20201113232951458.png" alt="image-20201113232951458" style="zoom:50%;" />
+
+![da3381bc-cd7d-43f9-a573-f75cd22d45f7](/img/in-post/20_07/da3381bc-cd7d-43f9-a573-f75cd22d45f7.svg)
+
+<img src="/img/in-post/20_07/image-20201113233000952.png" alt="image-20201113233000952" style="zoom:50%;" />
+
 42776像素
 
 | #    | Class                | Samples |
@@ -55,15 +79,15 @@ tags:
 
 # 评价指标
 
-**总体精度是模型在所有测试集上预测正确的与总体数量之间的比值**，**平均精度是每一类预测正确的与每一类总体数量之间的比值，最终再取每一类的精度的平均值**。
+总体精度是模型在所有测试集上预测正确的与总体数量之间的比值，平均精度是每一类预测正确的与每一类总体数量之间的比值，最终再取每一类的精度的平均值。
 
-![img](/img/in-post/20_07/Center.jpeg)
+<img src="/img/in-post/20_07/Center.jpeg" alt="img" style="zoom:50%;" />
 
 ## 混淆矩阵
 
 ![img](/img/in-post/20_07/v2-026440fdfe0a0a799a135cc534cb61e2_1440w.jpg)
 
-![img](https://pic4.zhimg.com/80/v2-87311fed72faca24c38a9f7ac394e3e4_1440w.jpg?source=1940ef5c)
+<img src="https://pic4.zhimg.com/80/v2-87311fed72faca24c38a9f7ac394e3e4_1440w.jpg?source=1940ef5c" alt="img" style="zoom:50%;" />
 
 
 
