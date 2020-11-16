@@ -331,6 +331,22 @@ groups(int, optional) – 从输入通道到输出通道的阻塞连接数；没
 bias(bool, optional) - 如果bias=True，添加偏置；没用到，没细看
 ```
 
+> 注意:
+>
+> 1. kernel_size(int or tuple) - 过滤器的尺寸，假设为(a,b,c)中, a为通道数, 即深度. 同理stride, padding等等也是
+> 2. torch的输入x的形状是: [batch, 通道数, 光谱维数(深度), 宽度, 高度]
+>    ![image-20201116220718290](/img/in-post/20_07/image-20201116220718290.png)
+
+## x.view() 更改维度
+
+> **注意:**
+>
+> **要加上前面的一维**
+>
+> ```python
+> x = x.view(-1 ,x.size(1) * x.size(2), x.size(3), x.size(4))  
+> ```
+
 ## 正则化方法
 
 ### `nn.LocalResponseNorm()-Local Response Normalization`
