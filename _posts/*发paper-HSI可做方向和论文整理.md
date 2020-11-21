@@ -967,6 +967,10 @@ V. CONCLUSION
 
 # 程序实现
 
+## SSRN
+
+拟议的SSRN是一种受监督的深度学习框架，可缓解其他深度学习模型的准确性下降现象。具体而言，残差块通过身份映射连接每隔3D卷积层，这有助于梯度的反向传播。此外，我们在每个卷积层上进行批量归一化，以规范学习过程并提高训练模型的分类性能。定量和定性结果表明，SSRN在不同种类的高光谱数据集中实现了最新的HSI分类精度。
+
 ## 08-06 18_TGRS_DFFN_Hyperspectral Image Classification With Deep Feature Fusion Network 
 
 Deep Network + Feature Fusion  + keras + MATLAB
