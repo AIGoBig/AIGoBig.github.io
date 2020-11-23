@@ -14,6 +14,8 @@ tags:
 
 ## 规定
 
+
+
 用**绿色**标记出好的表达句式, 好的观点, 常复习, 写论文可用
 
 把单词放入欧陆, 休息时间背诵 
@@ -25,6 +27,8 @@ tags:
 # 创新点
 
 ## 基于对比自监督学习的HSI分类
+
+## 多任务-单光谱,单空间,单分割,精度最大化,最后合并
 
 
 
@@ -424,25 +428,7 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 
 
 
-## CONTEXTUAL CNN+FCN
 
-16_IGRSS_CONTEXTUAL DEEP CNN BASED HYPERSPECTRAL CLASSIFICATION
-
-International Geoscience and Remote Sensing Symposium**(0.5??)**
-
-### 整体流程
-
-### 整体流程
-
-![image-20200311100427872](/img/in-post/20_03/image-20200311100427872.png)
-
-相当于只在**第一个layer利用了3*3提取了空间信息**, 之后便只使用1d convolution
-
-<img src="/img/in-post/20_03/image-20200311100950799.png" alt="image-20200311100950799" style="zoom:50%;" />
-
-### 创新点
-
-**提出**?????了一种可以共同利用高光谱图像局部时空光谱特征的**全卷积神经网络**。提出的CNN架构总共使用**9个卷积层**，使用相对较少数量的训练样本即可对其进行有效训练而不会过度拟合。
 
 ## 3D-CNN+L2 Regularization+Dropout
 
@@ -967,9 +953,21 @@ V. CONCLUSION
 
 # 程序实现
 
-## SSRN
+## 18_TGRS_SSRN_Spectral Spatial Residual Network for Hyperspectral Image Classification:A 3D Deep Learning Framework.pdf
 
-拟议的SSRN是一种受监督的深度学习框架，可缓解其他深度学习模型的准确性下降现象。具体而言，残差块通过身份映射连接每隔3D卷积层，这有助于梯度的反向传播。此外，我们在每个卷积层上进行批量归一化，以规范学习过程并提高训练模型的分类性能。定量和定性结果表明，SSRN在不同种类的高光谱数据集中实现了最新的HSI分类精度。
+摘要—在本文中，我们设计了一个端到端**光谱空间残差网络（SSRN）**，该网络将原始3D多维数据集作为输入数据，而无需进行用于高光谱图像分类的特征工程。在该网络中，光谱和空间残差块从高光谱图像（HSI）中的大量光谱特征和空间上下文中连续学习判别特征。拟议的SSRN是一种受监督的深度学习框架，**可缓解其他深度学习模型的准确性下降现象**。具体而言，残差块通过身份映射连接每隔一个3D卷积层，这有利于梯度的反向传播。此外，**我们在每个卷积层上进行批量归一化，以规范学习过程并提高训练模型的分类性能**。定量和定性结果表明，SSRN在农业，城乡和城市数据集：印度松树，肯尼迪航天中心和帕维亚大学中均达到了最新的HSI分类准确度
+
+![image-20201123143005117](/img/in-post/20_07/image-20201123143005117.png)
+
+![image-20201123143026618](/img/in-post/20_07/image-20201123143026618.png)
+
+
+
+
+
+
+
+
 
 ## 08-06 18_TGRS_DFFN_Hyperspectral Image Classification With Deep Feature Fusion Network 
 
@@ -1409,7 +1407,11 @@ MS-CNN标准结构:
 
 
 
-## 17_TIP_DCNN_Contextual CNN+MS+ResNet+FCN
+## 16_IGARSS_lee_CONTEXTUAL DEEP CNN BASED HYPERSPECTRAL CLASSIFICATION
+
+![image-20201123181835138](/img/in-post/20_07/image-20201123181835138.png)
+
+## 17_TIP_lee_DCNN_Contextual CNN+MS+ResNet+FCN
 
 **17_TIP_DCNN_Going Deeper with Contextual CNN for Hyperspectral Image Classification**
 
@@ -1430,8 +1432,9 @@ MS-CNN标准结构:
 
 ### 优势
 
-1. **multi-scale: 实现了deeper and wider** than other existing deep networks for hyperspectral image classification
-2. `FCN: 使用1*1卷积替代全连接网络, 其实就是对**将卷积核上同一点的所有channel进行FC操作**。`
+1. 上下文深度CNN，可以通过**联合利用相邻单个像素向量的局部时空光谱关系**来最佳地探索局部上下文交互
+2. **multi-scale: 实现了deeper and wider** than other existing deep networks for hyperspectral image classification
+3. `FCN: 使用1*1卷积替代全连接网络, 其实就是对**将卷积核上同一点的所有channel进行FC操作**。`
    1. 能不能通过FCN使用少数标记点(结合语义分割)来标记其他像素点进行训练
    2. `看语义分割能不能转化为像素点分类`
    3. 声称是第一次用比较**深的网络**来进行高光谱分类

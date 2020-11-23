@@ -326,6 +326,12 @@ Overall Accuracy
 
 # 数据预处理方法积累
 
+## dictionary.setdefault()
+
+Python dictionary method **setdefault()** is similar to get(), but will set *dict[key]=default* if key is not already in dict.
+
+**注意, 只有当没有这个键值的时候才会被设置**
+
 ## 数据集划分
 
 ```python
