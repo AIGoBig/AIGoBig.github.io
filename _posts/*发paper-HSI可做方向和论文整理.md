@@ -24,6 +24,23 @@ tags:
 
 # 学习队列
 
+### 改损失,如多任务(辅助loss)
+
+`辅助loss`
+
+如果前面网络比较深,需要辅助loss把前面网络训练起来
+
+比如, ctr做**主目标**, 时长做**辅助目标**
+
+主loss 权重更大, ![image-20201202104944140](/img/in-post/20_07/image-20201202104944140.png)
+
+方式:
+
+ 	1. 按权重
+      	1. 认为训练
+      	2. 挑选验证集最高的参数, 主要根据实验结果(贝叶斯调参,网格搜索等)
+ 	2. 拼接并反向传播
+
 ### 三元组的方法, 相似的放在一起, 不相似的远离
 
 输入为3D块好还是1D好?
@@ -127,6 +144,12 @@ Automatic Design of Convolutional Neural Network for Hyperspectral Image Classif
 ### 解决维度问题
 
 ### 波段选择
+
+### 改损失,如多任务
+
+`辅助loss`
+
+如果前面网络比较深,需要辅助loss把前面网络训练起来
 
 ### `零样本学习 — 新添加的类别的学习`  — 避免分类精度过高无法提升
 
@@ -1681,6 +1704,12 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 
 # 度量学习
 
+## 考虑idea
+
+(度量和多任务结合就可)
+
+## 理论
+
 [深度度量学习的这十三年，难道是错付了吗？](https://www.jiqizhixin.com/articles/2020-05-16-5)
 
 **度量学习的对象通常是样本特征向量的距离，度量学习的目的是通过训练和学习，减小或限制同类样本之间的距离，同时增大不同类别样本之间的距离。**
@@ -1771,11 +1800,17 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 
 
 
-
-
-
-
 # 基于对比自监督学习的HSI分类
+
+## 思考idea
+
+与度量学习结合
+
+与数据增强方法结合
+
+和gan结合
+
+和多任务结合
 
 ## 数据增强方式
 
@@ -1783,7 +1818,35 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 
 
 
-## 
+## 19_TGRS_Self-Supervised Feature Learning With CRF Embedding for Hyperspectral Image Classification
+
+<img src="/img/in-post/20_07/image-20201202172148581.png" alt="image-20201202172148581" style="zoom:50%;" />
+
+<img src="/img/in-post/20_07/image-20201202172546795.png" alt="image-20201202172546795" style="zoom:50%;" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
