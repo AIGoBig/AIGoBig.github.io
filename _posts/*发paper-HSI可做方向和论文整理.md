@@ -1648,6 +1648,24 @@ https://github.com/eecn/Hyperspectral-Classification/issues/7
 
 ### 与度量学习结合等
 
+### 与GAN结合
+
+## GAN_多个输出 (分类+重建判别任务)
+
+Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
+
+在本文中，我们提出了一个多任务生成对抗网络（MTGAN），以利用来自未标记样本的丰富信息来缓解此问题。具体来说，我们设计了一个发电机网络来同时承担两项任务：**重建任务和分类任务。**前一个任务旨在重建输入的高光谱立方体，包括标记的和未标记的立方体，而后一个任务则试图识别立方体的类别。同时，我们构建了一个鉴别器网络，以区分来自真实分布或重构分布的输入样本。通过对抗学习的方法，生成器网络将生成真实的立方体，从而间接提高了分类任务的判别和泛化能力。更重要的是，为了充分挖掘浅层的有用信息，我们在重建和分类任务中均采用了跳过层连接。
+
+<img src="/img/in-post/20_07/image-20201128134216737.png" alt="image-20201128134216737" style="zoom:50%;" />
+
+### 分类结果
+
+Indian pines 2010 
+
+![image-20201207215421307](/img/in-post/20_07/image-20201207215421307.png)
+
+## 
+
 ## GAN_多输出(分类+重建判别+少样本)
 
 **2020_TGRS_Few-Shot Hyperspectral Image Classification With Unknown Classes Using Multitask Deep Learning**
@@ -1667,16 +1685,6 @@ https://github.com/eecn/Hyperspectral-Classification/issues/7
 ![image-20201128103617798](/img/in-post/20_07/image-20201128103617798.png)
 
 请注意，建议的多任务深度学习是一种可以与任何具有大量参数的网络集成的方法，此处的骨干网络应发挥非常有限的作用
-
-## GAN_多个输出 (分类+重建判别任务)
-
-Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
-
-在本文中，我们提出了一个多任务生成对抗网络（MTGAN），以利用来自未标记样本的丰富信息来缓解此问题。具体来说，我们设计了一个发电机网络来同时承担两项任务：**重建任务和分类任务。**前一个任务旨在重建输入的高光谱立方体，包括标记的和未标记的立方体，而后一个任务则试图识别立方体的类别。同时，我们构建了一个鉴别器网络，以区分来自真实分布或重构分布的输入样本。通过对抗学习的方法，生成器网络将生成真实的立方体，从而间接提高了分类任务的判别和泛化能力。更重要的是，为了充分挖掘浅层的有用信息，我们在重建和分类任务中均采用了跳过层连接。
-
-<img src="/img/in-post/20_07/image-20201128134216737.png" alt="image-20201128134216737" style="zoom:50%;" />
-
-
 
 ## 光谱+空间+空间光谱信息(多输入)
 
@@ -1824,7 +1832,9 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 
 <img src="/img/in-post/20_07/image-20201202172546795.png" alt="image-20201202172546795" style="zoom:50%;" />
 
+# 基于GAN等的多任务HSI分类
 
+Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
 
 
 
