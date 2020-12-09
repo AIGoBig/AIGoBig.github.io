@@ -16,7 +16,7 @@ tags:
   - paper
 ---
 
-20_CVPR_(Hinton|CL)A Simple Framework for Contrastive Learning of Visual Representations
+20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations
 
 ## Index
 

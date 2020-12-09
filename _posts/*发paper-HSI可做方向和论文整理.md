@@ -1650,21 +1650,61 @@ https://github.com/eecn/Hyperspectral-Classification/issues/7
 
 ### 与GAN结合
 
-## GAN_多个输出 (分类+重建判别任务)
+## ※※多任务+中心度量学习+相似性分布学习+ASC
 
-Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
+遥感多任务总结: https://zhuanlan.zhihu.com/p/222935902
+
+**Eagle-Eyed Multitask CNNs for Aerial Image Retrieval and Scene Classification TGRS2020**
+
+CNN在检索分类任务上都取得了好的效果，但是相似性学习（检索）和分类分开，忽略了联合学习的优势。本文提出center-metric learning，相似性分布学习，分类融合到一个CNN。
+
+> three tasks, that is, center-metric learning, similarity distribution learning, and ASC, are incorporated into one CNN, benefitting from one another and leading to a better generalization capability.
+
+![img](/img/in-post/20_07/v2-f3382202c2c84fed7bc4ed3f723d5cae_720w.jpg)
+
+多任务学习要估计任务的相关性。如何确定多个任务是否相关，本文中描述的是“从经验表明”检索和分类可以相互促进~~
+
+本文关注于**细粒度**的识别。
+
+现在的分类 aerial scene classification (ASC)和检索content-based aerial image retrieval (CBAIR)的**缺点**：
+
+1. ***遥感图像类内多样性***
+
+![img](/img/in-post/20_07/v2-68502c2fb8305d239a4400b89c14e053_720w.jpg)
+
+> a b 对应分类，c d对应检索。同一类别，同一行的相似，但是不同行之间差异大
+
+> 2 大多数检索的方法是分类导向的，特征和similarity是分开的，而且***特征designed for classification not similarity.\*** 有一些方法通过joint 特征和similarity。这种方法完全适用于检索，又***没有利用语义标签，损害了泛化性\***。
+>
+> ***3.相似具有不确定性\***，不应该是 binary prediction，应该是***连续\***的预测值。并且，就算是ground truth 是***同一类的图片之间，也有相似性区别\***：
+
+<img src="/img/in-post/20_07/v2-c4be0e022afb14a0418ec18ec252612b_720w.jpg" alt="img" style="zoom:67%;" />
+
+<img src="/img/in-post/20_07/v2-8689e37ceb30e0b30e7e64565afb278f_720w.jpg" alt="img" style="zoom:67%;" />
+
+> 四种损失
+
+## MTGAN_多个输出 (分类+重建判别任务)
+
+20_TGRS_MTGAN_Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
 
 在本文中，我们提出了一个多任务生成对抗网络（MTGAN），以利用来自未标记样本的丰富信息来缓解此问题。具体来说，我们设计了一个发电机网络来同时承担两项任务：**重建任务和分类任务。**前一个任务旨在重建输入的高光谱立方体，包括标记的和未标记的立方体，而后一个任务则试图识别立方体的类别。同时，我们构建了一个鉴别器网络，以区分来自真实分布或重构分布的输入样本。通过对抗学习的方法，生成器网络将生成真实的立方体，从而间接提高了分类任务的判别和泛化能力。更重要的是，为了充分挖掘浅层的有用信息，我们在重建和分类任务中均采用了跳过层连接。
 
 <img src="/img/in-post/20_07/image-20201128134216737.png" alt="image-20201128134216737" style="zoom:50%;" />
 
+> 深度学习依赖训练样本的数量，利用未标记数据的信息 is useful.  如何利用未标记的信息：autoencoders（AE）AE背后的核心思想是**利用未标记样本实现重建任务，然后利用标记样本对网络进行微调以完成分类任务。AE利用大量的未标记样本，能够获得鲁棒且强大的HSI分类识别特征。**
+>
+> 本文增加了一个判别器，判别样本来自真实还是重建的。 生成网络**同时完成重建（labeled，unlabeled cube）和分类任务**。 **share same encoder**
+
 ### 分类结果
 
 Indian pines 2010 
 
+样本数量差不多每类10%
+
 ![image-20201207215421307](/img/in-post/20_07/image-20201207215421307.png)
 
-## 
+
 
 ## GAN_多输出(分类+重建判别+少样本)
 
@@ -1673,8 +1713,6 @@ Indian pines 2010
 在本文中，我们提出了一种新颖的**多任务深度学习方法**，用于在开放世界中**对未知类别的高光谱图像进行分类**，这是据我们所知在文献中尚属首次。
 
 ![image-20201128154130686](/img/in-post/20_07/image-20201128154130686.png)
-
-
 
 ## 多数据集_迁移学习(data1分类+data2分类)
 
@@ -1712,59 +1750,33 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 
 # 度量学习
 
-## 考虑idea
+## 理论笔记
 
-(度量和多任务结合就可)
-
-## 理论
-
-[深度度量学习的这十三年，难道是错付了吗？](https://www.jiqizhixin.com/articles/2020-05-16-5)
-
-**度量学习的对象通常是样本特征向量的距离，度量学习的目的是通过训练和学习，减小或限制同类样本之间的距离，同时增大不同类别样本之间的距离。**
-
-度量学习 (Metric Learning) == 距离度量学习 (Distance Metric Learning，DML) == 相似度学习
-是人脸识别中常用的机器学习方法
-
-### **与经典识别网络的区别 (优势):**
-
-- 不需要提前设定类别数, 因此，Metric Learning作为经典识别网络的替代方案，可以很好地适应某些特定的图像识别场景。**`一种较好的做法，是丢弃经典神经网络最后的softmax层，改成直接输出一个feature vector，去特征库里面按照Metric Learning寻找最近邻的类别作为匹配项。`**
-
-> 经典识别网络有一个bug：必须提前设定好类别数，例如softmax loss。
-> 这也就意味着，每增加一个新种类，就要重新定义网络模型，并从头训练一遍。
->
-> 比如我们要做一个门禁系统，每增加或减少一个员工(等于是一个新类别)，就要修改识别网络并重新训练。很明显，这种做法在某些实际运用中很不科学。
->
-> - 训练和测试人脸识别分类器的时候经常被提到的**Open-set 和Close-set**：
->   close-set，就是所有的测试集都在训练集中出现过。所以预测结果是图片的ID，如果想要测试两张图片是否是同一个，那么就看这两张图片的预测ID是否一样即可。
->   open-set，就是测试的图片并没有在训练集中出现过，**那么每张测试图片的预测结果是特征向量，如果想要比较两张图片的人脸是否属于同一个人，需要测试图像特征向量的距离**。
->
-> 理想的Open-set就需要度量学习，人脸识别学习到的特征应当在特定的度量空间中，**满足同一类的最大类内距离小于不同类的最小类间距离。**然后再使用最近邻检索就可以实现良好的人脸识别和人脸验证性能。
-> 然而softmax loss仅仅能够使得特征可分，还不能够使得特征具有可判别性，所以需要对softmax loss进行改造。
-
-
-
-### **基本流程**：
-
-一般的度量学习包含以下步骤：
-
-- **Encoder编码**模型：用于把原始数据编码为特征向量（重点如何训练模型）
-- **相似度判别**算法：将一对特征向量进行相似度比对（重点如何计算相似度，阈值如何设定）
-
-### **关键问题**：
-
-- 网络设计：代表有孪生神经网络（Siamese network）
-- hard negative mining：**找出难以区分的样本，更利于训练收敛。**
-- pairs weighting/pair-based loss functions：**改进loss函数，促使网络优化， 使具有相同标签的样本在嵌入空间中尽量接近 ，具有不同标签的样本在嵌入空间中尽量远离。**
+[2020-12-08-深度学习-度量学习](/Users/king/sunqinghu.github.io/_posts/2020-12-08-深度学习-度量学习.md)
 
 ## 考虑idea
 
+### 度量和多任务结合就可
+
+### 度量学习和GAN结合
+
+### 度量学习和对比自监督结合
+
+### 度量学习-HSI的增量学习
+
+`openset情况下, 增加一个新种类，不需要重新定义网络模型，并从头训练一遍。(与普通网络学习不同)`
 
 
-## MS-CNN+Diversified Metric(DPP+DML)+MS+
 
-笔记:  [19_TGRS_A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification](/blog/_posts/2020-03-02-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification.md)
+## 20_diversified-metric + multiscale 
 
-IEEE Transactions on Geoscience and Remote Sensing, 2019
+## 20_SimCLR + 对比表示学习
+
+[(HInton-CL)A-Simple-Framework-for-Contrastive-Learning-of-Visual-Representations](https://sunqinghu.github.io/2020/03/19/%E8%AE%BA%E6%96%87%E5%AD%A6%E4%B9%A0-20_(HInton-CL)A-Simple-Framework-for-Contrastive-Learning-of-Visual-Representations/)
+
+## 19_Diversified-Metric(DPP+DML) + multiscale
+
+完整笔记:  [A-CNN-With-Multiscale-Convolution-and-Diversified-Metric-for-Hyperspectral-Image-Classification](https://sunqinghu.github.io/2020/03/02/%E8%AE%BA%E6%96%87%E5%AD%A6%E4%B9%A0-A-CNN-With-Multiscale-Convolution-and-Diversified-Metric-for-Hyperspectral-Image-Classification/)
 
 ### 收获和点子
 
@@ -1835,6 +1847,44 @@ IEEE Transactions on Geoscience and Remote Sensing, 2019
 # 基于GAN等的多任务HSI分类
 
 Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
+
+
+
+
+
+# 充分利用无标签数据 — 对比学习/GAN/度量学习
+
+深度学习依赖训练样本的数量，利用未标记数据的信息 is useful.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
