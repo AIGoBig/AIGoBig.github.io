@@ -804,6 +804,18 @@ V. CONCLUSION
 
 # 程序实现
 
+
+
+## SimCLR实验结果
+
+log文件: May05_03-39-36_PC-20200427FKJL
+
+![image-20200505203958392](/img/in-post/20_07/image-20200505203958392.png)
+
+![image-20200505204017837](/img/in-post/20_07/image-20200505204017837.png)
+
+![image-20200505204029918](/img/in-post/20_07/image-20200505204029918.png)
+
 ## 20_TGRS_MDL4OW_Few-Shot Hyperspectral Image Classification With Unknown Classes Using Multitask Deep Learning
 
 
@@ -1855,16 +1867,6 @@ Classification of Hyperspectral Images via Multitask Generative Adversarial Netw
 # 充分利用无标签数据 — 对比学习/GAN/度量学习
 
 深度学习依赖训练样本的数量，利用未标记数据的信息 is useful.
-
-
-
-
-
-
-
-
-
-
 
 
 
