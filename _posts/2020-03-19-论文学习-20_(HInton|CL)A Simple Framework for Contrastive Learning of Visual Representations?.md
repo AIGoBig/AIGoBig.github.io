@@ -1,62 +1,69 @@
----
-layout: post
-comments: true
-title: "(Hinton|CL)A Simple Framework for Contrastive Learning of Visual Representations"
-subtitle: '20_CVPR_Deep Learning先驱Hinton最新论文学习及对SimCLR解读'
-author: "Sun"
-mathjax: true
-header-style: text
-tags:
-  - Contrastive Learning
-  - metric
-  - Master
-  - VR
-  - CVPR
-  - data augmentation
-  - paper
----
+## 20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations
 
-# 20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations
+提出SimCLR:  可用于视觉表示的一种**对比学习(Contrastive Learning)** 的简单框架
 
-## Index
-
-**Contrastive Learning**
-
-Visual Representation 
-
-## 收获
+- 用的是对比损失函数, 最小化正对间距离, 最大化负对间距离 
+- 自监督学习: 标签产生方式不同 
 
 与度量学习结合, 训练网络
 
-1. `无监督的方式学习表示网络(度量网络),` 
+1. **无监督的方式学习表示网络(度量网络)** 
 2. 卷积神经网络提取特征
 3. 少量样本微调网络
 
 样本增强方式
 
 1. 随机裁剪
-2. `颜色增强`
+2. **颜色增强**
 
-## Abstract
+---
 
-> This paper presents **SimCLR: a simple framework for contrastive learning of visual representations.** 
-> We simplify recently proposed contrastive self- supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by Sim- CLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of- the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100× fewer labels.
-
-本文介绍了SimCLR：用于视觉表示的对比学习的简单框架:
+主要工作:
 
 1. 我们**简化了最近提出的的对比自监督学习算法**, 使其无需专门的架构或存储库 。
 
 2. 为了了解什么使对比预测任务能够学习有用的表示形式，我们系统地研究了框架的主要组成部分。
 
-3. 我们证明
+3. 提出了如下主要结论 :
 
-（1）**多个数据扩充方法的组合**对于有效的预测任务起着至关重要的作用，且数据增强相比于有监督学习, 其对于无监督学习更加有用.
+   1. **多个数据扩充方法的组合**与**数据增强**非常重要, 尤其使用无监督学习方法时
+   2. **在表示 (特征) 和对比损失间引入可学习的非线性变换**可以大幅度提高模型学到的表示的质量
 
-（2）`在表示和对比损失之间引入**可学习的非线性变换**，可以大幅度提高模型学到的表示的质量，` 
+   3. 对于对比学习更大的**批处理数量**和更多的**训练次数**的重要性
 
-（3）与有监督的学习相比，对比学习**得益于更大的批处理数量和更多的训练次数**。
+---
 
-通过结合这些发现，我们能够大大胜过ImageNet上用于自我监督和半监督学习的先前方法。 **使用通过Sim-CLR学习到的自监督表示来训练线性分类器**，可达到76.5％的top-1准确性，与以前的最新技术相比，相对**提高了7％**，`与监督的ResNet-50的性能相匹配。当**使用1％的标签进行微调时**，我们的top-5准确性达到了85.8％，比AlexNet少了100倍的标签?????`
+使用通过Sim-CLR自监督学习到的表示来训练线性分类器得到的效果: 
+
+1. 大幅胜过ImageNet上先前用于自监督和半监督学习的先前方法。可达到76.5％的top-1准确性，与最新技术相比相对提**高了7％**.
+2. 与监督的ResNet-50的性能相匹配。
+   在仅使用 1% 的 ImageNet 标签进行微调时，SimCLR 实现了 85.8% 的 top-5 准确率，比之前的 SOTA 方法**提升了 10%**。
+
+![bg right w:15cm](/img/in-post/20_07/image-20201214163927589-7940352.png)
+
+
+
+图为SimCLR 与此前各类自监督方法在 ImageNet 上的 Top-1 准确率对比（以 ImageNet 进行预训练），以及 ResNet-50 的有监督学习效果（灰色×）
+
+------
+
+### 自监督学习
+
+* **训练数据集** -- 不是由人手动标记的，每个样本的标签是通过利用输入的相关性生成的（如来自不同的传感器模式）。
+
+- **标签** -- 通常来自于数据本身: 即模型直接从无标签数据中自行学习，无需标注数据。
+
+- **训练** -- **通过使用各种辅助任务 (auxiliary task ) 训练网络**, 来提高学习表征 (representation) 的质量.
+
+- **核心** **--** 如何自动为数据产生标签。如随机旋转, 均匀分割而自动产生的标注
+
+- **性能评价** -- 通过模型学出来的**feature的质量**来评价. feature质量是通过迁移学习的方式，把feature用到其它视觉任务中通过结果的好坏来评价。
+
+![bg right:40% w:20cm drow-shadow](/img/in-post/20_07/image-20201214164627891-7940352.png)
+
+
+
+------
 
 #### Q: 到底使用了多少标签和准确率
 
@@ -70,7 +77,7 @@ Visual Representation
 
 A: 只是学习一个视觉表示, 然后再用线性分类器分类?????
 
-## 评价
+### 评价
 
 SimCLR 是一种简单而清晰的方法，**无需类标签即可让 AI 学会视觉表示，而且可以达到有监督学习的准确度。**
 
@@ -90,31 +97,58 @@ A:  在训练好的基础网络上训练一个线性分类器, 将测试精度�
 
 > where a linear classifier is trained on top of the frozen base net- work, and test accuracy is used as a proxy for representation quality. Beyond linear evaluation, we also compare against state-of-the-art on semi-supervised and transfer learning.
 
-## 整体流程
+---
 
-受到最近对比学习算法（contrastive learning algorithm）的启发，SimCLR 通过**隐空间中的对比损失来最大化同一数据示例的不同增强视图之间的一致性，从而学习表示形式**。具体说来，这一框架包含**四个主要部分**：
 
-- **随机数据增强模块**，可随机转换任何给定的数据示例，从而**产生同一示例的两个相关视图，分别表示为 $x_i$ 和 $x_j$，我们将其视为正对**；
-- 一个**基本的神经网络编码器 $f(·)$**，从增强数据中`**提取表示向量**(类似度量因子???)；`
-- 一个小的**神经网络投射头（projection head）$g(·)$**，**将表示映射到对比损失的空间**；
-- 为对比预测任务定义的**对比损失函数**。
 
-<img src="/img/in-post/20_03/640.png" alt="img" style="zoom:67%;" />
+### 整体流程
 
-论文的作者之一，谷歌资深研究科学家 Mohammad Norouzi 的**简化总结**: 
+SimCLR 通过**隐空间中的对比损失来最大化同一数据示例的不同增强视图之间的一致性，从而学习到特征表示**。具体说来，这一框架包含**四个主要部分**：
 
-- 随机抽取一个小批量
-- 给每个例子绘制两个独立的增强函数
-- 使用两种增强机制，为每个示例生成两个互相关联的视图
-- 让相关视图互相吸引，同时排斥其他示例
+- 随机数据增强模块
 
-<img src="https://image.jiqizhixin.com/uploads/editor/447eb3c3-1342-49bb-9542-3a870150560b/640.jpeg" alt="img" style="zoom: 33%;" />
+- 基本的神经网络编码器 f(·) -- 特征网络
 
-SimCLR 的主要**学习算法**如下：
+- 神经网络映射头 g(·) -- 变换网络
 
-<img src="/img/in-post/20_03/640.jpeg" alt="img"  />
+- 对比预测任务的对比损失函数 ![w:13cm](/img/in-post/20_07/image-20201214165044531-7940352.png)
+  其中, ![w:7cm](/img/in-post/20_07/image-20201214165102360-7940352.png)
 
-注意: 
+相比之前对比学习模型: 结构更简单, 省去数据存储队列
+
+![bg right:33% w:10cm](/img/in-post/20_07/image-20201214165327114-7940352.png)
+
+------
+
+![image-20201214170925308](/img/in-post/20_07/image-20201214170925308-7940352.png)
+
+<img src="/img/in-post/20_07/image-20201214170947825.png" alt="image-20201214170947825"  />
+
+> 如图, 来自同一图片（x1）的不同增广（z1, z2）互相吸引，它们的特征应该接近（红色的线）；
+>
+> 而来自不同图片的增广（例如z1和z2N）互相排斥，它们的特征应该偏离（蓝色的线）。
+
+---
+
+![image-20201214172628117](/img/in-post/20_07/image-20201214172628117.png)
+
+>  **独立的数据增强函数**
+>
+>  F g 为**可训练的神经网络****,** **其中每个** **f** **和每个** **g** **都是同一个网络**
+>
+>  加入这个**非线性变换网络也是文章比较创新的地方, 可提高获得的特征表示的质量**
+>
+>  学习完特征表示后, **我们将投影头g** **拿走，并使用特征网络** **f** **和****represention** **h**  **进行后面阶段的任务。**
+>
+>  **f** **是正常的卷积网络 比如文中用的是****resnet**
+>
+>  **投影头g** 是**liner+relu+liner(非线性变换层)**
+
+#### Q: g用的是什么网络???
+
+---
+
+### 网络结构 
 
 不同且独立的增强函数$t(x)$
 
@@ -132,7 +166,7 @@ SimCLR 的主要**学习算法**如下：
 
 #### Q: `LARS 优化器???`
 
-**数据增强**
+### **数据增强**
 
 虽然数据增强已经广泛应用于监督和无监督表示学习，但它还没有被看做一种定义对比学习任务的系统性方法。许多现有的方法通过改变架构来定义对比预测任务。
 
@@ -142,61 +176,83 @@ SimCLR 的主要**学习算法**如下：
 
 <img src="/img/in-post/20_03/640-20200403135840952.png" alt="img" style="zoom:50%;" />
 
+**作者研究了一系列数据增广和数据增广的两两组合**
+
+<img src="https://image.jiqizhixin.com/uploads/editor/8b86985a-f53a-4826-8dd5-291d10db8022/640.jpeg" alt="img" style="zoom: 50%;" />
+
 
 
 #### Q: 将预测任务与其他组件（如神经网络架构）解耦????。
 
-## 多种数据增强操作的组合是学习良好表示的关键
+### 实验验证
 
-<img src="https://image.jiqizhixin.com/uploads/editor/8b86985a-f53a-4826-8dd5-291d10db8022/640.jpeg" alt="img" style="zoom: 50%;" />
+#### 多种数据增强操作的组合是学习良好表示的关键
+
+![image-20201214174604142](/img/in-post/20_07/image-20201214174604142.png)
+
+> 线性评估(ImageNet top-1精度)下的单独或合成的数据增广的实验结果。
 
 `颜色增强的重要性???, 如下调整了颜色的强度`
 
 <img src="/img/in-post/20_03/640-20200403135845024.jpeg" alt="img" style="zoom: 33%;" />
 
-**随参数增加Top1变换**
+#### 网络结构
 
-如图 7 所示，增加深度和宽度都可以提升性能。监督学习也同样适用这一规律。但我们发现，随着模型规模的增大，监督模型和在无监督模型上训练的线性分类器之间的差距会缩小。这表明，与监督模型相比，无监督学习能从更大规模的模型中得到更多收益。
+•随着模型大小的不断增加，SimCLR（红色的线）带来的提升，要大于监督学习（绿色的线）。说明**无监督学习可以更好的利用更大模型的潜力**。
 
 <img src="/img/in-post/20_03/640-20200403135849439.jpeg" alt="img" style="zoom:50%;" />
 
-**非线性的投射头**可以改善之前的层的表示质量，图 8 展示了使用三种不同投射头架构的线性评估结果。
+> 具有不同深度和宽度的模型的线性评价。蓝点上的模型我们训练了100个迭代，红星上的模型我们训练了1000个迭代，绿十字上的模型我们训练了90个迭代
+
+#### **非线性的投射头**
+
+•对比可以发现，在特征后面加入一个可**学习的非线性变换层** **g** ，可以极大的提升特征的表达能力。图 8 展示了使用三种不同投射头架构的线性评估结果。
 
 <img src="/img/in-post/20_03/640-20200403135852808.png" alt="img" style="zoom:50%;" />
 
- **损失函数和批大小**
+> 对使用不同种类和不同维度的 变换网络 g 时学习得到的表示的线性评估
+
+####  损失函数
 
 可调节温度的归一化交叉熵损失比其他方法更佳。研究者对比了 NT-Xent 损失和其他常用的对比损失函数，比如 logistic 损失、margin 损失。`表 2 展示了**目标函数和损失函数输入的梯度**????。`
 
-![640](/img/in-post/20_03/640-20200403135856064.jpeg)
+![640](/img/in-post/20_07/640-20200403135856064.jpeg)
+
+#### **Batch** **size**和训练步数
 
 对比学习（Contrastive learning）**能从更大的批大小和更长时间的训练中受益更多**。图 9 展示了在模型在不同 Epoch 下训练时，不同批大小所产生的影响。 
 
 
 
-**与当前最佳模型的对比**
+![image-20201214175820785](/img/in-post/20_07/image-20201214175820785.png)
 
-**线性估计**
+>   图9. 不同batchsize和训练步数对模型的影响
+>
+> 作者用的是google的Cloud TPU，对于batchisze=4096以及epoch=100的情况，128个TPU v3，训练时间大约1.5小时
 
-表 6 显示了 SimCLR 与之前方法在线性估计方面的对比。此外，上文中的表 1 展示了不同方法之间更多的数值比较。从表中可以看出，用 SimCLR 方法使用 ResNet-50 (4×) 架构能够得到与监督预训练 ResNet-50 相媲美的结果。
+#### 线性评估 — 用不同的自监督学习方法训练的线性分类器在ImageNet上的准确率对比
 
-<img src="https://image.jiqizhixin.com/uploads/editor/62861fdb-95e5-4e2c-9782-1a3d1a0dd497/640.jpeg" alt="img" style="zoom:50%;" />
+![image-20201214175917086](/img/in-post/20_07/image-20201214175917086.png)
 
-**半监督学习**
+> 表 6 显示了 SimCLR 与之前方法在线性估计方面的对比。此外，上文中的表 1 展示了不同方法之间更多的数值比较。从表中可以看出，用 SimCLR 方法使用 ResNet-50 (4×) 架构能够得到与监督预训练 ResNet-50 相媲美的结果。
+
+#### 与其他方法通过半监督学习在ImageNet上的准确率对比
 
 下表 7 显示了 SimCLR 与之前方法在**半监督学习**方面的对比。从表中可以看出，无论是**使用 1% 还是 10% 的标签**，本文提出的方法都显著优于之前的 SOTA 模型。
 
-<img src="/img/in-post/20_03/640-20200403135859669.jpeg" alt="img" style="zoom:50%;" />
+![image-20201214175948140](/img/in-post/20_07/image-20201214175948140.png)
 
-**迁移学习**
+> 我们只需根据标记的数据对整个基础网络进行微调  在1%和10%的标签的基础上有了显著的改进。
+
+#### **迁移学习**
 
 研究者在 12 个自然图像数据集上评估了**模型的迁移学习性能**。下表 8 显示了使用 ResNet-50 的结果，与监督学习模型 ResNet-50 相比，SimCLR 显示了良好的迁移性能——两者成绩互有胜负。
 
-![img](/img/in-post/20_03/640-20200403135903014.jpeg)
+![img](/img/in-post/20_07/640-20200403135903014.jpeg)
 
-## 附录 -- 方法
+> 在 12 个自然图像数据集上模型的迁移学习性能与监督学习baselines的对比
 
-### 线性评估
+#### 线性评估是什么
 
 我们用预训练网络上提取到的特征训练 $l2$ 正则化的多项式逻辑回归分类器, 使用L-BFGS来优化softmax交叉熵损失, 
 
@@ -210,13 +266,17 @@ L-BFGS和梯度下降、SGD干的同样的事情，但收敛速度更快
 
 
 
-### 微调
+### 微调的方法
 
 我们**使用预训练网络的权值作为初始化**，对整个网络进行了微调。我们使用带有Nesterov动量的SGD进行了20000步的批量训练，其动量参数为0.9。我们将批量标准化统计的动量参数设置为max(1 10s, 0.9)，其中s为每个epoch的步数。作为微调期间的数据扩充，我们只执行随机裁剪与调整大小和翻转;与训练前相比，我们没有进行色彩增强或模糊处理。在测试时，我们沿着短边将图像大小调整为256像素
 
+### 总结
 
+•提出了一个对比学习的简单框架并用于视觉表示学习中, 相比以前的自监督、半监督和迁移学习方法在结果上有了很大的改进。
 
-## Reference
+•结果表明, 想要获得良好性能, 以往一些用于自监督学习的方法的**复杂性并不是所必需的**。本文方法与ImageNet上标准的监督学习方法的不同之处在于，它只选择了**数据增广**、在网络的末端使用一个**非线性映射头**以及**损失函数**。这一简单框架的强大说明尽管近来人们对自监督学习的兴趣激增，但它的价值仍然被低估了。
+
+### Reference
 
 [Hinton组力作：ImageNet无监督学习最佳性能一次提升7%，媲美监督学习](https://www.jiqizhixin.com/articles/2020-02-15-3)
 
