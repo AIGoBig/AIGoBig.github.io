@@ -16,7 +16,7 @@ tags:
   - paper
 ---
 
-20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations
+# 20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations
 
 ## Index
 
@@ -26,29 +26,29 @@ Visual Representation
 
 ## 收获
 
-与度量学习结合, 训练网络, 
+与度量学习结合, 训练网络
 
 1. `无监督的方式学习表示网络(度量网络),` 
-2. 少量样本微调网络
-3. 卷积神经网络提取特征
+2. 卷积神经网络提取特征
+3. 少量样本微调网络
 
 样本增强方式
 
 1. 随机裁剪
 2. `颜色增强`
 
-
-
 ## Abstract
 
-> This paper presents SimCLR: a simple framework for contrastive learning of visual representations. 
+> This paper presents **SimCLR: a simple framework for contrastive learning of visual representations.** 
 > We simplify recently proposed contrastive self- supervised learning algorithms without requiring specialized architectures or a memory bank. In order to understand what enables the contrastive prediction tasks to learn useful representations, we systematically study the major components of our framework. We show that (1) composition of data augmentations plays a critical role in defining effective predictive tasks, (2) introducing a learnable nonlinear transformation between the representation and the contrastive loss substantially improves the quality of the learned representations, and (3) contrastive learning benefits from larger batch sizes and more training steps compared to supervised learning. By combining these findings, we are able to considerably outperform previous methods for self-supervised and semi-supervised learning on ImageNet. A linear classifier trained on self-supervised representations learned by Sim- CLR achieves 76.5% top-1 accuracy, which is a 7% relative improvement over previous state-of- the-art, matching the performance of a supervised ResNet-50. When fine-tuned on only 1% of the labels, we achieve 85.8% top-5 accuracy, outperforming AlexNet with 100× fewer labels.
 
-本文介绍了SimCLR：用于视觉表示的对比学习的简单框架。
+本文介绍了SimCLR：用于视觉表示的对比学习的简单框架:
 
-我们简化了最近提出的的对比自监督学习算法, 使其**无需专门的架构或存储库** 。为了了解什么使对比预测任务能够学习有用的表示形式，我们系统地研究了框架的主要组成部分。
+1. 我们**简化了最近提出的的对比自监督学习算法**, 使其无需专门的架构或存储库 。
 
-我们证明
+2. 为了了解什么使对比预测任务能够学习有用的表示形式，我们系统地研究了框架的主要组成部分。
+
+3. 我们证明
 
 （1）**多个数据扩充方法的组合**对于有效的预测任务起着至关重要的作用，且数据增强相比于有监督学习, 其对于无监督学习更加有用.
 
@@ -62,15 +62,17 @@ Visual Representation
 
 #### Q: 自监督和无监督的区别
 
+自监督与无监督相同之处是都不需要使用人工标注标签, 不同之处是自监督使用辅助任务产生标签, 从而达到类似于有监督的训练过程. 
+
 #### Q: 怎么理解"**既不需要专门的架构，也不需要特殊的存储库。**"
 
 #### `Q: 无监督表示学习??/啥意思`
 
-A: 只是学习一个视觉表示, 然后再用线性分类器分类?
+A: 只是学习一个视觉表示, 然后再用线性分类器分类?????
 
 ## 评价
 
-SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视觉表示，而且可以达到有监督学习的准确度。
+SimCLR 是一种简单而清晰的方法，**无需类标签即可让 AI 学会视觉表示，而且可以达到有监督学习的准确度。**
 
 它不仅优于此前的所有工作，也优于最新的对比自监督学习算法，而且结构更加简单：**既不需要专门的架构，也不需要特殊的存储库。**
 
@@ -87,8 +89,6 @@ SimCLR 是一种简单而清晰的方法，无需类标签即可让 AI 学会视
 A:  在训练好的基础网络上训练一个线性分类器, 将测试精度作为学习到的表征的质量
 
 > where a linear classifier is trained on top of the frozen base net- work, and test accuracy is used as a proxy for representation quality. Beyond linear evaluation, we also compare against state-of-the-art on semi-supervised and transfer learning.
-
-
 
 ## 整体流程
 
