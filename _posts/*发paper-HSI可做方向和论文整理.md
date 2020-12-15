@@ -37,8 +37,8 @@ tags:
 方式:
 
  	1. 按权重
-      	1. 认为训练
-      	2. 挑选验证集最高的参数, 主要根据实验结果(贝叶斯调参,网格搜索等)
+ 	  	1. 认为训练
+ 	  	2. 挑选验证集最高的参数, 主要根据实验结果(贝叶斯调参,网格搜索等)
  	2. 拼接并反向传播
 
 ### 三元组的方法, 相似的放在一起, 不相似的远离
@@ -818,21 +818,11 @@ log文件: May05_03-39-36_PC-20200427FKJL
 
 ## 20_TGRS_MDL4OW_Few-Shot Hyperspectral Image Classification With Unknown Classes Using Multitask Deep Learning
 
-
-
-
-
-
-
 <img src="/img/in-post/20_07/salinas_close_0.png" alt="salinas_close_0" style="zoom:50%;" />
 
 <img src="/img/in-post/20_07/salinas_mdl4ow_0.png" alt="salinas_mdl4ow_0" style="zoom:50%;" />
 
 <img src="/img/in-post/20_07/salinas_mdl4ow_classwise_0.png" alt="salinas_mdl4ow_classwise_0" style="zoom:50%;" />
-
-
-
-
 
 ```
 Model: "functional_1"
@@ -1151,7 +1141,7 @@ DFFN 结合了残差学习和feature fusion，发现这两种方法能够比较�
 >
 > 在本节中，比较不同的融合方法，以证明所提出的融合策略的有效性。表V显示了通过三种HSI的不同融合方法获得的OA值。在表V中，DFFN2，DFFN6和DFFN9分别指的是融合两个，六个和九个分层层的方法。特别地，**DFFN2-LH表示低层和高层的融合**，而**DFFN2-MH是指中间层和高层的融合**。
 >
-> 从表V中可以看出，与DRN相比，**融合多层可以在一定程度上改善分类结果**，并且所提出的融合策略DFFN确实优于其他方法。但是，反过来**融合太多层可能会带来冗余信息**，从而大大降低性能（例如DFFN9
+> 从表V中可以看出，与DRN相比，**融合多层可以在一定程度上改善分类结果**，并且所提出的融合策略DFFN确实优于其他方法。但是，反过来**融合太多层可能会带来冗余信息**，从而大大降低性能（例如DFFN9)
 
 ###  有什么缺点?还能加什么?
 
@@ -1185,7 +1175,7 @@ python + keras
 
 > HybridSN使用了频谱空间3D-CNN和空间2D-CNN。 3D-CNN可以**联合空间光谱特征表示**。在3D-CNN之上的2D-CNN**进一步学习了更多抽象级别的空间表示**。
 >
-> 2D卷积公式, 3D卷积公式. 2η+ 1是沿着光谱维的核深度. **为了同时增加频谱-空间特征图的数量**，**三次使用三维卷积**，可以将输入HSI数据的**光谱信息**保存在输出体中。考虑到二维卷积可以很好地区分不同光谱波段内的**空间信息**而不会造成光谱信息的大量损失，因此在平化层之前进行一次二维卷积，这对于HSI数据非常重要。
+> 2D卷积公式, 3D卷积公式. 2η+1是沿着光谱维的核深度. **为了同时增加频谱-空间特征图的数量**，**三次使用三维卷积**，可以将输入HSI数据的**光谱信息**保存在输出体中。考虑到二维卷积可以很好地区分不同光谱波段内的**空间信息**而不会造成光谱信息的大量损失，因此在平化层之前进行一次二维卷积，这对于HSI数据非常重要。
 
 ### 网络层参数分析
 
@@ -1760,11 +1750,23 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 
 > 本文提出了一种多变量深度学习框架，用于学习和分类高光谱图像。通过执行二阶特征提取来合并多任务特征杠杆。使用二维经验小波变换（2D-EWT）完成一阶特征提取，使用堆叠自动编码器（SAE）和卷积神经网络（CNN）完成2D-EWT近似图像的二阶特征提取 。由于可以处理突出特征，因此建议的工作使用近似图像而不是原始图像。**使用随机森林（RF），多支持向量机（MSVM）和极限学习机（ELM）进行分类
 
-# 度量学习
+# 想法1 - 空间结合光谱
 
-## 理论笔记
 
-[2020-12-08-深度学习-度量学习](/Users/king/sunqinghu.github.io/_posts/2020-12-08-深度学习-度量学习.md)
+
+# 想法2 - 度量学习
+
+---
+
+## 关联笔记
+
+[2020-12-08-深度学习-度量学习.md](/Users/king/sunqinghu.github.io/_posts/2020-12-08-深度学习-度量学习.md)
+
+[2020-12-14-深度学习-小样本学习](/Users/king/sunqinghu.github.io/_posts/2020-12-14-深度学习-小样本学习.md)
+
+[2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations](/Users/king/sunqinghu.github.io/_posts/2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations?.md)
+
+[2020-03-02-论文学习-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification](/Users/king/sunqinghu.github.io/_posts/2020-03-02-论文学习-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification.md)
 
 ## 考虑idea
 
@@ -1775,6 +1777,8 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 ### 度量学习和对比自监督结合
 
 ### 度量学习-HSI的增量学习
+
+### 深度度量学习
 
 `openset情况下, 增加一个新种类，不需要重新定义网络模型，并从头训练一遍。(与普通网络学习不同)`
 
@@ -1847,8 +1851,6 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 ## 数据增强方式
 
 翻转
-
-
 
 ## 19_TGRS_Self-Supervised Feature Learning With CRF Embedding for Hyperspectral Image Classification
 
