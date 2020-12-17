@@ -967,8 +967,6 @@ ________________________________________________________________________________
 
 `尝试把分类图的0标签位置忽视`
 
-
-
 ## 18_TGRS_SSRN_Spectral Spatial Residual Network for Hyperspectral Image Classification:A 3D Deep Learning Framework.pdf
 
 摘要—在本文中，我们设计了一个端到端**光谱空间残差网络（SSRN）**，该网络将原始3D多维数据集作为输入数据，而无需进行用于高光谱图像分类的特征工程。在该网络中，光谱和空间残差块从高光谱图像（HSI）中的大量光谱特征和空间上下文中连续学习判别特征。拟议的SSRN是一种受监督的深度学习框架，**可缓解其他深度学习模型的准确性下降现象**。具体而言，残差块通过身份映射连接每隔一个3D卷积层，这有利于梯度的反向传播。此外，**我们在每个卷积层上进行批量归一化，以规范学习过程并提高训练模型的分类性能**。定量和定性结果表明，SSRN在农业，城乡和城市数据集：印度松树，肯尼迪航天中心和帕维亚大学中均达到了最新的HSI分类准确度
@@ -1636,7 +1634,11 @@ https://github.com/eecn/Hyperspectral-Classification/issues/7
 
 ![5634194f-7ea6-4aa3-9000-0a349d03572a](/img/in-post/20_07/5634194f-7ea6-4aa3-9000-0a349d03572a.svg)
 
-# Multi-task 
+# 想法 - 基于多任务的空间光谱信息利用网络
+
+【MDL4OW代码链接】https://sjliu.me/MDL4OW
+
+
 
 ## 考虑idea
 
@@ -1690,7 +1692,7 @@ CNN在检索分类任务上都取得了好的效果，但是相似性学习（�
 
 20_TGRS_MTGAN_Classification of Hyperspectral Images via Multitask Generative Adversarial Networks
 
-在本文中，我们提出了一个多任务生成对抗网络（MTGAN），以利用来自未标记样本的丰富信息来缓解此问题。具体来说，我们设计了一个发电机网络来同时承担两项任务：**重建任务和分类任务。**前一个任务旨在重建输入的高光谱立方体，包括标记的和未标记的立方体，而后一个任务则试图识别立方体的类别。同时，我们构建了一个鉴别器网络，以区分来自真实分布或重构分布的输入样本。通过对抗学习的方法，生成器网络将生成真实的立方体，从而间接提高了分类任务的判别和泛化能力。更重要的是，为了充分挖掘浅层的有用信息，我们在重建和分类任务中均采用了跳过层连接。
+在本文中，我们提出了一个多任务生成对抗网络（MTGAN），以利用来自未标记样本的丰富信息来缓解此问题。具体来说，我们设计了一个发电机网络来同时承担两项任务：**重建任务和分类任务。**前一个任务旨在重建输入的高光谱立方体，包括标记的和未标记的立方体，而后一个任务则试图识别立方体的类别。同时，我们构建了一个鉴别器网络，以区分来自真实分布或重构分布的输入样本。**通过对抗学习的方法，生成器网络将生成真实的立方体，从而间接提高了分类任务的判别和泛化能力。更重要的是，为了充分挖掘浅层的有用信息，我们在重建和分类任务中均采用了跳过层连接。**
 
 <img src="/img/in-post/20_07/image-20201128134216737.png" alt="image-20201128134216737" style="zoom:50%;" />
 
@@ -1782,7 +1784,35 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 
 `openset情况下, 增加一个新种类，不需要重新定义网络模型，并从头训练一遍。(与普通网络学习不同)`
 
+##  20_TGRS_Eagle-Eyed Multitask CNNs for Aerial Image Retrieval and Scene Classification
 
+CNN在检索分类任务上都取得了好的效果，但是相似性学习（检索）和分类分开，忽略了联合学习的优势。本文提出center-metric learning，相似性分布学习，分类融合到一个CNN。
+
+> three tasks, that is, center-metric learning, similarity distribution learning, and ASC, are incorporated into one CNN, benefitting from one another and leading to a better generalization capability.
+
+![img](/img/in-post/20_07/v2-f3382202c2c84fed7bc4ed3f723d5cae_720w.jpg)
+
+多任务学习要估计任务的相关性。如何确定多个任务是否相关，本文中描述的是“从经验表明”检索和分类可以相互促进~~
+
+本文关注于**细粒度**的识别。
+
+现在的分类 aerial scene classification (ASC)和检索content-based aerial image retrieval (CBAIR)的**缺点**：
+
+1. ***遥感图像类内多样性***
+
+![img](/img/in-post/20_07/v2-68502c2fb8305d239a4400b89c14e053_720w.jpg)
+
+> a b 对应分类，c d对应检索。同一类别，同一行的相似，但是不同行之间差异大
+
+> 2 大多数检索的方法是分类导向的，特征和similarity是分开的，而且***特征designed for classification not similarity.\*** 有一些方法通过joint 特征和similarity。这种方法完全适用于检索，又***没有利用语义标签，损害了泛化性\***。
+>
+> ***3.相似具有不确定性\***，不应该是 binary prediction，应该是***连续\***的预测值。并且，就算是ground truth 是***同一类的图片之间，也有相似性区别\***：
+
+<img src="/img/in-post/20_07/v2-c4be0e022afb14a0418ec18ec252612b_720w.jpg" alt="img" style="zoom:67%;" />
+
+<img src="/img/in-post/20_07/v2-8689e37ceb30e0b30e7e64565afb278f_720w.jpg" alt="img" style="zoom:67%;" />
+
+> 四种损失
 
 ## 20_diversified-metric + multiscale 
 
@@ -1838,6 +1868,10 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 
 # 基于对比自监督学习的HSI分类
 
+## 关联笔记
+
+[2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations](/Users/king/sunqinghu.github.io/_posts/2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations?.md)
+
 ## 思考idea
 
 与度量学习结合
@@ -1851,6 +1885,119 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 ## 数据增强方式
 
 翻转
+
+---
+
+## **20_CVPR_(Hinton)A Simple Framework for Contrastive Learning of Visual Representations**
+
+提出SimCLR:  可用于视觉表示的一种**对比学习(Contrastive Learning)** 的简单框架
+
+- 用的是对比损失函数, 最小化正对间距离, 最大化负对间距离 
+- 自监督学习: 标签产生方式不同 
+
+与度量学习结合, 训练网络
+
+1. **无监督的方式学习表示网络(度量网络)** 
+2. 卷积神经网络提取特征
+3. 少量样本微调网络
+
+样本增强方式
+
+1. 随机裁剪
+2. **颜色增强**
+
+---
+
+主要工作:
+
+1. 我们**简化了最近提出的的对比自监督学习算法**, 使其无需专门的架构或存储库 。
+
+2. 为了了解什么使对比预测任务能够学习有用的表示形式，我们系统地研究了框架的主要组成部分。
+
+3. 提出了如下主要结论 :
+   1. **多个数据扩充方法的组合**与**数据增强**非常重要, 尤其使用无监督学习方法时
+   2. **在表示 (特征) 和对比损失间引入可学习的非线性变换**可以大幅度提高模型学到的表示的质量
+
+   3. 对于对比学习更大的**批处理数量**和更多的**训练次数**的重要性
+
+---
+
+使用通过Sim-CLR自监督学习到的表示来训练线性分类器得到的效果: 
+
+1. 大幅胜过ImageNet上先前用于自监督和半监督学习的先前方法。可达到76.5％的top-1准确性，与最新技术相比相对提**高了7％**.
+2. 与监督的ResNet-50的性能相匹配。
+   在仅使用 1% 的 ImageNet 标签进行微调时，SimCLR 实现了 85.8% 的 top-5 准确率，比之前的 SOTA 方法**提升了 10%**。
+
+![bg right w:15cm](/img/in-post/20_07/image-20201214163927589-20201216161314340.png)
+
+
+
+图为SimCLR 与此前各类自监督方法在 ImageNet 上的 Top-1 准确率对比（以 ImageNet 进行预训练），以及 ResNet-50 的有监督学习效果（灰色×）
+
+------
+
+### 自监督学习
+
+* **训练数据集** -- 不是由人手动标记的，每个样本的标签是通过利用输入的相关性生成的（如来自不同的传感器模式）。
+
+- **标签** -- 通常来自于数据本身: 即模型直接从无标签数据中自行学习，无需标注数据。
+
+- **训练** -- **通过使用各种辅助任务 (auxiliary task ) 训练网络**, 来提高学习表征 (representation) 的质量.
+
+- **核心** **--** 如何自动为数据产生标签。如随机旋转, 均匀分割而自动产生的标注
+
+- **性能评价** -- 通过模型学出来的**feature的质量**来评价. feature质量是通过迁移学习的方式，把feature用到其它视觉任务中通过结果的好坏来评价。
+
+![bg right:40% w:20cm drow-shadow](/img/in-post/20_07/image-20201214164627891-20201216161314537.png)
+
+
+
+------
+
+
+
+### 整体流程
+
+SimCLR 通过**隐空间中的对比损失来最大化同一数据示例的不同增强视图之间的一致性，从而学习到特征表示**。具体说来，这一框架包含**四个主要部分**：
+
+- 随机数据增强模块
+
+- 基本的神经网络编码器 f(·) -- 特征网络
+
+- 神经网络映射头 g(·) -- 变换网络
+
+- 对比预测任务的对比损失函数 ![w:13cm](/img/in-post/20_07/image-20201214165044531-20201216161314461.png)
+  其中, ![w:7cm](/img/in-post/20_07/image-20201214165102360-20201216161314340.png)
+
+相比之前对比学习模型: 结构更简单, 省去数据存储队列
+
+![bg right:33% w:10cm](/img/in-post/20_07/image-20201214165327114-20201216161314525.png)
+
+------
+
+
+
+![w:15cm](/img/in-post/20_07/image-20201214170947825-8106394.png)
+
+![bg right w:15cm](/img/in-post/20_07/image-20201214170925308-20201214203603020-20201216161314308.png)
+
+> 如图, 来自同一图片（x1）的不同增广（z1, z2）互相吸引，它们的特征应该接近（红色的线）；
+>
+> 而来自不同图片的增广（例如z1和z2N）互相排斥，它们的特征应该偏离（蓝色的线）。
+
+---
+
+![w:25cm](/img/in-post/20_07/image-20201214172628117-20201216161314410.png)
+
+---
+
+**作者研究了一系列数据增广和数据增广的两两组合**
+
+![](/img/in-post/20_07/640-20201216161314655.jpeg)
+
+------
+
+##  
 
 ## 19_TGRS_Self-Supervised Feature Learning With CRF Embedding for Hyperspectral Image Classification
 
