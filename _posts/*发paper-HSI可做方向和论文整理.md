@@ -24,6 +24,14 @@ tags:
 
 # 学习队列
 
+### 使用标签平滑/知识蒸馏/老师学生网络: 防止过拟合
+
+![img](/img/in-post/20_07/v2-540ea6a6368e89614d5d9de18e2095fe_720w.jpg)
+
+> 左：没有使用标签平滑进行训练，右：使用标签标签平滑进行训练
+
+### 使用类似efficient-Net 的自动搜索网络结构方法
+
 ### 改损失,如多任务(辅助loss)
 
 `辅助loss`
@@ -1769,6 +1777,8 @@ MULTI-TASK EMBEDDED CONVOLUTIONAL NEURAL NETWORK FOR HYPERSPECTRAL IMAGE CLASSIF
 [2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations](/Users/king/sunqinghu.github.io/_posts/2020-03-19-论文学习-20_(HInton|CL)A Simple Framework for Contrastive Learning of Visual Representations?.md)
 
 [2020-03-02-论文学习-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification](/Users/king/sunqinghu.github.io/_posts/2020-03-02-论文学习-A CNN With Multiscale Convolution and Diversified Metric   for Hyperspectral Image Classification.md)
+
+[2020-12-11-组会分享-度量学习、想法.md](/Users/king/sunqinghu.github.io/_posts/2020-12-11-组会分享-度量学习、想法.md)
 
 ## 考虑idea
 
