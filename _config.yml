@@ -106,7 +106,9 @@ friends: [
     #     title: "Su",
     #     href: "http://su.gallery/"
     # },{
-        title: "Just a blog",
-        href: "https://steve02081504.github.io/"
+        # title: "Just a blog",
+        # href: "https://steve02081504.github.io/"
+        title: "ChenaniahBaby的博客",
+        href: "https://blog.csdn.net/doswynkfsw"
     }
 ]
