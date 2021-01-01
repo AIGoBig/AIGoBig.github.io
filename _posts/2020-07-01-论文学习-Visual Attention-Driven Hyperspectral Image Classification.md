@@ -2,7 +2,6 @@
 layout: post
 comments: true
 mathjax: false
-title: "[论文笔记]Visual Attention-Driven Hyperspectral Image Classification"
 subtitle: ''
 author: "Sun"
 header-style: text
