@@ -84,17 +84,13 @@ f(s)的作用可以理解为一种平滑操作，alpha是一个超参数，推�
 
 由于DNN模型往往十分复杂，而且参数较多。利用L1,L2等正则手段往往加重了模型过拟合，DIN提出了一种高效的正则方法：
 
-​                  ![img](/img/in-post/20_07/20181214183516390.png)
-
-由于数据中有些feature id出现次数较少，这在训练过程中将引入很多噪声，从而加重了过拟合风险。DIN构造的正则器会针对id出现的频率不同，动态调整其参数的正则化力度。即，出现频率较高的id，给与较小的正则化力度，反之，则加大力度。
+![img](/img/in-post/20_07/20181214183516390.png)
 
 # 总结
 
-DIN通过引入attention机制，针对不同的广告构造不同的用户抽象表示，从而实现了在数据维度一定的情况下，更精准地捕捉用户当前的兴趣。此外，DIN模型也适用于其他有丰富行为数据的场景，比如，电商中的个性化推荐，以及当前比较火热的feed流推荐等。
+DIN通过引入attention机制，针对不同的广告构造不同的用户抽象表示，从而**实现了在数据维度一定的情况下，更精准地捕捉用户当前的兴趣。**此外，DIN模型也适用于其他有丰富行为数据的场景，比如，电商中的个性化推荐，以及当前比较火热的feed流推荐等。
 
 # 代码解读
-
-[Deep Interest Network解读](https://www.jianshu.com/p/132da6864d40?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation)
 
 ## 亚马孙数据格式
 
@@ -120,13 +116,9 @@ DIN通过引入attention机制，针对不同的广告构造不同的用户抽�
 
 > 亚马逊数据集包含产品评论和产品原始数据，用作基准数据集。我们对名为Electronics的子集进行实验，其中包含192,403个用户，63,001个商品，801个类别和1,689,188个样本。 此数据集中的用户行为很丰富，每个用户和商品都有超过5条评论。 **特征**包括goods_id，cate_id，用户评论goods_id_list和cate_id_list。用户的所有行为都是b1，b2，...，bk，... ，bn），**任务是通过利用前k个评论商品来预测第（k + 1）个评论的商品。** 训练数据集是用每个用户的k = 1,2，...，n-2生成的。 **在测试集中，我们预测最后一个给出第一个n - 1评论商品。**
 
-
-
 # 参考
 
 [CTR预估之Deep Interest NetWork模型原理详解](https://blog.csdn.net/yz930618/article/details/85003101)
 
-
-
-
+[Deep Interest Network解读](https://www.jianshu.com/p/132da6864d40?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation)
 
