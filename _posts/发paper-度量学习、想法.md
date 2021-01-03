@@ -409,6 +409,8 @@ section {
 
 <!--【代码链接】https://sjliu.me/MDL4OW-->
 
+
+
 ---
 
 ## 思路1: 重建损失部分—考虑使用网络判别
@@ -444,6 +446,12 @@ section {
 思路2-3: 既使用特征度量又使用分类任务 
 
 ![image-20201216175349079](https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo/img/2020/image-20201216175349079.png)
+
+
+
+
+
+
 
 ## <!--思路3: 进行多条短路连接(dense连接)-->
 
