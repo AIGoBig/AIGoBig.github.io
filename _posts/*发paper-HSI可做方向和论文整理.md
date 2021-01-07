@@ -884,17 +884,46 @@ log文件: May05_03-39-36_PC-20200427FKJL
 
 <img src="/img/in-post/20_07/image-20201110160413820.png" alt="image-20201110160413820" style="zoom: 33%;" />
 
-### 结果
+### 结果及复现
 
 ![image-20201110161315045](/img/in-post/20_07/image-20201110161315045.png)
 
 > 在多次拍摄设置下，MDL4OW / C获得了最佳分类。 OA和F1比封闭分类高90.53％和0.9482，分别比封闭分类高1.87％和0.0083。 
 
+#### 
+
 ![image-20201110162614041](/img/in-post/20_07/image-20201110162614041.png)
 
 >我们可以看到，所提出的方法成功地**识别了建筑物1，车辆（直升机和某些汽车），停车棚，和游泳池。**在这三种开放方法中，只有CROSR将building-2识别为未知，这在新颖类的F1高分中得到了体现。但是，CROSR在二级草地上的F1较低。此类在图像中覆盖了很大的区域，如示例实例的数量所示（表II）。如分类图所示（图4 CROSR），在图像的下部，一些草甸被CROSR误分类为未知。 **CROSR是一种基于质心的方法，对类内变异很敏感。 Meadows包含超过18000个实例，并且具有较大的类内差异，从而限制了基于质心的方法的性能。在遥感图像中，类内差异很大。因此，与CROSR相比，拟议的MDL4OW更加健壮和稳定**
 
-![image-20201110162657617](/img/in-post/20_07/image-20201110162657617.png)
+#### Salinas 20
+
+![image-20210104102118382](/img/in-post/20_07/image-20210104102118382.png)
+
+1. **model1 输出预测和重建的数据, model2 仅输出预测的类**
+
+```python
+if patch==9:
+    model1,model2 = nw.resnet99_avg_recon(im1z,patch,cls1,l=1)
+elif patch==5:
+    model1,model2 = nw.wcrn_recon(im1z,cls1)
+```
+
+**patch==9， nw.resnet99_avg_recon **
+
+64/64  loss: 0.0259 - output1_loss: 0.0448 - conv2d_transpose_4_loss: 0.0069 - output1_accuracy: 0.9828 - conv2d_transpose_4_accuracy: 0.6388
+
+ 
+
+#### Salinas 200
+
+![image-20210104102145512](/img/in-post/20_07/image-20210104102145512.png)
+
+
+
+
+
+#### 重建可视化
 
 > 我们用白色手动注释了一些人造材料. 我们可以看到，使用CROSR方法将许多已知实例（下部）误分类为未知。相反，提出的MDL4OW成功地**识别了未知物（左下方的道路和左上方的水池），同时又保持了已知类别的高精度。**
 
@@ -908,6 +937,8 @@ log文件: May05_03-39-36_PC-20200427FKJL
 
 `尝试把分类图的0标签位置忽视`
 
+原始：
+
 
 
 <img src="/img/in-post/20_07/salinas_close_0.png" alt="salinas_close_0" style="zoom:50%;" />
@@ -916,9 +947,11 @@ log文件: May05_03-39-36_PC-20200427FKJL
 
 <img src="/img/in-post/20_07/salinas_mdl4ow_classwise_0.png" alt="salinas_mdl4ow_classwise_0" style="zoom:50%;" />
 
-### 实验-构建模型
 
- **model1 输出预测和重建的数据, model2 仅输出预测的类**
+
+### 结果复现
+
+**model1 输出预测和重建的数据, model2 仅输出预测的类**
 
 ```python
 if patch==9:
@@ -990,7 +1023,65 @@ Non-trainable params: 384
 __________________________________________________________________________________________________
 ```
 
+### 实验描述
 
+**错误分类的道路，房屋，直升机和卡车**
+以下是普通/封闭分类。可以注意到训练样本中未包含某些分类。例如，对于上方的Salinas图像，农田之间的道路和房屋无法分类为任何已知类别，但是因为从不教它识别未知实例，所以深度学习模型仍然必须分配标签之一。
+
+![](/img/in-post/20_07/mdl4ow1.png)
+
+**我们的工作点：用黑色掩盖未知的事物**
+
+通过使用多任务深度学习，使深度学习模型具有识别未知事物的能力：那些被黑色掩盖的事物。
+对于Salinas，成功识别了农田之间的**道路和房屋**。
+对于Pavia University，**直升机和卡车**被成功识别。
+
+![](/img/in-post/20_07/mdl4ow2-20210106132634367.png)
+
+
+
+### 改进实验
+
+**数据：**
+
+| 模型                                  | loss   | output1_loss | conv2d_transpose_4_loss | output1_accuracy | conv2d_transpose_4_accuracy | Train_time | Predict_time |
+| ------------------------------------- | ------ | ------------ | ----------------------- | ---------------- | --------------------------- | ---------- | ------------ |
+| raw                                   | 0.0306 | 0.0527       | 0.0085                  | 0.9781           | 0.6633                      | 282        | 40           |
+| 改进点1 <br />全样本预训练（epoch=2） | 0.0243 | 0.0420       | 0.0065                  | **0.9828**       | **0.6984**                  | 436        | 39           |
+| 改进点1 <br />全样本预训练（epoch=6） | 0.0237 | 0.0410       | 0.0063                  | **0.9845**       | **0.7319**                  | 975        | 39           |
+
+**5个样本**
+
+| 模型                                  | loss   | output1_loss | conv2d_transpose_4_loss | output1_accuracy | conv2d_transpose_4_accuracy | Train_time | Predict_time |
+| ------------------------------------- | ------ | ------------ | ----------------------- | ---------------- | --------------------------- | ---------- | ------------ |
+| raw                                   | 0.0569 | 0.0923       | 0.0091                  | 0.9642           | 0.6309                      | \          | \            |
+| 改进点1 <br />全样本预训练（epoch=2） | 0.0033 | 0.0635       | 0.0068                  | **0.9751**       | **0.6620**                  | 321        | 40           |
+
+**起始：**
+
+| 模型                                  | loss   | output1_loss | conv2d_transpose_4_loss | output1_accuracy | conv2d_transpose_4_accuracy |      |      |
+| ------------------------------------- | ------ | ------------ | ----------------------- | ---------------- | --------------------------- | ---- | ---- |
+| raw                                   | 1.1228 | 2.1499       | 0.0957                  | 0.2164           | 0.0377                      |      |      |
+| 改进点1 <br />全样本预训练            | 0.9410 | 1.8694       | 0.0126                  | 0.3141           | 0.6655                      |      |      |
+| 改进点1 <br />全样本预训练（epoch=6） | 0.9176 | 1.8226       | **0.0125**              | **0.3398**       | **0.6766**                  |      |      |
+
+**结果图：**
+
+| 模型                                        | salinas_close_0                                              | salinas_mdl4ow_0                                             | salinas_mdl4ow_classwise_0                                   |      |
+| ------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---- |
+| raw                                         | <img src="/img/in-post/20_07/salinas_close_0.png" alt="salinas_close_0" style="zoom:50%;" /> | <img src="/img/in-post/20_07/salinas_mdl4ow_0.png" alt="salinas_mdl4ow_0" style="zoom:50%;" /> | <img src="/img/in-post/20_07/salinas_mdl4ow_classwise_0.png" alt="salinas_mdl4ow_classwise_0" style="zoom:50%;" /> |      |
+| 改进点1 <br />全样本预训练<br />（epoch=2） | <img src="/img/in-post/20_07/image-20210106110727705.png" alt="image-20210106110727705" style="zoom:50%;" /> | <img src="/img/in-post/20_07/image-20210106111225188.png" alt="image-20210106111225188" style="zoom:50%;" /> | <img src="/img/in-post/20_07/image-20210106110758647.png" alt="image-20210106110758647" style="zoom:50%;" /> |      |
+| 改进点1 <br />全样本预训练<br />（epoch=6） | <img src="/img/in-post/20_07/image-20210106121822372.png" alt="image-20210106121822372" style="zoom:50%;" /> | <img src="/img/in-post/20_07/image-20210106121932292.png" alt="image-20210106112620219" style="zoom:50%;" /> | <img src="/img/in-post/20_07/image-20210106125222424.png" alt="image-20210106125222424" style="zoom:50%;" /> |      |
+| Reference                                   |                                                              | <img src="/img/in-post/20_07/image-20210106112620219.png" alt="image-20210106112620219" style="zoom:35%;" /> |                                                              |      |
+
+
+
+| 模型                                                       | 精度（conv2d_transpose_4_accuracy） | realmask图                                                   |      |
+| ---------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------ | ---- |
+| 原始模型                                                   | 0.6504                              | ![image-20210106151722447](/img/in-post/20_07/image-20210106151722447.png) |      |
+| 改进点 - 无标签全数据预训练 <br />1epoch 的  realmask：    | 0.6672                              | ![image-20210106151139634](/img/in-post/20_07/image-20210106151139634.png) |      |
+| 改进点 - **无标签**全数据预训练<br />6 epoch 的 realmask： | /                                   | <img src="/img/in-post/20_07/image-20210106145547259.png" alt="image-20210106145547259" style="zoom:100%;" /> |      |
+| 无标签预训练 + 有监督微调的realmask：                      | 0.7319                              | <img src="/img/in-post/20_07/image-20210106141339131.png" alt="image-20210106141339131" style="zoom:100%;" /> |      |
 
 ## 18_TGRS_SSRN_Spectral Spatial Residual Network for Hyperspectral Image Classification:A 3D Deep Learning Framework.pdf
 
