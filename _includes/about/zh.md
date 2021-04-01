@@ -16,8 +16,8 @@
 |      | ❤️              | ❤️❤️               | ❤️❤️❤️              |
 | ---- | -------------- | ---------------- | ---------------- |
 | 😅    |                | Java             |                  |
-| 🧐    | C, Verilog HDL | MATLAB, Multisim | C++              |
-| 😏    |                | AD,              | python3, pytorch |
+| 🧐    | C, Verilog HDL | MATLAB, Multisim | C++, java, keras |
+| 😏    |                | AD, TensorFlow   | python3, pytorch |
 | 🤓    |                |                  |                  |
 
 ## Grade
@@ -56,27 +56,19 @@ FPGA 6层高速电路板绘制及基于FPGA的自适应滤波器系统设计
 
 ## Academic Performance
 
-|                                                       |                                                              |
-| ----------------------------------------------------- | ------------------------------------------------------------ |
-| [IEEE WCNC 2021](https://edas.info/index.php?c=27682) | [*Clustering-Based Data Collection Using Concurrent Transmission in Wireless Sensor Network*](https://edas.info/showPaper.php?m=1570682628) |
+Clustering-Based Data Collection Using Concurrent Transmission in Wireless Sensor Network - in review
 
 ## Practice
 
-通过华为云NAIE 服务实战营并获得华为云社会实践证书，熟练使用ModelArts、AutoML、NAIE等平台。
-
-<img src="/img/in-post/20_07/%E5%8D%8E%E4%B8%BA%E7%A4%BE%E4%BC%9A%E5%AE%9E%E8%B7%B5%E8%AF%81%E4%B9%A6.png" alt="华为社会实践证书" style="zoom: 33%;" />
+通过华为云NAIE 服务实战营并获得华为云社会实践证书，熟练使用ModelArts、AutoML、NAIE等。
 
 参加了创新工场DeeCamp2020人工智能夏令营
 
-担任西安电子科技大学华为创新协会部（组）长
+担任西安电子科技大学华为创新协会部（组）长、华为校园大使
 
 参加了2019年全国高校人工智能学院院长/系主任论坛
 
 参加华为云垃圾分类项目并获得华为云人工智能技能认证
-
-![image-20200714235021299](/img/in-post/20_07/image-20200714235021299.png)
-
-
 
 主要居住在西安或青岛，线上可能出没于[Github](https://github.com/sunqinghu)、[微博](https://weibo.com/孙庆虎_DeepLearning)、[知乎](https://www.zhihu.com/people/Tigerking)、Twitter
 
