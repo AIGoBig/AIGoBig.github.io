@@ -56,7 +56,7 @@ FPGA 6层高速电路板绘制及基于FPGA的自适应滤波器系统设计
 
 ## Academic Performance
 
-Clustering-Based Data Collection Using Concurrent Transmission in Wireless Sensor Network - in review
+Clustering-Based Data Collection Using Concurrent Transmission in Wireless Sensor Network - published
 
 ## Practice
 

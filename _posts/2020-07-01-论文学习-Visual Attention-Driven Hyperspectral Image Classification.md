@@ -26,3 +26,4 @@ https://blog.csdn.net/qq_40721337/article/details/106408155
 
 ​	   跟ResNet类似，A-ResNet也采用了一个基础模块——attention module（A(l)），包括“the trunk branch”和“the mask branch”两个分支。
   输入X(l-1)，经过“attention module”（A(l)）后，输出与X(l-1)光谱和空间维度一致的X(l)，其中X(l)=(1+X(lmask))*X(ltrunk)。
+
