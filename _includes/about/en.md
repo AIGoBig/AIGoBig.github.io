@@ -1,4 +1,4 @@
-> Your time is limited, so don’t waste it living someone else’s life. 
+Hi, I am _@huxpro_ (Huang, Xuan), an UI/Frontend engineer & designer, accidentally growing into a compiler hacker. My current interests range from programming languages theory and implementation in general (compiler, type system, type-based formal verification, virtual machine, runtime systems, garbage collection) to software engineering in the tech industry (client-side web/mobile app development, server-side backend, user interface and UX, developer infrastructure and DX). 
 
 |                               |                                             |
 | ----------------------------- | ------------------------------------------- |
@@ -11,8 +11,9 @@ Hi, I am SunQH (Sun Qinghu), a postgraduate student in Xidian University  and a 
 
 I will keep working hard.
 
+##### [My PL Spectrum (WIP 🚧)](https://huangxuan.me/2020/05/05/pl-chart/)
 
-##### My Programming Languages Spectrum
+I made a chart to visualize my experiences and interests on some of the programming languages. I know. I know this is always contraversial. But it's just something quite self-entertaining to do. So bare with me and have fun reading that!
 
 > __Left-right__ is how much I prefer it.  __Top-down__ is how much I know it. __Versions__ are lower bounds.
 
