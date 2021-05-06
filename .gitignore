@@ -1,7 +1,4 @@
 _site
-_posts/_draft
-_posts/_archive
-_archive
 node_modules
 .vscode
 *.log
@@ -11,13 +8,14 @@ node_modules
 .jekyll-cache
 */.DS_Store
 */*/.DS_Store
-_posts/2020-03-08-组会.md
-_posts/2020-03-08-论文整理.md
-_posts/组会.md
-_posts/论文整理.md
-_posts/k8s-share-master
-_posts/*发paper*
 
+_posts/_draft
+_posts/_archive
+_posts/_ignore
+_archive
+
+_posts/work/_ignore
+_posts/pap/_ignore
 
 
 
