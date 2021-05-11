@@ -1145,44 +1145,8 @@ for dataset in full_data:
 
 
 
-    ---------------------------------------------------------------------------
-    
-    ValueError                                Traceback (most recent call last)
-    
-    <ipython-input-23-910a39f23f64> in <module>
-         23 for dataset in full_data:
-         24     dataset['Fare'] = dataset['Fare'].fillna(train['Fare'].median())
-    ---> 25 train['CategoricalFare'] = pd.qcut(train['Fare'], 4)
-         26 # Create a New feature CategoricalAge
-         27 for dataset in full_data:
-
-
-    ~/opt/anaconda3/lib/python3.7/site-packages/pandas/core/reshape/tile.py in qcut(x, q, labels, retbins, precision, duplicates)
-        347         include_lowest=True,
-        348         dtype=dtype,
-    --> 349         duplicates=duplicates,
-        350     )
-        351 
-
-
-    ~/opt/anaconda3/lib/python3.7/site-packages/pandas/core/reshape/tile.py in _bins_to_cuts(x, bins, right, labels, precision, include_lowest, dtype, duplicates)
-        385                 "Bin edges must be unique: {bins!r}.\nYou "
-        386                 "can drop duplicate edges by setting "
-    --> 387                 "the 'duplicates' kwarg".format(bins=bins)
-        388             )
-        389         else:
-
-
-    ValueError: Bin edges must be unique: array([0. , 0.5, 2. , 2. , 3. ]).
-    You can drop duplicate edges by setting the 'duplicates' kwarg
 
 
 
-```python
-
-```
 
 
-```python
-
-```

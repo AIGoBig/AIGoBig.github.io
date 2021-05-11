@@ -189,4 +189,3 @@ objective function in KWFLICM is
 
 <img src="/img/in-post/20_03/image-20200325154252114.png" alt="image-20200325154252114" style="zoom: 33%;" />
 
-## IV. EXPERIMENTAL STUDY
