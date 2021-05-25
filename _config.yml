@@ -102,7 +102,7 @@ page-mathjax: false
 
 # Friends
 friends: [
-    {
+#    {
     #     title: "Su",
     #     href: "http://su.gallery/"
     # },{
@@ -110,7 +110,11 @@ friends: [
         # href: "https://steve02081504.github.io/"
 #        title: "ChenaniahBaby的博客",
 #        href: "https://blog.csdn.net/doswynkfsw"
-        title: "LoveLine",
-        href: "https://sunqh.top/LoveLine"
-    }
+    {
+      title: "LoveLine",
+      href: "https://sunqh.top/LoveLine"
+    },{
+      title: "loverecord",
+      href: "https://sunqh.top/loverecord/iloveu.html"
+    },
 ]
