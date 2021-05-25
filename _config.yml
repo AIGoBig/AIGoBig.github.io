@@ -3,8 +3,8 @@ title: SunQH Blog
 SEOTitle: 孙庆虎的个人网站 | SunQH personal website
 header-img: img/home-bg.jpg
 email: qinghu.sun@outlook.com
-description: "关于算法设计、python、健身与学习爱好者 | 孙庆虎，DeepLearning & python Lover，want to be a Algorithm Engineer，Fitness master | 这里是 @孙庆虎 的个人博客，与你一起发现更大的世界。"
-keyword: "孙庆虎, SunQH, sunqinghu, 西安电子科技大学,  人工智能, 青岛科技大学, 青科, 西电, python, pytorch, 深度学习, mac, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
+description: "关于算法设计、python、健身与学习 | 孙庆虎，DeepLearning & python，want to be a Algorithm Engineer | 这里是 @孙庆虎 的个人博客，与你一起发现更大的世界。"
+keyword: "孙庆虎, SunQH, sunqinghu, 西安电子科技大学, 人工智能, 西电, python, pytorch, 深度学习, mac, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
 url: "https://sunqinghu.github.io"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
@@ -17,7 +17,7 @@ weibo_username:     u/3244215083/
 zhihu_username:     tigerking-28
 github_username:    sunqinghu
 twitter_username:   QinghuSun
-#facebook_username:  huxpro
+#facebook_username:  hux
 linkedin_username:   庆虎-孙   #firstname-lastname-idxxxx
 
 
@@ -108,7 +108,9 @@ friends: [
     # },{
         # title: "Just a blog",
         # href: "https://steve02081504.github.io/"
-        title: "ChenaniahBaby的博客",
-        href: "https://blog.csdn.net/doswynkfsw"
+#        title: "ChenaniahBaby的博客",
+#        href: "https://blog.csdn.net/doswynkfsw"
+        title: "LoveLine",
+        href: "https://sunqh.top/LoveLine"
     }
 ]
