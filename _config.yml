@@ -5,7 +5,7 @@ header-img: img/home-bg.jpg
 email: qinghu.sun@outlook.com
 description: "关于算法设计、python、健身与学习 | 孙庆虎，DeepLearning & python，want to be a Algorithm Engineer | 这里是 @孙庆虎 的个人博客，与你一起发现更大的世界。"
 keyword: "孙庆虎, SunQH, sunqinghu, 西安电子科技大学, 人工智能, 西电, python, pytorch, 深度学习, mac, 孙庆虎的博客, SunQH Blog, 博客, 个人网站, 互联网, Web"
-url: "https://sunqinghu.github.io"              # your host, for absolute URL
+url: "https://sunqh.top"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 # Publish posts or collection documents with a future date.
@@ -115,6 +115,6 @@ friends: [
       href: "https://sunqh.top/LoveLine"
     },{
       title: "loverecord",
-      href: "https://sunqh.top/loverecord/iloveu.html"
+      href: "http://sunqh.top/LoveRecord/iloveu.html"
     },
 ]
