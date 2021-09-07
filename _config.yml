@@ -111,10 +111,13 @@ friends: [
 #        title: "ChenaniahBaby的博客",
 #        href: "https://blog.csdn.net/doswynkfsw"
     {
-      title: "LoveLine",
+      title: "My Daily Check",
+      href: "https://closed-august-0ef.notion.site/SunQH-s-Home-ea405d744a5b4007a94f3bbf0dbb55da"
+    },{
+      title: "Love Line",
       href: "https://sunqh.top/LoveLine"
     },{
-      title: "loverecord",
+      title: "Love Record",
       href: "http://sunqh.top/LoveRecord/iloveu.html"
     },
 ]
