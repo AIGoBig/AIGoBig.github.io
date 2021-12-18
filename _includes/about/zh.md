@@ -73,5 +73,5 @@ DeeCamp2020 - AI 精英训练营
 
 **公众号：**
 
-![image-20211218195530478](/Users/king/Library/Application%20Support/typora-user-images/image-20211218195530478.png)
+<img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/image-20211218195530478_20211218195950r9Ysw3.png" alt="image-20211218195530478" style="zoom:80%;" />
 
