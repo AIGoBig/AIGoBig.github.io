@@ -1,12 +1,12 @@
 
 |                               |                                             |
 | ----------------------------- | ------------------------------------------- |
-| **Name**：Sun Qinghu          | **Career**:  postgraduate                   |
+| **Name**：Qinghu Sun          | **Career**:  postgraduate                   |
 | **Phone**：15666528629        | **Major**:  Deep-learning, Machine-learning |
-| **English**：CET 6            | **Adress**：Qingdao \| Xi'an                |
+| **English**：CET 6            | **Adress**：Qingdao \| Xi’an                |
 | **School**：Xidian University | **E-mail**：qinghu.sun@outlook.com          |
 
-Hi, I am SunQH (Sun Qinghu), a postgraduate student in Xidian University  and a DL, ML learner, majoring in Artificial Intelligence. My interests range from programming to fitting. 
+Hi, I am Qinghu Sun, a postgraduate student in Xidian University  and a DL, ML learner, majoring in Artificial Intelligence. My interests range from programming to fitting. 
 
 I will keep working hard.
 
