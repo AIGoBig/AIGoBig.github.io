@@ -11,12 +11,12 @@
 
 > __从左到右__ 为喜欢程度，__从上到下__ 为了解程度。
 
-|      | ❤️              | ❤️❤️               | ❤️❤️❤️              |
-| ---- | -------------- | ---------------- | ---------------- |
-| 😅    |                | Java             |                  |
-| 🧐    | C, Verilog HDL | MATLAB, Multisim | C++, java, keras |
-| 😏    |                | AD, TensorFlow   | python3, pytorch |
-| 🤓    |                |                  |                  |
+|      | ❤️              | ❤️❤️             | ❤️❤️❤️              |
+| ---- | -------------- | -------------- | ---------------- |
+| 😅    |                | Java           |                  |
+| 🧐    | C, Verilog HDL | MATLAB,        | C++, keras       |
+| 😏    |                | AD, TensorFlow | python3, pytorch |
+| 🤓    |                |                |                  |
 
 编程能力：拥有良好的编程能力，熟悉Python，熟悉Linux开发环境、熟悉Git等。
 
