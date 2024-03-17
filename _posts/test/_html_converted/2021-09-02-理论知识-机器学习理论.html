@@ -1,0 +1,1038 @@
+<pre><code>date: 2015-01-10 19:55
+layout: &#39;post&#39;
+title: &#39;Blogging Like a Hacker&#39;
+tags:
+    - &quot;hello&quot;
+    - &#39;world&#39;
+status: &#39;public&#39;</code></pre>
+<h1 id="机器学习理论">机器学习理论</h1>
+<h2 id="常问问题">常问问题</h2>
+<h3 id="线性回归">线性回归</h3>
+<ul>
+<li><p><strong>原理</strong></p>
+<ul>
+<li><p>给定n维特征的样本<span class="math inline"><em>x</em></span>，线性模型的形式为：<span class="math inline"><em>f</em>(<em>x</em>) = <em>w</em><em>x</em> + <em>b</em></span></p>
+<blockquote>
+<p>其中w为每个特征对应的权重生成的权重向量。</p>
+</blockquote></li>
+<li><p>线性模型的优点是：</p>
+<ol type="1">
+<li>模型简单</li>
+<li>可解释性强，权重向量w直观的表达了各个特征在预测中的重要性。</li>
+</ol></li>
+<li><p>很多功能强大的<strong>非线性模型</strong>可以在线性模型的基础上通过引入层级结构或者非线性映射得到。</p></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># 测试代码：</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="im">import</span> os</a></code></pre></div>
+<h3 id="逻辑回归lr">==逻辑回归（LR）==</h3>
+<blockquote>
+<p>考察点：把LR从头到脚都给讲一遍。建模，现场数学推导，每种解法的原理，正则化，LR和maxent模型啥关系，LR为啥比线性回归好。有不少会背答案的人，问逻辑细节就糊涂了。原理都会? 那就问工程，并行化怎么做，有几种并行化方式，读过哪些开源的实现。还会，那就准备收了吧，顺便逼问LR模型发展历史。</p>
+</blockquote>
+<h4 id="原理"><strong>原理</strong></h4>
+<ul>
+<li>逻辑回归虽然名字叫做回归，但实际上却是一种<strong>分类学习方法</strong>。</li>
+<li>逻辑回归本质上是线性回归，只是在特征到结果的映射中加入了一层<strong>逻辑函数g(z)</strong>，即：
+<ol type="1">
+<li>先把特征线性求和</li>
+<li>然后使用函数g(z)作为假设函数来预测（使用<code>sigmoid</code>函数作为逻辑函数），将连续值映射到0 和1</li>
+<li>这样输出的为一个<strong>概率值</strong>。</li>
+</ol></li>
+</ul>
+<h4 id="cost-function极大似然函数推导">cost function（极大似然函数）推导</h4>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-5a8c1bd6e21cad2246ec8e31a6e7f226_1440w_20240315115736xyb8TR.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h4 id="如何做分类">如何做分类</h4>
+<p>逻辑回归作为一个回归函数，如何用于分类问题。 逻辑回归中，对于每个 x，其条件概率 y 的确是一个连续的变量。而逻辑回归中可以<strong>设定一个阈值</strong>，y 值大于这个阈值的是一类，y 值小于这个阈值的是另外一类。至于阈值的选择，通常是根据实际情况来确定，一般情况下选取 0.5 作为阈值来划分。</p>
+<h4 id="为什么可以用似然函数做损失函数">🚩为什么可以用似然函数做损失函数</h4>
+<p>因为目标是要让预测为正的的概率最大，且预测为负的概率也最大，即每一个样本预测都要得到最大的概率，将<strong>所有的样本预测后的概率进行相乘</strong>都最大，这就能到似然函数了。</p>
+<p>要<strong>求 <span class="math inline"><em>w</em></span> 使得 <span class="math inline"><em>l</em><em>n</em><em>L</em>(<em>w</em>)</span> 最大</strong>，用梯度下降或者牛顿法求解都行。</p>
+<h4 id="lr的cost-function和梯度下降参数迭代公式">🚩LR的cost function和梯度下降参数迭代公式</h4>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-bb8d98634a9cdf940b0920871db40dca_1440w_20240315115738TTpVVl.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h4 id="lr参数求解的优化方法">==LR参数求解的优化方法==</h4>
+<p>梯度下降法，随机梯度下降法，牛顿法，LBFGS，BFGS,OWLQN</p>
+<p>极大似然函数<strong>无法直接求解</strong>，一般是通过对该函数进行<strong>梯度下降来不断逼近其最优解</strong>。这里需要注意的点是要对梯度下降有一定的了解，就梯度下降本身来看的话就有随机梯度下降，批梯度下降，small batch 梯度下降三种方式，面试官可能会问这三种方式的优劣以及如何选择最合适的梯度下降方式。</p>
+<ul>
+<li>批梯度下降会获得全局最优解，缺点是在更新每个参数的时候需要遍历所有的数据，计算量会很大，并且会有很多的冗余计算，导致的结果是当数据量大的时候，每个参数的更新都会很慢。</li>
+<li>随机梯度下降是以高方差频繁更新，优点是使得 sgd 会跳到新的和潜在更好的局部最优解，缺点是使得收敛到局部最优解的过程更加的复杂。</li>
+<li>小批量梯度下降结合了批梯度下降和随机梯度下降的优点，每次更新的时候使用 n 个样本。减少了参数更新的次数，可以达到更加稳定收敛结果，一般在深度学习当中我们采用这种方法。</li>
+</ul>
+<h4 id="lr和线性回归的区别"><strong>LR和线性回归的区别</strong></h4>
+<ol type="1">
+<li><p>线性回归用来做预测, LR用来做分类。</p></li>
+<li><p>线性回归的拟合函数本质上是对 <strong>输出变量 y 的拟合</strong>， 而==逻辑回归的拟合函数是对 <strong>label 为1的样本的概率的拟合</strong>。==</p></li>
+<li><figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/equation-20210827140521662_20240315115739mq2p1d.jpg" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure></li>
+<li><p>线性回归用<strong>最小二乘法</strong>来计算参数,LR用<strong>最大似然估计</strong>来计算参数。</p></li>
+<li><p>🚩 ==线性回归更容易受到异常值的影响,而LR对异常值有较好的稳定性。==</p></li>
+</ol>
+<h4 id="lr-如何实现多分类"><strong>LR 如何实现多分类？</strong></h4>
+<ol type="1">
+<li><p><strong>方式1</strong>： 修改逻辑回归的损失函数，<strong>使用softmax函数构造模型</strong>解决多分类问题</p>
+<blockquote>
+<p>softmax分类模型会有相同于类别数的输出，输出的值为对于样本属于各个类别的概率，最后对于样本进行预测的类型为概率值最高的那个类别。</p>
+</blockquote></li>
+<li><p><strong>方式2</strong>： <strong>根据每个类别都建立一个二分类器</strong>，本类别的样本标签定义为0，其它分类样本标签定义为1</p>
+<blockquote>
+<p>则有多少个类别就构造多少个逻辑回归分类器。</p>
+</blockquote></li>
+<li><p><strong>若所有类别之间有明显的互斥则使用softmax分类器，若所有类别不互斥有交叉的情况则构造相应类别个数的逻辑回归分类器。</strong></p></li>
+</ol>
+<h4 id="逻辑回归为什么一般性能差">逻辑回归为什么一般性能差？</h4>
+<p>LR是<strong>线性</strong>的，不能得到非线性关系，实际问题并不完全能用线性关系就能拟合。</p>
+<h4 id="如何用lr解决非线性问题">如何用LR解决非线性问题？</h4>
+<p>将特征<strong>离散</strong>成高维的01特征可以解决分类模型的非线性问题</p>
+<h4 id="lr-为何要对特征进行离散化">🚩 <strong>LR 为何要对特征进行离散化</strong></h4>
+<ol type="1">
+<li><p><strong>引入非线性。</strong> 逻辑回归属于广义线性模型，<strong>表达能力受限</strong>；单变量离散化为N个后，每个变量有单独的权重，相当于为模型引入了非线性，能够提升模型表达能力，加大拟合； 离散特征的增加和减少都很容易，易于模型的快速迭代；</p></li>
+<li><p><strong>运算速度快。</strong> 稀疏向量内积乘法运算速度快，计算结果方便存储，容易扩展</p></li>
+<li><p><strong>增加鲁棒性。</strong> 离散化后的特征对异常数据有很强的鲁棒性：</p></li>
+</ol>
+<blockquote>
+<p>比如一个特征是年龄&gt;30是1，否则0。如果特征没有离散化，一个异常数据“年龄300岁”会给模型造成很大的干扰；</p>
+</blockquote>
+<ol start="4" type="1">
+<li><strong>方便交叉与特征组合</strong>： 离散化后可以进行特征交叉，</li>
+</ol>
+<blockquote>
+<p>由M+N个变量变为M*N个变量，进一步引入非线性，提升表达能力。</p>
+</blockquote>
+<ol start="5" type="1">
+<li><strong>增加稳定性</strong>： 特征离散化后，模型会更稳定，</li>
+</ol>
+<blockquote>
+<p>比如如果对用户年龄离散化，20-30作为一个区间，不会因为一个用户年龄长了一岁就变成一个完全不同的人。当然处于区间相邻处的样本会刚好相反，所以怎么划分区间是门学问。</p>
+</blockquote>
+<ol start="6" type="1">
+<li><strong>简化模型，降低过拟合风险</strong>： 特征离散化以后，起到了简化了逻辑回归模型的作用，降低了模型过拟合的风险。</li>
+</ol>
+<h4 id="为什么逻辑回归比线性回归要好">为什么逻辑回归比线性回归要好？</h4>
+<p>逻辑回归和线性回归首先都是广义的线性回归，但是：</p>
+<ol type="1">
+<li><p>经典线性模型的<strong>优化目标函数</strong>是最小二乘，而逻辑回归则是似然函数，</p></li>
+<li><p>另外线性回归在整个实数域范围内进行预测，敏感度一致，而分类范围，需要在[0,1]。逻辑回归就是一种<strong>减小预测范围</strong>，将预测值限定为[0,1]间的一种回归模型，因而对于这类问题来说，逻辑回归的鲁棒性比线性回归的要好</p></li>
+</ol>
+<h4 id="逻辑回归与最大熵模型maxent的关系">逻辑回归与最大熵模型MaxEnt的关系?</h4>
+<p>逻辑回归跟最大熵模型<strong>没有本质区别</strong>。逻辑回归是最大熵对应类别为<strong>二类</strong>时的特殊情况，也就是<strong>当逻辑回归类别扩展到多类别时，就是最大熵模型</strong>。</p>
+<h4 id="逻辑回归的优缺点"><strong>逻辑回归的优缺点</strong></h4>
+<p>优点：</p>
+<ul>
+<li>形式简单，模型的可解释性非常好。从特征的权重可以看到不同的特征对最后结果的影响，某个特征的权重值比较高，那么这个特征最后对结果的影响会比较大。</li>
+<li>模型效果不错。在工程上是可以接受的（作为 baseline），如果特征工程做的好，效果不会太差，并且特征工程可以并行开发，大大加快开发的速度。</li>
+<li>训练速度较快。分类的时候，计算量仅仅只和特征的数目相关。并且逻辑回归的分布式优化 SGD 发展比较成熟。</li>
+<li>方便调整输出结果，通过调整阈值的方式。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>准确率欠佳。因为形式非常的简单，而现实中的数据非常复杂，因此，很难达到很高的准确性。</li>
+<li>很难处理数据不平衡的问题。举个例子：如果我们对于一个正负样本非常不平衡的问题比如正负样本比 10000:1。我们把所有样本都预测为正也能使损失函数的值比较小。但是作为一个分类器，它对正负样本的区分能力不会很好。</li>
+<li>无法自动的进行特征筛选。</li>
+<li>只能处理二分类问题。</li>
+</ul>
+<h4 id="工程上怎么实现lr的并行化有哪些并行化的工具">🚩工程上，怎么实现LR的并行化？有哪些并行化的工具</h4>
+<ul>
+<li>逻辑回归的并行化最主要的就是对<strong>目标函数梯度计算的并行化</strong>。</li>
+<li>算法的并行化有两种：
+<ol type="1">
+<li>无损的并行化：
+<ol type="1">
+<li>算法天然可以并行，并行只是提高了计算的速度和解决问题的规模，但和正常执行的结果是一样的。</li>
+<li>基于Batch的算法(Batch-GD, LBFGS, OWLQN)都是可以进行无损的并行化的。</li>
+</ol></li>
+<li>有损的并行化：
+<ol type="1">
+<li>算法本身不是天然并行的，需要对算法做一些近似来实现并行化，这样并行化之后的双方和正常执行的结果并不一致，但是相似的。</li>
+<li>基于SGD的算法（Ad Predictor， FTRL－Proximal）都只能进行有损的并行化。</li>
+</ol></li>
+</ol></li>
+<li>并行化的工具：
+<ul>
+<li><strong>MPI</strong></li>
+<li><strong>OpenMP</strong></li>
+</ul></li>
+</ul>
+<h4 id="lr和svm的联系与区别">🚩<strong>LR和SVM的联系与区别？</strong></h4>
+<ul>
+<li><strong>联系</strong>：
+<ul>
+<li>LR和SVM都可以处理<strong>分类</strong>问题，且一般都用于处理线性二分类问题（在改进的情况下可以处理多分类问题）</li>
+<li>两个方法都可以增加不同的<strong>正则化项</strong>，如L1、L2等等。所以在很多实验中，两种算法的结果是很接近的。</li>
+</ul></li>
+<li><strong>区别</strong>：
+<ul>
+<li>LR是参数模型，SVM是非参数模型。</li>
+<li>从目标函数来看，区别在于逻辑回归采用的是<strong>Logistical Loss</strong>，SVM采用的是<strong>hinge loss</strong>.这两个损失函数的目的都是增加对分类影响较大的数据点的权重，减少与分类关系较小的数据点的权重。</li>
+<li>SVM的处理方法是只考虑Support Vectors，也就是和<strong>分类最相关的少数点</strong>，去学习分类器。而逻辑回归通过<strong>非线性映射</strong>，大大减小了离分类平面较远的点的权重，相对提升了与分类最相关的数据点的权重。</li>
+<li>逻辑回归相对来说模型更简单，好理解，特别是大规模线性分类时比较方便。而SVM的理解和优化相对来说复杂一些，SVM转化为对偶问题后,分类只需要计算与少数几个支持向量的距离,这个在进行复杂核函数计算时优势很明显,能够大大简化模型和计算。</li>
+<li>Logic 能做的 SVM能做，但可能在准确率上有问题，SVM能做的Logic有的做不了。</li>
+</ul></li>
+</ul>
+<h3 id="svm">SVM</h3>
+<p><a href="https://zhuanlan.zhihu.com/p/77750026">【机器学习】支持向量机 SVM（非常详细）</a></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-e833772fe2044ad9c353fb0173bd0b79_1440w-5919940-1073746_202403151157401HxYYm.jpg" alt="【机器学习】支持向量机 SVM（非常详细）" style="zoom:33%;" /></p>
+<ul>
+<li><p><strong>原理：</strong> SVM，全称是support vector machine，中文名叫支持向量机。SVM是一个<strong>面向数据</strong>的分类算法，它的<strong>目标</strong>是为确定一个<strong>分类超平面</strong>，从而将不同的数据分隔开。</p>
+<ul>
+<li>支持向量机（support vector machines, SVM）是一种二分类模型，</li>
+<li>它的基本模型是定义在特征空间上的<strong>间隔最大的线性分类器</strong>，间隔最大使它有别于感知机；</li>
+<li>SVM还包括<strong>核技巧</strong>，这使它成为实质上的非线性分类器。</li>
+<li>SVM的的学习策略就是<strong>间隔最大化</strong>，可形式化为一个求解凸二次规划的问题，也等价于<strong>正则化的合页损失函数的最小化问题</strong>。</li>
+<li>SVM的的学习算法就是求解<strong>凸二次规划的最优化算法。</strong></li>
+</ul></li>
+<li><p><strong>最大间隔超平面。</strong></p>
+<ul>
+<li>为了使这个超平面更具鲁棒性，我们会去找最佳超平面，<strong>以最大间隔把两类样本分开的超平面</strong>，也称之为最大间隔超平面。</li>
+</ul></li>
+<li><p><strong>支持向量</strong></p>
+<ul>
+<li><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-0f1ccaf844905148b7e75cab0d0ee2e3_720w_20240315115741jGm9o2.jpg" alt="img" style="zoom:50%;" /></li>
+<li>样本中<strong>距离超平面最近的一些点</strong>，这些点叫做支持向量。</li>
+</ul></li>
+<li><p><strong>SVM的核函数</strong></p>
+<ul>
+<li><p>核函数的本质可以概括为如下三点：</p>
+<ul>
+<li><p>实际应用中，常常遇到线性不可分的情况。针对这种情况，常用做法是把样例特征映射到高维空间中，<strong>转化为线性可分问题</strong>。</p></li>
+<li><p>将样例特征映射到高维空间，可能会遇到<strong>维度过高</strong>的问题。</p></li>
+<li><p>针对可能的<strong>维数灾难，可以利用核函数</strong>。核函数也是将特征从低维到高维的转换，但避免了直接进行高维空间中的复杂计算，可以在低维上进行计算，却能在实质上将分类效果表现在高维上。</p>
+<blockquote>
+<p>当然，SVM也能处理线性可分问题，这时使用的就是线性核了。</p>
+</blockquote></li>
+</ul></li>
+</ul></li>
+<li><p><strong>常用的核函数</strong>包括如下几个</p>
+<ul>
+<li>线性核函数</li>
+<li>多项式核函数</li>
+<li>RBF核函数(高斯核)</li>
+<li>Sigmoid核函数</li>
+</ul></li>
+<li><p><strong>松弛变量的理解</strong></p>
+<ol type="1">
+<li>线性可分的理解
+<ol type="1">
+<li>线性可分，即能找到超平面，对应<strong>硬间隔支持向量机</strong></li>
+<li>部分不可分，为<strong>近似线性可分</strong>问题，需要<strong>松弛变量</strong>，对应<strong>软间隔支持向量机</strong></li>
+<li>线性不可分，需要用到<strong>核函数</strong></li>
+</ol></li>
+<li>硬间隔支持向量机对噪声敏感，软间隔支持向量机要加个松弛变量ξ。我们都知道，硬间隔满足，yi * ( wi * x + b )≥1，这是函数间隔，是几何间隔的||w||倍。由于一些点出现在两条线的间隔内部，函数间隔的约束条件不满足，所以引入松弛变量ξ，使yi * ( wi * x + b ) + ξ ≥1，即：yi * ( wi * x + b ) ≥1 - ξ。<strong>对于这些离群点有对应的松弛变量</strong>，其他的点是没有松弛变量ξ的。</li>
+</ol></li>
+</ul>
+<h3 id="k最近邻knn分类算法">K最近邻（KNN）分类算法</h3>
+<ul>
+<li><strong>算法的过程</strong>：来了一个新的输入实例，我们算出该实例与每一个训练点的距离（这里的复杂度为0(n)比较大，所以引出了下文的kd树等结构），然后找到前k个，这k个哪个类别数最多，我们就判断新的输入实例就是哪类
+<ol type="1">
+<li>计算测试数据与各个训练数据之间的距离；（耗时）</li>
+<li>选取距离最小的K个点；</li>
+<li>确定这K个点所在类别的<strong>出现频率</strong>；</li>
+<li>这K个点中<strong>出现频率最高</strong>的类别作为测试数据的<strong>预测分类</strong></li>
+</ol></li>
+<li><strong>距离函数：</strong>与该实例最近邻的k个实例，这个最近邻的定义是通过不同<strong>距离函数</strong>来定义，我们最常用的是欧式距离。</li>
+<li><strong>归一化：</strong>为了保证每个特征同等重要性，我们这里对每个特征进行<strong>归一化</strong>。</li>
+<li><strong>参数选择：</strong>k值的选取，既不能太大，也不能太小，何值为最好，需要实验调整参数确定！
+<ul>
+<li><strong>k取值的影响：</strong>
+<ul>
+<li>k小：模型复杂，容易过拟合</li>
+<li>k大：模型简单，忽略数据中的有用信息</li>
+</ul></li>
+<li><strong>如何确定k的取值</strong>
+<ul>
+<li>那么我们一般怎么选取呢？李航博士书上讲到，我们一般选取一个较小的数值，通常采取 <strong>交叉验证法</strong>来选取最优的k值。</li>
+<li>也就是说，选取k值很重要的关键是实验调参，类似于神经网络选取多少层这种，通过调整超参数来得到一个较好的结果</li>
+</ul></li>
+</ul></li>
+<li><strong>减少搜索时间-kd树</strong>：按照每个特征的维度的中位数建立kd树，之后根据预测样本的特征搜索，如果大于，则右枝；如果小于，则左枝。</li>
+</ul>
+<h3 id="k-means聚类算法无监督">k-means聚类算法（无监督）</h3>
+<ul>
+<li><p><strong>算法步骤：</strong></p>
+<ol type="1">
+<li>随机选取k个点，作为聚类中心；</li>
+<li>计算每个点分别到k个聚类中心的<strong>欧式距离</strong>，然后将该点分到最近的聚类中心，这样就行成了k个集合；</li>
+<li>再重新计算每个集合的<strong>质心（各向量特征取均值）</strong>；</li>
+<li>重复以上2~4步，直到<strong>质心的位置不再发生变化或者达到设定的迭代次数。</strong></li>
+</ol></li>
+<li><p><strong>在k-means或kNN，为什么用欧氏距离来计算最近邻之间的距离而不用曼哈顿距离？</strong></p>
+<ul>
+<li><p>曼哈顿距离只计算水平或垂直距离，<strong>有维度的限制</strong>。</p></li>
+<li><p>另一方面，欧氏距离可用于<strong>任何空间的距离计算问题</strong>。</p>
+<blockquote>
+<p>因为，数据点可以存在于任何空间，欧氏距离是更可行的选择。例如：想象一下国际象棋棋盘，象或车所做的移动是由曼哈顿距离计算的，因为它们是在各自的水平和垂直方向做的运动。</p>
+</blockquote></li>
+</ul></li>
+</ul>
+<h3 id="岭回归模型ridge">岭回归模型(Ridge)</h3>
+<ul>
+<li>就是对于一个线性模型，在原来的损失函数加入参数的<em>l2</em>范数的惩罚项, 限制参数</li>
+</ul>
+<h3 id="决策树dt">决策树（DT）</h3>
+<p>决策树的<strong>生成过程</strong>就是使用<strong>满足划分准则的特征</strong>不断的将数据集划分为<strong>纯度更高，不确定性更小的子集</strong> 的过程。对于当前数据集D的每一次的划分，都希望根据某特征划分之后的各个子集的纯度更高，不确定性更小。</p>
+<ul>
+<li><strong>决策树的类型</strong>
+<ul>
+<li><strong>分类树</strong>分析是指预测结果是数据所属的类（比如某个电影去看还是不看）</li>
+<li><strong>回归树</strong>分析是指预测结果可以被认为是实数（例如房屋的价格，或患者在医院中的逗留时间）</li>
+<li><strong>分类回归树</strong>（CART，Classification And Regression Tree）分析是用于指代上述两种树的总称</li>
+<li>分类的目标是根据已知样本的某些特征，判断一个新的样本属于哪种已知的样本类，它的结果是<strong>离散值</strong>。而回归的结果是<strong>连续的值</strong>。当然，<strong>本质是一样的，都是特征（feature）到结果/标签（label）之间的映射。</strong></li>
+</ul></li>
+<li><strong>特征选择准则</strong>
+<ul>
+<li>用来度量划分前后的数据集的纯度及不确定性（量化分类效果）</li>
+<li>比如：信息增益，信息增益率，基尼指数</li>
+</ul></li>
+</ul>
+<h4 id="信息增益-id3算法">信息增益（ ID3算法 ）</h4>
+<ul>
+<li><strong>核心思想</strong>：以信息增益度量属性选择，选择分裂后<strong>信息增益最大</strong>的属性进行分裂。</li>
+<li><strong>定义</strong>： 以某特征划分数据集前后的<strong>熵的差值</strong><br />
+</li>
+<li><strong>公式</strong>： 划分前集合熵 - 划分后集合熵<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210801183450773-1073746_202403151157425n88ES.png" alt="image-20210801183450773" style="zoom:50%;" /></li>
+</ul>
+<blockquote>
+<p>在熵的理解那部分提到了，熵可以表示样本集合的不确定性，熵越大，样本的不确定性就越大。因此可以<strong>使用划分前后集合熵的差值来衡量使用当前特征对于样本集合D划分效果的好坏</strong>。</p>
+<p><strong>做法</strong>：计算使用所有特征划分数据集D，得到多个特征划分数据集D的信息增益，从这些<strong>信息增益中选 择最大的</strong>，因而当前结点的划分特征便是使信息增益最大的划分所使用的特征。</p>
+<p><strong>熵的理解</strong>：为了精确地定义信息增益，我们先定义信息论中广泛使用的一个<strong>度量标准</strong>称为熵（entropy）</p>
+<ul>
+<li><p>它刻画了任意样例集的纯度（purity）。</p></li>
+<li><p>给定包含关于某个目标概念的正反样例的样例集S，那么S相对这个布尔型分类的熵为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210109214727229-1073746_20240315115743r9swp6.png" alt="image-20210109214727229" style="zoom:67%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210109224025591-1073746_20240315115744ugZZE9.png" alt="image-20210109224025591" style="zoom:67%;" /></p>
+<p>其中，p+为正样本概率，p-为负样本概率。</p></li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>缺点</strong>：信息增益偏向取值较多的特征
+<ul>
+<li><strong>原因</strong>：当特征的取值较多时，根据此特征划分<strong>更容易</strong>得到纯度更高的子集，因此划分之后的熵更低，由于划分前的熵是一定的，因此信息增益更大，因此信息增益比较偏向取值较多的特征。</li>
+<li><strong>解决方法 :</strong> 信息增益比（ C4.5算法 ）</li>
+</ul></li>
+</ul>
+<h4 id="信息增益比-c4.5算法">信息增益比（ C4.5算法 ）</h4>
+<ul>
+<li><p><strong>本质</strong>： 是在信息增益的基础之上乘上一个惩罚参数。</p></li>
+<li><p><strong>公式</strong>：信息增益比 = 惩罚参数 * 信息增益<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210801184028880-1073746_20240315115745w2Xu2q.png" alt="image-20210801184028880" style="zoom:50%;" /></p></li>
+<li><blockquote>
+<p>特征个数较多时，惩罚参数较小；特征个数较少时，惩罚参数较大。</p>
+</blockquote></li>
+<li><p><strong>缺点</strong>：信息增益比偏向取值较少的特征</p></li>
+<li><p><strong>原因</strong>： 当特征取值较少时HA(D)的值较小，因此其倒数较大，因而信息增益比较大。因而偏向取值较少 的特征。</p></li>
+<li><p><strong>信息增益比的使用</strong>：基于以上缺点，并不是直接选择信息增益率最大的特征，而是</p></li>
+<li><ol type="1">
+<li>先在候选特征中找出信 息增益高于平均水平的特征，</li>
+<li>然后在这些特征中再选择信息增益率最高的特征。</li>
+</ol></li>
+</ul>
+<h4 id="基尼指数-cart算法--分类树">基尼指数（ CART算法 -分类树）</h4>
+<p><strong>定义</strong>：基尼指数（基尼不纯度）：表示在样本集合中一个<strong>随机</strong>选中的样本<strong>被分错的概率</strong>。</p>
+<p><strong>公式</strong>：基尼指数（基尼不纯度）= 样本被选中的概率 * 样本被分错的概率</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210801213355246_20240315115746h70p3b.png" alt="image-20210801213355246" style="zoom:50%;" /></p>
+<blockquote>
+<p>注意： Gini指数<strong>越小</strong>表示集合中被选中的样本<strong>被分错的概率越小</strong>，也就是说集合的<strong>纯度越高</strong>，反之，集合越不纯。</p>
+<ol type="1">
+<li>🚩 pk表示选中的样本属于k类别的概率，则这个样本被分错的概率是(1-pk)</li>
+<li>样本集合中有K个类别，一个随机选中的样本可以属于这k个类别中的任意一个，因而对类别就加和</li>
+<li>当为二分类是，Gini(P) = 2p(1-p)</li>
+</ol>
+</blockquote>
+<h3 id="集成学习">集成学习</h3>
+<ul>
+<li><strong>原理：</strong>
+<ul>
+<li>集成学习是指<strong>用某种策略将多个分类器预测的结果集成起来</strong>，作为最终的预测结</li>
+<li>主要有2种形式：boosting和bagging。</li>
+</ul></li>
+<li><strong>Boosting方法</strong>
+<ul>
+<li><strong>基本思想</strong>：
+<ul>
+<li>串行，分类器互相依赖</li>
+<li>训练时，将基分类器层层叠加，每一层训练时对<strong>前一层错分样本给予更高的权重</strong>，分类<strong>错误率低的基分类器给予更高的权重</strong>。</li>
+<li>测试时，根据各层分类器的<strong>结果加权</strong>得到最终结果。</li>
+</ul></li>
+<li><strong>主要作用</strong>：
+<ul>
+<li>减少集成分类器的<strong>偏差</strong>（基分类器层层叠加）</li>
+</ul></li>
+</ul></li>
+</ul>
+<blockquote>
+<p><strong>Boosting方法的例子</strong></p>
+<ul>
+<li>AdaBoost(自适应增强)
+<ul>
+<li>基本思想
+<ul>
+<li><strong>前一个分类器</strong>分错/分对的样本的权值会得到加强/降低，<strong>加权后的全体样本再次被用来训练下一个基本分类器</strong>。</li>
+</ul></li>
+</ul></li>
+<li>GBDT(梯度提升决策树)
+<ul>
+<li><p>基本思想</p>
+<ul>
+<li>GBDT的每一次计算都为了减少上一次的<strong>残差</strong>，进而在负梯度的方向上建立一个新的模型</li>
+<li>根据当前模型损失函数的<strong>负梯度信息</strong>来训练新加入的弱分类器，然后把训练好的弱分类器以累加的形式结合到现有模型里</li>
+</ul></li>
+</ul></li>
+<li><p>XGBoost</p>
+<ul>
+<li><p>目标函数</p>
+<ul>
+<li>目标函数分为两个部分<strong>：误差函数</strong>(logistic损失函数、平方损失函数)和<strong>正则化项（</strong>定义模型的复杂度）</li>
+<li>将目标函数化简之后，目标函数只依赖于一阶导数g和二阶导数h</li>
+<li>将目标函数和正则化项结合化简，对w进行求导，求出最优w，代入目标函数中</li>
+</ul></li>
+</ul></li>
+</ul>
+</blockquote>
+<h4 id="bagging方法">bagging方法</h4>
+<ul>
+<li><strong>基本思想</strong>
+<ul>
+<li>可并行，分类器无依赖</li>
+<li>将训练集分为若干子集，分别训练<strong>各个基分类器</strong></li>
+<li>测试时，每个基分类器单独做出判断，通过<strong>投票方式</strong>做出最终决策</li>
+</ul></li>
+<li><strong>作用</strong>
+<ul>
+<li>减少集成分类器的<strong>方差</strong>（基分类器并行，根据统计学）</li>
+</ul></li>
+</ul>
+<blockquote>
+<p><strong>bagging方法的例子</strong></p>
+<ul>
+<li>随机森林 https://zhuanlan.zhihu.com/p/91395504</li>
+</ul>
+</blockquote>
+<h3 id="gbdt">GBDT</h3>
+<ul>
+<li>梯度提升决策树，使用CART回归树作为<strong>基学习器</strong>，是一种boosting算法，用于分类或者回归问题。GBDT通过不断学习前一个基学习器的残差做优化，最终得到结果。</li>
+</ul>
+<h4 id="rf和gbdt">RF和GBDT</h4>
+<ul>
+<li>随机森林， 使用决策树作为<strong>基学习器</strong>，是一种bagging算法，用于分类或者回归问题。RF通过各个基生成器投票或取平均的方式<strong>得到结果</strong>。<strong>基模型</strong>其实就是ID3、C4.5、CART这几种决策树。</li>
+<li>梯度提升决策树，使用CART回归树作为<strong>基学习器</strong>，是一种boosting算法，用于分类或者回归问题。GBDT通过不断学习前一个基学习器的残差做优化，最终得到结果。</li>
+</ul>
+<blockquote>
+<ol type="1">
+<li>首先gbdt 是通过采用<strong>加法模型</strong>（即基函数的线性组合），以及不断减小训练过程产生的<strong>残差</strong>来达到将数据分类或者回归的算法。</li>
+<li>gbdt通过<strong>多轮迭代</strong>, 每轮迭代产生一个<strong>弱分类器</strong>，每个分类器在<strong>上一轮分类器的梯度</strong>（如果损失函数是平方损失函数，则梯度就是残差值）基础上进行训练。</li>
+<li>🚩 对弱分类器的要求一般是足够简单，并且是低方差和高偏差的。因为训练的过程是通过<strong>降低偏差</strong>来不断提高最终分类器的精度（此处是可以证明的）。</li>
+<li><strong>弱分类器</strong>一般会选择为==CART TREE==（也就是分类回归树）。</li>
+<li>由于上述高偏差和简单的要求，每个分类回归树的深度不会很深。最终的<strong>总分类器</strong>是将每轮训练得到的弱分类器加权求和得到的（也就是加法模型）。</li>
+</ol>
+</blockquote>
+<ul>
+<li><p><strong>处理缺失值</strong></p>
+<ul>
+<li><p>RF：</p>
+<ol type="1">
+<li><p>对应类别的中位数代替</p>
+<blockquote>
+<p>快速简单但是效果差：</p>
+</blockquote></li>
+<li><p>引入权重，先做相似度预测，相似度高的权重大</p>
+<blockquote>
+<p>费时费力但效果好：</p>
+</blockquote></li>
+</ol></li>
+<li><p>🚩GBDT</p>
+<ul>
+<li>构建CART树时通过 特征中无缺失值数据比例*这些数据的的信息增益 选取特征分裂节点。</li>
+</ul></li>
+</ul></li>
+<li><p><strong>特征重要性判断</strong></p>
+<ul>
+<li><p>RF</p>
+<ol type="1">
+<li>通过Gini系数的减少量，越大越重要</li>
+<li>🚩对于一个树，先使用OOB（Out of bag）样本计算测试误差a，再随机打乱OOB样本中第i个特征 （上下打乱特征矩阵第i列的顺序）后计算测试误差b，a与b差距越大特征i越重要。</li>
+</ol></li>
+<li><p>GBDT:</p>
+<p>计算 所有回归决策树中通过特征i分裂后<strong>平方损失或基尼指数的减少值的和 / 回归树数量</strong> 得到特征重 要性。</p></li>
+</ul></li>
+<li><p><strong>异同点</strong></p>
+<ul>
+<li><strong>相同点</strong>
+<ul>
+<li>都是多棵树</li>
+<li>都由多棵树决定结果</li>
+</ul></li>
+<li><strong>不同点</strong>：
+<ul>
+<li>RF为bagging思想，又放回的采样数据；GBDT为boosting思想</li>
+<li>RF不限制书深度、不剪枝；GBDT需要限制书的深度（容易过拟合）</li>
+<li>RF可以并行；GBDT为串行</li>
+<li>RF为多数投票法，<strong>方差小</strong>；GBDT将结果累加，或者加权累加，<strong>偏差小</strong></li>
+<li>RF对异常值不敏感；GBDT敏感</li>
+</ul></li>
+</ul></li>
+</ul>
+<h4 id="rf和gbdt的区别"><font color='red'>RF和GBDT的区别？</font></h4>
+<p><strong>相同点</strong>：</p>
+<ul>
+<li>都是由多棵树组成，最终的结果都是由多棵树一起决定。</li>
+</ul>
+<p><strong>不同点</strong>：</p>
+<ul>
+<li><strong>集成学习</strong>：RF属于bagging思想，而GBDT是boosting思想</li>
+<li><strong>偏差-方差权衡</strong>：RF不断的降低模型的方差，而GBDT不断的降低模型的偏差</li>
+<li><strong>训练样本</strong>：RF每次迭代的样本是从全部训练集中有放回抽样形成的，而GBDT每次使用全部样本</li>
+<li><strong>并行性</strong>：RF的树可以并行生成，而GBDT只能串行顺序生成(需要等上一棵树完全生成)</li>
+<li><strong>最终结果</strong>：RF最终是多棵树进行多数表决（回归问题是取平均），方差小；而GBDT是将所有结果累加或者加权累加，偏差小</li>
+<li><strong>数据敏感性</strong>：RF对异常值不敏感，而GBDT对异常值比较敏感</li>
+<li><strong>泛化能力</strong>：RF不易过拟合（有放回的采样数据，而且可以对特征列采样，不用全部特征），而GBDT容易过拟合</li>
+<li>RF不需要限制树的深度，不用剪枝；GBDT为了防止过拟合，需要限制树深</li>
+</ul>
+<h4 id="比较lr和gbdt">比较LR和GBDT</h4>
+<p><strong>先说说LR和GBDT的区别</strong>：</p>
+<ul>
+<li>LR是线性模型，可解释性强，很容易并行化，但学习能力有限，需要大量的人工特征工程</li>
+<li>GBDT是非线性模型，具有天然的特征组合优势，特征表达能力强，但是树与树之间无法并行训练，而且树模型很容易过拟合；</li>
+</ul>
+<h4 id="说说什么情景下gbdt不如lr">说说什么情景下GBDT不如LR？</h4>
+<p><strong>当在高维稀疏特征的场景下，LR的效果一般会比GBDT好</strong>。</p>
+<p>原因如下：</p>
+<blockquote>
+<p>先看一个例子： 假设一个二分类问题，label为0和1，特征有100维，如果有1w个样本，但其中只要10个正样本1，而这些样本的特征 f1的值全为1，而其余9990条样本的f1特征都为0(在高维稀疏的情况下这种情况很常见)。</p>
+<p>我们都知道在这种情况下，树模型很容易优化出一个使用fyu’yuya’s’d’f’j’ka特征作为重要分裂节点的树，因为这个结点直接能够将训练数据划分的很好，但是当测试的时候，却会发现效果很差，因为这个特征f1只是刚好偶然间跟y拟合到了这个规律，这也是我们常说的过拟合。</p>
+</blockquote>
+<p>那么这种情况下，如果采用LR的话，应该也会出现类似过拟合的情况呀：y = W1 x f1 + Wi x fi+….，其中 W1特别大以拟合这10个样本。为什么此时树模型就过拟合的更严重呢？</p>
+<p>仔细想想发现，因为现在的模型普遍都会带着正则项，而 <strong>LR 等线性模型的正则项是对权重的惩罚，也就是 W1一旦过大，惩罚就会很大，进一步压缩 W1的值，使他不至于过大</strong>。但是，树模型则不一样，<strong>树模型的惩罚项通常为叶子节点数和深度</strong>等，而我们都知道，对于上面这种 case，<strong>树只需要一个节点就可以完美分割9990和10个样本，一个结点，最终产生的惩罚项极其之小</strong>。</p>
+<p>这也就是为什么在高维稀疏特征的时候，线性模型会比非线性模型好的原因了<strong>：带正则化的线性模型比较不容易对稀疏特征过拟合。</strong></p>
+<h3 id="xgboost">XGBoost</h3>
+<h4 id="简单介绍一下xgboost"><font color='red'>简单介绍一下XGBoost。</font></h4>
+<ul>
+<li><p><strong>基本原理</strong>：</p>
+<ul>
+<li><p>首先需要说一说GBDT，它是一种基于boosting增强策略的<strong>加法模型</strong>，训练的时候采用前向分布算法进行贪婪的学习，每次迭代都学习一棵<strong>CART树</strong>来拟合之前 t-1 棵树的预测结果与训练样本真实值的<strong>残差</strong>（使用损失函数的负梯度来近似模拟残差）。</p></li>
+<li><p>XGBoost对GBDT进行了<strong>一系列优化</strong>，如果不考虑工程实现、解决问题上的一些差异，xgboost与gbdt<strong>比较大的不同就是目标函数的定义</strong>： 比如<strong>损失函数</strong>进行了<strong>二阶泰勒展开、目标函数加入正则项、支持并行和默认缺失值处理（稀疏感知法）等</strong>，在<strong>可扩展性</strong>和<strong>训练速度</strong>上有了巨大的提升，但其核心思想没有大的变化</p>
+<blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo/img/2020/image-20210804000153195.png" alt="image-20210804000153195" style="zoom:25%;" />1. 相比GBDT，XGBoost添加了正则项，对每颗树的<strong>复杂度进行了惩罚</strong>，包括叶子节点个数和叶节点权重： <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210804000410508-1073747_20240315115746HXZ9Qx.png" alt="image-20210804000410508" style="zoom:25%;" /></p>
+<ol start="2" type="1">
+<li>对目标函数进行了<strong>二阶泰勒展开</strong>，得到节点分裂增益公式：</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210804002204563-1073747_20240315115747eLDxma.png" alt="image-20210804002204563" style="zoom:50%;" /></p>
+</blockquote></li>
+</ul></li>
+<li><p><strong>主要过程是</strong>：一层一层的完成建树过程， xgboost训练的时候，是通过<strong>加法的方式进行训练</strong>，也就是<strong>每一次通过聚焦残差</strong>训练一棵树出来， 最后的预测结果是<strong>所有树的加和表示</strong>。</p>
+<ol type="1">
+<li>在训练过程中是<strong>聚焦残差</strong>，</li>
+<li>在目标函数中使用了<strong>二阶泰勒展开并加入了正则</strong>，</li>
+<li>在决策树的生成过程中采用了<strong>精确贪心</strong>的思路，</li>
+<li>寻找最佳分裂点的时候，使用了<strong>预排序算法</strong>，</li>
+</ol>
+<blockquote>
+<p>对所有特征都按照特征的数值进行预排序， 然后遍历所有特征上的所有分裂点位，计算按照这些候选分裂点位分裂后 的全部样本的目标函数增益，找到最大的那个增益对应的特征和候选分裂点位，从而进行分裂。</p>
+</blockquote></li>
+<li><p><strong>xgboost优化</strong></p>
+<ol type="1">
+<li>预排序：对<strong>特征进行预排序</strong>，并以column block的结构保存在内存中，按照特征的由小到大保存 样本的索引（索引指向内存中的具体数据）。这种结构只需要在构建树之前先排序一次，之后节点分裂就可以直接根据索引得到梯度信息。</li>
+<li>Cache优化：预排序在索引层面上特征值是有序的，但在内存中还是不连续的，会造成内存的不 连续访问，降低Cache命中。故对其优化<strong>：为每个线程分配一个连续的缓存区，将需要的梯度信息 存放在缓冲区中</strong>，这样就是实现了非连续空间到连续空间的转换，<strong>提高了算法效率，解决缓存命中 率低的问题</strong>。</li>
+</ol></li>
+<li><p><strong>xgboost缺点</strong></p>
+<ol type="1">
+<li><p>虽然利用预排序和近似算法可以降低寻找最佳分裂点的计算量，但在<strong>节点分裂过程中仍需要遍历数据集</strong>；</p></li>
+<li><p><strong>预排序过程的空间复杂度过高</strong>，不仅需要存储特征值，还需要存储特征对应样本的梯度统计值的索引，相当于消耗了两倍的内存。</p></li>
+</ol></li>
+</ul>
+<h4 id="xgboost与gbdt的不同"><font color='red'>XGBoost与GBDT的不同？</font></h4>
+<p>XGBoost类似于GBDT的<strong>优化版</strong>，不论是精度还是效率上都有了提升。都是<strong>聚焦残差</strong>，不过与GBDT相比，具体的<strong>优点</strong>有：</p>
+<ul>
+<li><p><strong>基分类器</strong>：XGBoost的基分类器不仅支持CART决策树，<strong>还支持线性分类器</strong>，此时XGBoost相当于带L1和L2正则化项的Logistic回归（分类问题）或者线性回归（回归问题）。而GBDT仅支持CART树作为基学习器。</p>
+<blockquote>
+<p>🚩 节点<strong>分裂的方式</strong>不同，GBDT是用的基尼系数，XGBoost是经过优化推导后的。</p>
+</blockquote></li>
+<li><p><strong>损失函数</strong>：XGBoost对损失函数做了<strong>二阶泰勒展开</strong>，用二阶梯度可以更好地拟合损失下降的曲线。并且XGBoost还支持<strong>自定义损失函数</strong>（可以是最小平方差、logistic loss function、hinge loss function或者人为定义的loss function），只要损失函数一阶、二阶可导便可进行boosting，其进一步增大了模型的泛化能力； GBDT旨在通过<strong>不断加入新的树</strong>最快速度降低残差，只用了一阶导数信息</p></li>
+<li><p><strong>正则项</strong>：XGBoost的损失函数（目标函数）加了<strong>正则项</strong>，对<strong>叶子节点个数</strong>和<strong>叶子结点的权重</strong>分别进行L1、L2正则化， 相当于<strong>预剪枝</strong>，使得学习出来的模型更加不容易过拟合。</p></li>
+<li><p><strong>列抽样</strong>：XGBoost支持列采样，与随机森林类似，不仅可以减少计算，还可以用于防止过拟合，而GBDT使用全部特征。</p></li>
+<li><p><strong>缺失值处理</strong>：对树中的每个非叶子结点，XGBoost可以自动学习出它的默认分裂方向。如果某个样本该特征值缺失，会将其划入默认分支。</p></li>
+<li><p><strong>并行化</strong>：注意不是tree维度的并行，而是特征维度的并行。XGBoost预先将每个特征按特征值排好序，存储为块结构，（按特征值由小到大排序，不仅要存储样本的特征值，还需要保存样本的索引，索引指向内存中的具体数据，即样本的一阶、二阶梯度信息），分裂结点时，根据索引可以得到相应的梯度信息（一阶、二阶），可以采用多线程并行查找每个特征的最佳分割点，极大提升训练速度。</p></li>
+<li><p><strong>收缩率</strong>：XGBoost加入了收缩率系数，在每次迭代完决策树fi后将叶子节点的权重乘上该系数，来削弱每棵树的影响，让后面的树有更大的学习空间。实际应用中，一般把eta设置为较小的数，把迭代次数设置为较大值。</p></li>
+</ul>
+<h4 id="xgboost的优点"><strong>XGBoost的优点</strong></h4>
+<ol type="1">
+<li>精度高：GBDT 只用到一阶泰勒展开，而 XGBoost 对损失函数进行了二阶泰勒展开。引入二阶导一方面是为了增加精度，另一方面也是为了能够自定义损失函数。</li>
+<li>灵活性更强：传统GBDT以CART作为基分类器，xgboost还支持线性分类器，这时xgboost相当于带L1和L2正则化项的逻辑斯蒂回归（分类问题）或者线性回归（回归问题）。</li>
+<li>正则化：在目标函数中加入了正则项，用于控制模型的复杂度。正则项里包含了树的叶子节点个数、叶子节点权重的 L2 范式。正则项降低了模型的方差，使学习出来的模型更加简单，有助于防止过拟合。</li>
+<li>Shrinkage：相当于学习速率。XGBoost 在进行完一次迭代后，会将叶子节点的权重乘上该系数，主要是为了削弱每棵树的影响，让后面有更大的学习空间</li>
+<li>列抽样：借鉴了随机森林的做法，支持列抽样，不仅能降低过拟合，还能减少计算；</li>
+<li>缺失值处理：对于特征的值有缺失的样本，xgboost可以自动学习出它的分裂方向。</li>
+<li>可以并行化操作：块结构可以很好的支持并行计算。</li>
+<li>可并行的近似直方图算法：树节点在进行分裂时，我们需要计算每个特征的每个分割点对应的增益，即用贪心法枚举所有可能的分割点。当数据无法一次载入内存或者在分布式情况下，贪心算法效率就会变得很低，所以xgboost还提出了一种可并行的近似直方图算法，用于高效地生成候选的分割点。</li>
+<li>相当于预剪枝：当增益大于阈值时才让节点分裂，上式中的gamma即阈值，它是正则项里叶子节点数T的系数，所以xgboost在优化目标函数的同时相当于做了预剪枝。</li>
+</ol>
+<h4 id="xgboost的缺点"><strong>XGBoost的缺点</strong></h4>
+<ol type="1">
+<li><strong>节点分类需要遍历数据集</strong>：虽然利用预排序和近似算法可以降低寻找最佳分裂点的计算量，但在节点分裂过程中仍需要遍历数据集；</li>
+<li><strong>预排序空间复杂度高</strong>：预排序过程的空间复杂度过高，不仅需要存储特征值，还需要存储特征对应样本的梯度统计值的索引，相当于消耗了两倍的内存。</li>
+<li>找到特别精确的分割点，可能存在过拟合。</li>
+</ol>
+<h4 id="为什么使用泰勒二阶展开"><font color='red'>为什么使用泰勒二阶展开？</font></h4>
+<ul>
+<li><strong>精准性</strong>：相对于GBDT的一阶泰勒展开，XGBoost采用二阶泰勒展开，可以<strong>更为精准的逼近真实的损失函数</strong>。对损失函数应用泰勒二阶展开可以得到节点的分裂增益公式，为后面选取最佳变量的最佳分割点，提供增益指标。</li>
+<li><strong>可扩展性</strong>：损失函数支持自定义，只需要新的损失函数二阶可导。这种去耦合增加了XGBoost的适用性。</li>
+</ul>
+<h4 id="为什么可以并行训练"><font color='red'>为什么可以并行训练？</font></h4>
+<ul>
+<li>XGBoost的并行，并不是说每棵树可以并行训练，XGB本质上仍然采用boosting思想，每棵树训练前需要等前面的树训练完成才能开始训练。</li>
+<li>XGBoost的并行，指的是<strong>特征维度的并行</strong>：在训练之前，对每个特征按特征值有小到大对样本进行<strong>预排序</strong>，（不仅要存储样本的特征值，还需要保存样本的索引，索引指向内存中的具体数据，即样本的一阶、二阶梯度信息）并存储为Block结构，在后面查找特征分割点时可以重复使用，而且<strong>特征已经被存储为一个个block结构，那么在寻找每个特征的最佳分割点时，可以利用多线程对每个block并行计算。</strong></li>
+</ul>
+<h4 id="为什么快"><font color='red'>为什么快？</font></h4>
+<ul>
+<li><strong>分块并行</strong>：训练前每个特征按特征值进行排序并存储为Block结构，后面查找特征分割点时重复使用，并且支持并行查找每个特征的分割点。</li>
+<li><strong>候选分位点</strong>：每个特征采用常数个分位点作为候选分割点，在找最佳分裂点的时候，只需要在候选分割点中做选择，不用遍历所有可能的分裂位置。（全局扫描法将所有特征的特征按照从小到大排序，将所有可能的分裂位置都遍历一遍，找到其中增益最大的那个分裂点，其计算复杂度和叶子节点上样本的特征取值个数成正比。）</li>
+<li><strong>CPU cache（高速缓冲存储器） 命中优化</strong>： 使用缓存预取的方法，为每个线程分配一个连续的buffer（缓存区），读取每个block中样本的梯度信息并存入连续的Buffer中。（预排序在索引层面上特征值是有序的，但是在内存中还是不连续的，会造成内存的不连续访问，降低cache命中。故对其优化：为每个线程分配一个连续的缓存区，将需要的样本梯度信息存放到缓存区中，这样就实现了非连续空间到连续空间的转换，提高了算法效率，解决缓存命中率低的问题。）</li>
+<li><strong>Block 处理优化</strong>：Block预先放入内存；Block按列进行解压缩；将Block划分到不同硬盘来提高吞吐。</li>
+</ul>
+<h4 id="防止过拟合的方法"><font color='red'>防止过拟合的方法？</font></h4>
+<p>XGBoost在设计时，为了防止过拟合做了很多优化，具体如下：</p>
+<ul>
+<li><strong>目标函数添加正则项</strong>：叶子节点个数L1正则化+叶子节点权重的L2正则化。</li>
+<li><strong>列抽样</strong>：训练的时候只用<strong>一部分特征</strong>（不考虑剩余的block块即可）。</li>
+<li><strong>子采样</strong>：每轮计算可以<strong>不使用全部样本</strong>，使算法更加保守。</li>
+<li><strong>shrinkage</strong>: 得到决策树后，将叶子节点权重乘上收缩系数（可以叫学习率或步长），削弱每棵树的影响，为了给后面的训练留出更多的学习空间。</li>
+</ul>
+<h4 id="如何处理缺失值"><font color='red'>如何处理缺失值？</font></h4>
+<p>XGBoost模型的一个优点就是允许特征存在缺失值。对缺失值的处理方式如下：（稀疏感知算法）</p>
+<ul>
+<li><strong>训练时</strong>，根据叶子结点分裂增益公式，将该特征值missing的样本分别分配到左叶子结点和右叶子结点，两种情形都计算一遍后，选择放到<strong>分裂后增益最大的那个方向</strong>（左分支或是右分支），作为预测时特征值缺失样本的默认分支方向（右子节点）。</li>
+<li>如果在训练中没有缺失值而在<strong>预测中</strong>出现缺失，那么会自动将缺失值的划分方向放到<strong>右子结点</strong>。</li>
+</ul>
+<h4 id="叶子结点的权重计算">🚩<font color='red'>叶子结点的权重计算？</font></h4>
+<p>XGBoost目标函数最终推导形式如下：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/640-8646678_20240315115748JCWfFf.jpeg" alt="图片" /><figcaption>图片</figcaption>
+</figure>
+<p>利用一元二次函数求最值的知识，当目标函数达到最小值Obj星时，每个叶子结点的权重为wj*。</p>
+<p>具体公式如下：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/640-8646680._20240315115749zavOMC.jpg" alt="图片" /><figcaption>图片</figcaption>
+</figure>
+<p>Gj代表在叶子节点j上，所有样本的一阶导数值之和；Hj代表在叶子节点j上，所有样本的二阶导数值之和。最终的obj叫做结构分数，结构分数越小，代表生成的树的结构就越好（让残差尽可能的小）。</p>
+<h4 id="一棵树的停止生长条件"><font color='red'>一棵树的停止生长条件？</font></h4>
+<ul>
+<li>当新引入的一次分裂所带来的<strong>增益Gain&lt;0时</strong>，放弃当前的分裂。这是训练损失和模型结构复杂度的博弈过程。</li>
+<li>当树<strong>达到最大深度时</strong>，停止建树，因为树的深度太深容易出现过拟合，这里需要设置一个超参数max_depth。</li>
+<li>当引入一次分裂后，重新计算新生成的左、右两个叶子结点的样本权重和。如果<strong>任一个叶子结点的样本权重低于某一个阈值</strong>，也会放弃此次分裂。这涉及到一个超参数:最小样本权重和，<strong>是指如果一个叶子节点包含的样本数量太少也会放弃分裂，防止树分的太细。</strong></li>
+</ul>
+<h4 id="如何处理不平衡数据"><font color='red'>如何处理不平衡数据？</font></h4>
+<p>对于不平衡的数据集，例如用户的购买行为，肯定是极其不平衡的，这对XGBoost的训练有很大的影响，XGBoost有两种自带的方法来解决：</p>
+<ul>
+<li>第一种，如果你在意预测的排名顺序（AUC），采用AUC来评估模型的性能，那你可以通过设置scale_pos_weight(设置正样本的权重)来平衡正样本和负样本的权重。例如，当正负样本比例为1:10时，scale_pos_weight可以取10；</li>
+<li>第二种，如果你在意预测正确的概率，你不能重新平衡数据集(会破坏数据的真实分布)，应该设置max_delta_step为一个有限数字来帮助收敛（基模型为LR时有效）。</li>
+<li>除此之外，还可以通过上采样、下采样、SMOTE算法或者自定义代价函数的方式<strong>解决正负样本不平衡的问题</strong>。</li>
+</ul>
+<h4 id="如何对树进行剪枝"><font color='red'>如何对树进行剪枝？</font></h4>
+<ul>
+<li>①在目标函数中增加了<strong>正则项</strong>：使用叶子结点的数目和叶子结点权重的L2模的平方，控制树的复杂度。</li>
+<li>②在结点分裂时，定义了一个<strong>阈值</strong>，如果分裂后目标函数的增益（分裂增益）小于该阈值，则不分裂。</li>
+<li>③当引入一次分裂后，重新计算新生成的左、右两个叶子结点的样本权重和。如果任一个叶子结点的样本权重低于某一个阈值（最小样本权重和），也会放弃此次分裂。</li>
+<li>XGBoost 先从顶到底建立树直到最大深度，再从底到顶<strong>反向检查</strong>是否有不满足分裂条件的结点，进行剪枝。</li>
+</ul>
+<h4 id="如何选择最佳分裂点"><font color='red'>如何选择最佳分裂点？</font></h4>
+<ul>
+<li><strong>分裂策略</strong>
+<ul>
+<li>xgboost采用二叉树，开始的时候，全部样本都在一个叶子节点上。然后叶子节点不断通过二分裂，逐 渐生成一棵树。 xgboost使用<strong>levelwise的生成策略</strong>，即每次对同一层级的全部叶子节点尝试进行分裂。 对叶子节点分裂生成树的过程有<strong>几个基本的问题：</strong>是否要进行分裂？选择哪个特征进行分裂？在特征的 什么点位进行分裂？以及分裂后新的叶子上取什么值？</li>
+<li><strong>是否要进行分裂？</strong>
+<ul>
+<li>xgboost采用<strong>预剪枝策略</strong>，只有分裂后的<strong>增益大于0才会进行分裂</strong>。</li>
+</ul></li>
+<li><strong>选择什么特征进行分裂？</strong>
+<ul>
+<li>xgboost采用特征并行的方法进行计算选择要分裂的特征，即用多个线程，尝试把各个特征都作为分裂 的特征，找到各个特征的最优分割点，计算根据它们分裂后产生的增益，<strong>选择增益最大的那个特征作为 分裂的特征。</strong></li>
+</ul></li>
+<li><strong>选择什么分裂点位？</strong>
+<ul>
+<li>xgboost选择某个特征的分裂点位的方法有两种，一种是全局扫描法，另一种是候选分位点法。 全局扫描法将所有样本该特征的取值按从小到大排列，将所有可能的分裂位置都试一遍，找到其中<strong>增益最大的那个分裂点</strong>，其计算复杂度和叶子节点上的样本特征不同的取值个数成正比。 而候选分位点法是一种近似算法，仅选择常数个（如256个）候选分裂位置，然后从候选分裂位置中找 出最优的那个。 分裂点的提出<strong>：加权分位数算法</strong></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>XGBoost在训练前预先将特征按照特征值进行了排序，并存储为block结构，以后在结点分裂时可以重复使用该结构。</p>
+<p>选择最佳分裂点的方法有两种<strong>：全局扫描法和加权分位数算法。</strong></p>
+<p><strong>全局扫描法</strong>：可以采用特征并行的方法利用多个线程分别计算每个特征的最佳分割点（对每个特征的每个可能的分割点都计算其分裂增益），根据每次分裂后产生的增益，最终选择增益最大的那个特征的特征值作为最佳分裂点。</p>
+<p><strong>加权分位数算法</strong>：如果在计算每个特征的最佳分割点时，对每个样本都进行遍历，计算复杂度会很大，这种全局扫描的方法并不适用大数据和样本特征的取值较多的场景。XGBoost还提供了一种加权分位数算法（直方图近似算法），对特征排序后仅选择<strong>常数个候选分裂位置</strong>作为候选分裂点，选择最佳分裂点时，仅仅需要在候选分裂点中进行选择，极大提升了结点分裂时的计算效率。</p>
+<p>（相当于对分裂点进行了分桶，尽量让左右子树的loss分布均匀（利用二阶导数值hi根据每一个样本对拟合残差的贡献程度进行加权），这样先选出了候选分割点，我们只需要保存每个桶中样本的一阶导数值的和、二阶导数值的和，然后对于每个候选分割点，计算分裂增益时，只需要将分割点左边的桶的值进行求和与右边的桶的值求和进行比较即可。因为桶的个数肯定小于样本的数量，所以得以加速）</p>
+<h4 id="可扩展性如何体现"><font color='red'>可扩展性如何体现？</font></h4>
+<ul>
+<li><strong>基分类器的scalability</strong>：弱分类器可以支持CART决策树，也可以支持LR和Linear（线性分类器）。</li>
+<li><p><strong>目标函数的scalability</strong>：支持自定义loss function，只需要其一阶、二阶可导。有这个特性是因为泰勒二阶展开，得到通用的目标函数形式。</p></li>
+<li><p><strong>学习方法的scalability</strong>：Block结构支持并行化，支持 Out-of-core计算。</p></li>
+</ul>
+<h4 id="如何评价特征的重要性"><font color='red'>如何评价特征的重要性？</font></h4>
+<ul>
+<li><strong>weight</strong> ：该特征在所有树中被用作分割样本的特征的总次数。</li>
+<li><strong>gain</strong> ：该特征在其出现过的所有树中产生的平均增益。</li>
+<li><strong>cover</strong> ：该特征在其出现过的所有树中的平均覆盖范围。</li>
+</ul>
+<p>gain: 计算使用 <strong>特征i</strong>分裂节点的分裂增益之和/<strong>所有特征</strong>分裂节点的分裂增益之和 ，得到重要性。</p>
+<p>注意：覆盖范围这里指的是一个特征用作分割点后，其影响的样本数量，即有多少样本经过该特征分割到两个子节点。</p>
+<h4 id="为什么对缺失值不敏感"><font color='red'> 为什么对缺失值不敏感？</font></h4>
+<p>对存在缺失值的特征，一般的解决方法是：</p>
+<ul>
+<li>离散型变量：用出现次数最多的特征值填充；</li>
+<li>连续型变量：用中位数或均值填充；</li>
+</ul>
+<p>一些模型如SVM和KNN，其模型原理中涉及到了对样本距离的度量，如果缺失值处理不当，最终会导致模型预测效果很差。</p>
+<p><strong>而树模型对缺失值的敏感度低，大部分时候可以在数据缺失时时使用。原因就是，一棵树中每个结点在分裂时，寻找的是某个特征的最佳分裂点（特征值），完全可以不考虑存在特征值缺失的样本，也就是说，如果某些样本缺失的特征值缺失，对寻找最佳分割点的影响不是很大。</strong></p>
+<p>XGBoost对缺失数据有特定的处理方法：训练时，根据叶子结点分裂增益公式，将该特征值missing的样本分别分配到左叶子结点和右叶子结点，两种情形都计算一遍后，选择放到分裂后增益最大的那个方向（左分支或是右分支），作为预测时特征值缺失样本的默认分支方向（右子节点）。</p>
+<p>因此，对于有缺失值的数据在经过缺失处理后：</p>
+<ul>
+<li>当数据量很小时，优先用朴素贝叶斯</li>
+<li>数据量适中或者较大，用树模型，优先XGBoost</li>
+<li>数据量较大，也可以用神经网络</li>
+<li>避免使用距离度量相关的模型，如KNN和SVM</li>
+</ul>
+<h4 id="参数调优的一般步骤"><font color='red'>参数调优的一般步骤？</font></h4>
+<p>首先需要初始化一些基本变量，例如：</p>
+<ul>
+<li>learning_rate = 0.1</li>
+<li>max_depth = 5</li>
+<li>min_child_weight = 1</li>
+<li>gamma = 0</li>
+<li>subsample = 0.8</li>
+<li>colsample_bytree = 0.8</li>
+<li>scale_pos_weight = 1</li>
+</ul>
+<p><strong>learning_rate</strong>：学习率（收缩系数）</p>
+<p><strong>n_estimators</strong>：树的个数 一般会设置early_stopping_rounds=200,如果新增加200棵树都不降低损失，那么就停止建树， verbose=50，每50次输出一次结果。</p>
+<p><strong>max_depth</strong>：构建树的深度，越大越容易过拟合；</p>
+<p><strong>min_child_weight</strong>：孩子节点中最小的样本权重和。当引入一次分裂后，重新计算新生成的左、右两个叶子结点的样本权重和。如果任一个叶子结点的样本权重低于某一个阈值，会放弃此次分裂。这涉及到一个超参数:最小样本权重和，是指如果一个叶子节点包含的样本数量太少也会放弃分裂，防止树分的太细。</p>
+<p><strong>gamma</strong>：损失下降多少才进行分裂（控制叶子节点的个数，分裂后节点就增加了），也称作最小划分损失min_split_loss，只有当划分后的损失函数损失下降值大于此阈值，当前叶子节点才继续划分。</p>
+<p><strong>subsample</strong>：对训练样本的随机采样比例</p>
+<p><strong>colsample_bytree</strong>：对特征的采样比例</p>
+<p><strong>scale_pos_weight</strong>：正样本在数据集中占得权重（可以解决正负样本比例不均衡的问题）</p>
+<p><strong>alpha</strong> ：L1正则化系数，try 1e-5, 1e-2, 0.1, 1, 100</p>
+<p><strong>lambda</strong> ：L2正则化系数</p>
+<p><strong>(1) 确定learning rate和estimator的数量</strong></p>
+<p>learning rate可以先用0.1，用cv来寻找最优的estimators</p>
+<p><strong>(2) max_depth和 min_child_weight</strong></p>
+<p>我们调整这两个参数是因为，这两个参数对输出结果的影响很大。我们首先将这两个参数设置为较大的数，然后通过迭代的方式不断修正，缩小范围。</p>
+<p>max_depth，每棵子树的最大深度，check from range(3,10,2)。</p>
+<p>min_child_weight，子节点的权重阈值，check from range(1,6,2)。</p>
+<p>如果一个结点分裂后，它的所有子节点的权重之和都大于该阈值，该叶子节点才可以划分。</p>
+<p><strong>(3) gamma</strong></p>
+<p>也称作最小划分损失<code>min_split_loss</code>，check from 0.1 to 0.5，指的是，对于一个叶子节点，当对它采取划分之后，损失函数的降低值的阈值。</p>
+<ul>
+<li>如果大于该阈值，则该叶子节点值得继续划分</li>
+<li>如果小于该阈值，则该叶子节点不值得继续划分</li>
+</ul>
+<p><strong>(4) subsample, colsample_bytree</strong></p>
+<p>subsample是对训练的采样比例</p>
+<p>colsample_bytree是对特征的采样比例</p>
+<p>both check from 0.6 to 0.9</p>
+<p><strong>(5) 正则化参数</strong></p>
+<p>alpha 是L1正则化系数，try 1e-5, 1e-2, 0.1, 1, 100</p>
+<p>lambda 是L2正则化系数</p>
+<p><strong>(6) 降低学习率</strong></p>
+<p>降低学习率的同时增加树的数量，通常最后设置学习率为0.01~0.1</p>
+<h4 id="如果过拟合了怎么解决"><font color='red'>如果过拟合了怎么解决？</font></h4>
+<p>当出现过拟合时，有两类参数可以缓解：</p>
+<p>第一类参数：用于直接控制模型的复杂度。包括<code>max_depth,min_child_weight,gamma</code> 等参数（即控制树的深度和叶子节点的个数）；</p>
+<p>第二类参数：用于增加随机性，从而使得模型在训练时对于噪音不敏感。包括<code>subsample,colsample_bytree</code>（即对样本集采样、对特征采样）；</p>
+<p>还有就是直接减小<code>learning rate</code>，但需要同时增加<code>estimator</code> 参数。（即减小收缩系数，让叶子节点的权重更小，让后面的树有更大的学习空间）。</p>
+<h4 id="xgboost和lightgbm的区别"><font color='red'>XGBoost和LightGBM的区别？</font></h4>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/640-20210811095119313_202403151157502WQpoo.jpeg" alt="图片" /><figcaption>图片</figcaption>
+</figure>
+<p>（1）树生长策略：XGB采用<code>level-wise</code>的分裂策略，LGB采用<code>leaf-wise</code>的分裂策略。XGB对每一层所有节点做无差别分裂，（该策略遍历一次数据可以同时分裂同一层的叶子，容易进行多线程优化，也好控制模型的复杂度，不容易过拟合）但是可能有些节点增益非常小，对结果影响不大，带来不必要的开销（一层一层的走，不管它效果好不好）。Leaf-wise是在所有叶子节点中选取分裂收益最大的节点进行的，（该策略可以降低更多的误差，得到更好的精度），但是很容易出现过拟合问题，所以需要对最大深度做限制 。</p>
+<p>（2）分割点查找算法：XGB使用特征预排序算法，LGB使用基于直方图的切分点算法，其优势如下：</p>
+<p><strong>（XGB寻找最优分裂点的复杂度=特征数量 X 分裂节点数量 X 样本的数量，LGB分别从这三个方面进行了优化）</strong></p>
+<ul>
+<li>减少内存占用，比如离散为256个bin时，只需要用8位整形就可以保存一个样本被映射为哪个bin(这个bin可以说就是转换后的特征)，对比预排序的exact greedy（精准贪婪算法）算法来说（用int_32来存储索引+ 用float_32保存特征值），可以节省7/8的空间。(64-8)/64=7/8。（XGB需要保存特征值和样本索引值（指向样本的梯度信息），而LGB只需要保存每一个离散值对应的梯度累加和即可。）</li>
+<li>计算效率提高，预排序的Exact greedy（贪婪算法（全局扫描法））对每个特征都需要遍历一遍数据，并计算增益，复杂度为𝑂(#𝑓𝑒𝑎𝑡𝑢𝑟𝑒×#𝑑𝑎𝑡𝑎)。而直方图算法在建立完直方图后，只需要对每个特征遍历直方图即可，复杂度为𝑂(#𝑓𝑒𝑎𝑡𝑢𝑟𝑒×#𝑏𝑖𝑛𝑠)。</li>
+<li>LGB还可以使用直方图做差加速，一个节点的直方图可以通过父节点的直方图减去兄弟节点的直方图得到，从而加速计算</li>
+</ul>
+<blockquote>
+<p>但实际上xgboost的近似直方图算法（加权分位数算法）也类似于lightgbm这里的直方图算法，为什么xgboost的近似算法比lightgbm还是慢很多呢？</p>
+<p>xgboost在每一层都动态构建直方图， 因为xgboost的直方图算法不是针对某个特定的feature，而是所有feature共享一个直方图(每个样本的权重是二阶导)，所以每一层都要重新构建直方图，而lightgbm中对每个特征都有一个直方图，所以构建一次直方图就够了。（XGB在每一层的分裂过程中，都需要对所有的特征重新选择候选分割点（即重新构建直方图），因为XGB在选取候选分割点的时候，考虑的是想让loss在左右子树上分布均匀，（二阶导数代表样本对降低loss的贡献程度，所以可以根据二阶导数值累加来选取候选分割点），每次分裂之后，节点中的样本数量发生变化，每个节点的二阶导数和也是变化的，所以需要重新构建直方图。）</p>
+</blockquote>
+<ul>
+<li>LGB还使用了单边梯度采样算法GOSS来减少样本的个数和互斥特征捆绑算法EFB来减少特征的个数。</li>
+</ul>
+<p>（3）支持离散变量：XGB无法直接输入类别型变量，因此需要事先对类别型变量进行编码（例如独热编码），而LightGBM可以直接处理类别型变量（采用many-vs-many的切分方式，将类别特征分为两个子集，实现类别特征的最优切分。基本思想为每次分组时，都会根据训练目标对类别特征进行分类：在枚举分割点之前，先把直方图按照每个类别对应的label均值进行排序，然后按照排序的结果依次枚举最优分割点）。</p>
+<p>（4）缓存命中率<strong>：XGB使用Block结构的一个缺点是取梯度的时候，是通过索引来获取的，而这些梯度的获取顺序是按照特征的大小顺序的，（并且不同特征的访问顺序也不同），这将导致非连续的内存访问，可能使得CPU cache缓存命中率低，从而影响算法效率。</strong>而LGB是基于直方图分裂特征的，梯度信息都存储在一个个bin（桶：离散值索引？）中，所以访问梯度是连续的，缓存命中率高。</p>
+<p>（5）LightGBM 与 XGboost 的并行策略不同：</p>
+<ul>
+<li><strong>特征并行</strong> ：LGB特征并行的前提是每个worker留有一份完整的数据集，但是每个worker仅在特征子集上进行最佳切分点的寻找；worker之间需要相互通信，通过比对损失来确定最佳切分点；然后将这个最佳切分点的位置进行全局广播，每个worker进行切分即可。XGB的特征并行与LGB的最大不同在于XGB每个worker节点中仅有部分的列数据，也就是垂直切分，每个worker寻找局部最佳切分点，worker之间相互通信，然后在具有最佳切分点的worker上进行节点分裂，再由这个节点广播一下被切分到左右节点的样本索引号，其他worker才能开始分裂。二者的区别就导致了LGB中worker间通信成本明显降低，只需通信一个特征分裂点即可，而XGB中要广播样本索引。</li>
+<li><strong>数据并行</strong> ：当数据量很大，特征相对较少时，可采用数据并行策略。LGB中先对数据水平切分，每个worker上的数据先建立起局部的直方图，然后合并成全局的直方图，采用直方图相减的方式，先计算样本量少的节点的样本索引，然后直接相减得到另一子节点的样本索引，这个直方图算法使得worker间的通信成本降低一倍，因为只用通信以此样本量少的节点。XGB中的数据并行也是水平切分，然后单个worker建立局部直方图，再合并为全局，不同在于根据全局直方图进行各个worker上的节点分裂时会单独计算子节点的样本索引，因此效率贼慢，每个worker间的通信量也就变得很大。</li>
+<li><strong>投票并行（LGB）</strong>：当数据量和维度都很大时，选用投票并行，该方法是数据并行的一个改进。数据并行中的合并直方图的代价相对较大，尤其是当特征维度很大时。大致思想是：每个worker首先会找到本地的一些优秀的特征，然后进行全局投票，根据投票结果，选择top的特征进行直方图的合并，再寻求全局的最优分割点。</li>
+</ul>
+<h4 id="lightgbm的调参过程"><font color='red'>LightGBM的调参过程？</font></h4>
+<p>learning_rate：学习率，预先设定一个较高的值，如0.1</p>
+<p>boosting_type: 默认选择gbdt</p>
+<p>n_estimators/num_boost_round：迭代次数（残差树的个数）</p>
+<p>max_depth：树的深度</p>
+<p>num_leaves：叶子个数，一般小于2**max_depth</p>
+<p>min_data_in_leaf：节点中样本点最小个数</p>
+<p>max_bin：最大分桶的个数（离散化时取值的最大值）</p>
+<p>feature_fraction: 特征的采样率</p>
+<p>bagging_fraction: 样本的采样率</p>
+<p>bagging_freq: k，意味每k次迭代（每生成k棵树）执行bagging</p>
+<p>lambda_l1: L1正则化参数</p>
+<p>lambda_l2: L2正则化参数</p>
+<p>min_split_gain: 分裂最小增益阈值，分裂增益小于阈值则终止分裂</p>
+<ul>
+<li><p>针对leaf-wise树的参数优化</p></li>
+<li><ul>
+<li>num_leaves:控制了叶节点的数目。它是控制树模型复杂度的主要参数。如果是level-wise，则该参数为2**depth，其中depth为树的深度。但是当叶子数量相同时，leaf-wise的树要远远深过level-wise树，非常容易导致过拟合。因此应该让num_leaves小于2^depth。在leaf-wise树中，并不存在depth的概念。因为不存在一个从leaves到depth的合理映射。</li>
+<li>min_data_in_leaf: 每个叶节点的最少样本数量。它是处理leaf-wise树的过拟合的重要参数。将它设为较大的值，可以避免生成一个过深的树。但是也可能导致欠拟合。</li>
+<li>max_depth：控制了树的最大深度。该参数可以显式的限制树的深度。</li>
+</ul></li>
+<li><p>针对更快的训练速度</p></li>
+<li><ul>
+<li>通过设置 bagging_fraction 和 bagging_freq 参数来使用 bagging 方法</li>
+<li>通过设置 feature_fraction 参数来使用特征的子抽样</li>
+<li>使用较小的 max_bin（离散化值：分割节点）</li>
+<li>使用 save_binary 在未来的学习过程对数据加载进行加速</li>
+</ul></li>
+<li><p>获得更好的准确率</p></li>
+<li><ul>
+<li>使用较大的 max_bin （学习速度可能变慢）</li>
+<li>使用较小的 learning_rate 和较大的 num_iterations</li>
+<li>使用较大的 num_leaves （可能导致过拟合）</li>
+<li>使用更大的训练数据</li>
+<li>尝试DART</li>
+</ul></li>
+<li><p>缓解过拟合</p></li>
+<li><ul>
+<li>使用较小的 max_bin， 分桶粗一些</li>
+<li>使用较小的 num_leaves 不要在单棵树分的太细</li>
+<li>使用 lambda_l1, lambda_l2 和 min_gain_to_split 来使用正则</li>
+<li>尝试 max_depth 来避免生成过深的树</li>
+<li>使用 min_data_in_leaf 和 min_sum_hessian_in_leaf， 确保叶子节点有足够多的数据</li>
+</ul></li>
+</ul>
+<h4 id="lightgbm的调参步骤">LightGBM的调参步骤</h4>
+<p><strong>第一步：学习率和迭代次数</strong>我们先把学习率先定一个较高的值，这里取 <code>learning_rate = 0.1</code>，其次确定估计器<code>boosting/boost/boosting_type</code>的类型，不过默认都会选gbdt。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">&#39;boosting_type&#39;</span><span class="op">/</span><span class="st">&#39;boosting&#39;</span>: <span class="st">&#39;gbdt&#39;</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">&#39;objective&#39;</span>: <span class="st">&#39;binary&#39;</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">&#39;metric&#39;</span>: <span class="st">&#39;auc&#39;</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"> </a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># 以下是选择的初始值</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">&#39;max_depth&#39;</span>: <span class="dv">5</span>     <span class="co"># 由于数据集不是很大，所以选择了一个适中的值，其实4-10都无所谓。</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">&#39;num_leaves&#39;</span>: <span class="dv">30</span>   <span class="co"># 由于lightGBM是leaves_wise生长，官方说法是要小于2^max_depth</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">&#39;subsample&#39;</span><span class="op">/</span><span class="st">&#39;bagging_fraction&#39;</span>:<span class="fl">0.8</span>           <span class="co"># 数据采样</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">&#39;colsample_bytree&#39;</span><span class="op">/</span><span class="st">&#39;feature_fraction&#39;</span>: <span class="fl">0.8</span>   <span class="co"># 特征采样</span></a></code></pre></div>
+<p>迭代的次数，也可以说是残差树的数目，参数名为<code>n_estimators/num_iterations/num_round/num_boost_round</code>。我们可以先将该参数设成一个较大的数，然后在cv结果中查看最优的迭代次数<code>lgb.cv(params, data_train, num_boost_round=1000, nfold=5, stratified=False, shuffle=True, metrics='auc',early_stopping_rounds=50,seed=0)</code>。</p>
+<p>我们根据以上结果，就可以取<code>n_estimators=188</code>。</p>
+<p><strong>第二步：确定max_depth和num_leaves</strong>这是提高精确度的最重要的参数。这里我们引入<strong>sklearn里的GridSearchCV()函数</strong>进行搜索。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="im">from</span> sklearn.grid_search <span class="im">import</span> GridSearchCV</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">params_test1<span class="op">=</span>{<span class="st">&#39;max_depth&#39;</span>: <span class="bu">range</span>(<span class="dv">3</span>,<span class="dv">8</span>,<span class="dv">1</span>), <span class="st">&#39;num_leaves&#39;</span>:<span class="bu">range</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">5</span>)}</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">              </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">gsearch1 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">6</span>, bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">                       param_grid <span class="op">=</span> params_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">gsearch1.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_</a></code></pre></div>
+<p>根据结果，我们取max_depth=4, num_leaves=10</p>
+<p><strong>第三步：确定min_data_in_leaf和max_bin</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">params_test2<span class="op">=</span>{<span class="st">&#39;max_bin&#39;</span>: <span class="bu">range</span>(<span class="dv">5</span>,<span class="dv">256</span>,<span class="dv">10</span>), <span class="st">&#39;min_data_in_leaf&#39;</span>:<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">102</span>,<span class="dv">10</span>)}</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">              </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">gsearch2 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">                       param_grid <span class="op">=</span> params_test2, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">gsearch2.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">gsearch2.grid_scores_, gsearch2.best_params_, gsearch2.best_score_</a></code></pre></div>
+<p>这个结果就不显示了，根据结果，我们取min_data_in_leaf=51，max_bin in=15。</p>
+<p><strong>第四步：确定feature_fraction、bagging_fraction、bagging_freq</strong></p>
+<p><strong>第五步：确定lambda_l1和lambda_l2</strong></p>
+<p><strong>第六步：确定 min_split_gain</strong></p>
+<p><strong>第七步：降低学习率，增加迭代次数，验证模型</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1">model<span class="op">=</span>lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.01</span>, n_estimators<span class="op">=</span><span class="dv">1000</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,max_bin<span class="op">=</span><span class="dv">15</span>,min_data_in_leaf<span class="op">=</span><span class="dv">51</span>,bagging_fraction<span class="op">=</span><span class="fl">0.6</span>,bagging_freq<span class="op">=</span> <span class="dv">0</span>, feature_fraction<span class="op">=</span> <span class="fl">0.8</span>,</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">lambda_l1<span class="op">=</span><span class="fl">1e-05</span>,lambda_l2<span class="op">=</span><span class="fl">1e-05</span>,min_split_gain<span class="op">=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">model.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">y_pre<span class="op">=</span>model.predict(X_test)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="bu">print</span>(<span class="st">&quot;acc:&quot;</span>,metrics.accuracy_score(y_test,y_pre))</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="bu">print</span>(<span class="st">&quot;auc:&quot;</span>,metrics.roc_auc_score(y_test,y_pre))</a></code></pre></div>
+<p>这样会发现， 调完参之后， 比使用默认参数的acc，auc都会有所提高。还有一种是LightGBM的cv函数调参， 这个比较省事，写好代码自动寻优，但是需要调参经验，如何设置一个好的参数范围， 这个不写了，篇幅太长，具体的看最后面那个链接吧。</p>
+<p><strong>sklearn里的GridSearchCV()函数</strong></p>
+<h4 id="xgboost其他问题极端梯度提升">XGBoost其他问题(极端梯度提升)</h4>
+<ul>
+<li><p>与GBDT不同之处？</p>
+<ul>
+<li>用泰勒展开近似目标函数</li>
+</ul></li>
+<li>XGBoost为什么使用泰勒二阶展开？为什么用二阶信息不用一阶？</li>
+<li>XGBoost在什么地方做的剪枝，怎么做的？</li>
+<li>XGBoost如何分布式？特征分布式和数据分布式？ 各有什么存在的问题？</li>
+<li>XGBoost里处理缺失值的方法？</li>
+<li>XGBoost有那些优化？</li>
+<li>xgboost对预测模型特征重要性排序的原理？</li>
+<li>XGBoost如何寻找最优特征？是又放回还是无放回的呢？</li>
+<li>GBDT和XGBoost的区别是什么？</li>
+<li><p>lightgbm和xgboost有什么区别？他们的loss一样么？ 算法层面有什么区别？</p></li>
+</ul>
+<h4 id="xgboost怎么调参">XGBoost怎么调参</h4>
+<p><strong>(1) XGBoost重要参数</strong></p>
+<p>xgboost主要分为三类参数:</p>
+<p>1.通用参数 general parameter</p>
+<p>booster: 每次迭代的<strong>模型选择</strong>，gbtree或者gbliner</p>
+<p>silent: 控制打印信息，(过时，被verbosity代替)</p>
+<p>nthread：并行的线程数，默认使用最大的核数</p>
+<p>2.Booster参数：Parameters for Tree Booster</p>
+<p>eta: shinkage<strong>防止过拟合</strong>，默认0.3</p>
+<p>gamma:公式中<strong>叶子节点个数的参数</strong>，也就是分类后损失函数的增益，增益大于这个阈值，才会对节点进行分裂。</p>
+<p>max_depth:默认为0，<strong>树的最大深度</strong>，用来<strong>避免过拟合</strong>。</p>
+<p>min_child_weight: 最小的<strong>叶子节点样本权重和</strong>，如果节点分裂造成一个叶子节点的样本权重和小于该值，则放弃分裂。</p>
+<p>max_delta_step: 该参数仙子每棵树权重改变的最大步长。一般用不到，但是在数据样本极度不平衡时，可能对逻辑回归有帮助。</p>
+<p>subsample：训练样本随机采样的比例。</p>
+<p>colsample_bytree, colsample_bylevel, colsample_bynode: 列采样的参数设置。bytree表示在构建每棵树的时候使用。bylevel表示构建每层节点的时候使用，bynode在每次分裂的时候使用。</p>
+<p>lambda: <strong>L2正则化项</strong>。默认为1.</p>
+<p>alpha<strong>：L1的正则化项</strong>.</p>
+<p>scale_pos_weight: 控制<strong>正负样本的平衡</strong>，<strong>用于不平衡数据</strong>。</p>
+<p>3.学习任务参数：控制训练目标的表现</p>
+<p>objective:定义<strong>损失函数</strong>。常用值有binary:logistic; multi:softmax; multi:softprob</p>
+<p>eval_metic: 验证集的<strong>评估指标</strong>。rmse, mae, logloss, error, merror, mlogloss, auc</p>
+<p>seed:随机数的种子，设置它可以复现随机数的结果，也可以用于调整参数。</p>
+<p><strong>(2) XGBoost调参技巧</strong></p>
+<p>a.当出现<strong>过拟合</strong>时，有两类参数可以缓解：</p>
+<ul>
+<li>第一类参数：用于<strong>直接控制模型的复杂度。包括max_depth, min_child_weight, gamma等参数</strong></li>
+<li>第二类参数：用于增加随机性，从而使得模型在训练时对于噪声不敏感，包括subsample, colsample_bytree.</li>
+</ul>
+<p>也可以直接<strong>检查步长eta，此时需要增加num_round参数</strong>.</p>
+<p>b.当遇到<strong>数据不平衡时(如广告点击率预测任务)</strong>，有两种方式提高模型的预测性能：</p>
+<ul>
+<li>如果关心的是预测的AUC.</li>
+</ul>
+<p>可以通过<strong>scale_pos_weight参数来平衡正负样本的权重</strong>; 使用AUC来评估。</p>
+<ul>
+<li>如果关心的是预测的正确率</li>
+</ul>
+<p>不能重新平衡正负样本**；设置max_delta_step为一个有限的值(如1)，从而有助于收敛</p>
+<h3 id="lightgbm">LightGBM</h3>
+<h4 id="原理-1">原理</h4>
+<p>LightGBM （Light Gradient Boosting Machine）是一个实现GBDT算法的框架，支持高效率的并行训练。</p>
+<p>LigthGBM也是一种boosting算法，它由微软开源，是XGB的一种轻量级实现，用于分类或者回归问题。在准确率与XGB相近的情况下，大大<strong>减少运行时长和内存占用</strong>。</p>
+<p>LightGBM提出的主要原因就是为了解决GBDT在海量数据遇到的问题，让GBDT可以更好更快地用于工业实践。</p>
+<h4 id="优点"><strong>优点</strong></h4>
+<ul>
+<li>更快的训练速度</li>
+<li>更低的内存消耗</li>
+<li>更好的准确率</li>
+<li>分布式支持，可以快速处理海量数据</li>
+</ul>
+<h4 id="与xgb相比的优化">🚩<strong>与XGB相比的优化</strong></h4>
+<ul>
+<li>基于<strong>Histogram算法</strong>的决策树算法 - 将遍历样本转变为遍历直方图，极大的降低了时间复杂度；</li>
+<li><strong>带深度限制的Leaf-wise的叶子生长策略</strong> - 减少了很多不必要的计算量</li>
+<li><strong>直方图做差加速</strong> - 将遍历样本转变为遍历直方图，极大的降低了时间复杂度；</li>
+<li><strong>直接支持类别特征(Categorical Feature)</strong></li>
+<li>Cache命中率优化</li>
+<li>基于直方图的稀疏特征优化多线程优化。</li>
+</ul>
+<blockquote>
+<ol type="1">
+<li><strong>单边梯度抽样算法</strong> - 过滤掉梯度小的样本，减少了大量的计算；</li>
+<li><strong>直方图算法</strong> - 将遍历样本转变为遍历直方图，极大的降低了时间复杂度；</li>
+<li><strong>互斥特征捆绑算法（EFB）</strong></li>
+<li><strong>带深度限制的 Leaf-wise 算法</strong> - 减少了很多不必要的计算量</li>
+</ol>
+</blockquote>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-189428102807a339ee8dfa53411b6184_720w_20240315115751RMDvye.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h4 id="histogram算法"><strong>Histogram算法</strong></h4>
+<p>直方图算法的基本思想是先把连续的浮点特征值离散化成k个整数（其实又是分桶的思想，而这些桶称为bin，比如[0,0.1)→0, [0.1,0.3)→1），同时构造一个宽度为k的直方图。</p>
+<p>在遍历数据的时候，根据离散化后的值作为索引在直方图中累积统计量，当遍历一次数据后，直方图累积了需要的统计量，然后根据直方图的离散值，遍历寻找最优的分割点。</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-6693e2770bc3b15cc5ba92de77e374b8_720w_202403151157522LXzyZ.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>使用直方图算法有很多优点。首先，最明显就是内存消耗的降低，直方图算法不仅不需要额外存储预排序的结果，而且可以只保存特征离散化后的值，而这个值一般用8位整型存储就足够了，内存消耗可以降低为原来的1/8。然后在计算上的代价也大幅降低，预排序算法每遍历一个特征值就需要计算一次分裂的增益，而直方图算法只需要计算k次（k可以认为是常数），时间复杂度从O(#data<em>#feature)优化到O(k</em>#features)。</p>
+<h4 id="带深度限制的leaf-wise的叶子生长策略"><strong>带深度限制的Leaf-wise的叶子生长策略</strong></h4>
+<p>在XGBoost中，树是按层生长的，称为Level-wise tree growth，同一层的所有节点都做分裂，最后剪枝，如下图所示：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-2f547ab777223d5ff1b9d71d74dfeb3e_720w_20240315115753FZkhei.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>Level-wise过一次数据可以同时分裂同一层的叶子，容易进行多线程优化，也好控制模型复杂度，不容易过拟合。但实际上Level-wise是一种低效的算法，因为它不加区分的对待同一层的叶子，带来了很多没必要的开销，因为实际上很多叶子的分裂增益较低，没必要进行搜索和分裂。</p>
+<p>在Histogram算法之上，LightGBM进行进一步的优化。首先它抛弃了大多数GBDT工具使用的按层生长 (level-wise) 的决策树生长策略，而使用了带有深度限制的按叶子生长 (leaf-wise)算法。</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-ce64301614e88c83e23ba8ddcc2f1ccf_720w_20240315115753VVsRfx.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>Leaf-wise则是一种更为高效的策略，每次从当前所有叶子中，找到分裂增益最大的一个叶子，然后分裂，如此循环。因此同Level-wise相比，在分裂次数相同的情况下，Leaf-wise可以降低更多的误差，得到更好的精度。Leaf-wise的缺点是可能会长出比较深的决策树，产生过拟合。因此LightGBM在Leaf-wise之上增加了一个最大深度的限制，在保证高效率的同时防止过拟合。</p>
+<h4 id="直方图差加速"><strong>直方图差加速</strong></h4>
+<p>LightGBM另一个优化是Histogram（直方图）做差加速。一个容易观察到的现象：一个叶子的直方图可以由它的父亲节点的直方图与它兄弟的直方图做差得到。通常构造直方图，需要遍历该叶子上的所有数据，但直方图做差仅需遍历直方图的k个桶。</p>
+<p>利用这个方法，LightGBM可以在构造一个叶子的直方图后，可以用非常微小的代价得到它兄弟叶子的直方图，在速度上可以提升一倍。</p>
+<h4 id="直接支持类别特征"><strong>直接支持类别特征</strong></h4>
+<p>实际上大多数机器学习工具都无法直接支持类别特征，一般需要把类别特征，转化到多维的0/1特征，降低了空间和时间的效率。而类别特征的使用是在实践中很常用的。基于这个考虑，LightGBM优化了对类别特征的支持，可以直接输入类别特征，不需要额外的0/1展开。并在决策树算法上增加了类别特征的决策规则。在Expo数据集上的实验，相比0/1展开的方法，训练速度可以加速8倍，并且精度一致。据我们所知，LightGBM是第一个直接支持类别特征的GBDT工具。</p>
+<h3 id="catboost">CatBoost</h3>
+<p>极简示例:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="im">import</span> catboost <span class="im">as</span> cb</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co"># 读数据</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">train_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">100</span>, <span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">train_label <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">2</span>, size<span class="op">=</span>(<span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">test_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>,<span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">50</span>,<span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="bu">print</span>(train_data,train_label,test_data)</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="co"># 建立模型</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">model <span class="op">=</span> cb.CatBoostClassifier(iterations<span class="op">=</span><span class="dv">2</span>, depth<span class="op">=</span><span class="dv">2</span>, learning_rate<span class="op">=</span><span class="fl">0.5</span>, loss_function<span class="op">=</span><span class="st">&#39;Logloss&#39;</span>,</a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">                              logging_level<span class="op">=</span><span class="st">&#39;Verbose&#39;</span>)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="co"># 模型拟合</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">model.fit(train_data, train_label, cat_features<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">5</span>])</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"><span class="co"># 预测</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">preds_class <span class="op">=</span> model.predict(test_data)</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">preds_probs <span class="op">=</span> model.predict_proba(test_data)</a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="bu">print</span>(<span class="st">&#39;class = &#39;</span>,preds_class)</a>
+<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="bu">print</span>(<span class="st">&#39;proba = &#39;</span>,preds_probs)</a></code></pre></div>
+<h3 id="机器学习中的距离计算方法">机器学习中的距离计算方法</h3>
+<p>设空间中两个点为(x1,y1),(x2,y2):</p>
+<p>欧式距离:</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/311436_1552624962066_FD0F7CEFC32E400647C5CDE1DD75F990_20240315115754iRmsqF.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>曼哈顿距离（城区距离）:</p>
+<p>​ d(i,j)=|X1-X2|+|Y1-Y2|</p>
+<p>余弦距离:</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/311436_1552625030753_6307A76F04AC68503288B0A0C7D083D2_20240315115755XgWR9s.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p><strong>欧式距离与余弦距离的对比? </strong></p>
+<p>1.欧式距离的数值<strong>受到维度</strong>的影响，余弦相似度<strong>不受维度影响</strong>, 在高维的情况下也依然保持低维完全相同时相似度为1等性质。</p>
+<p>2.欧式距离体现的是<strong>距离上</strong>的绝对差异，余弦距离体现的是<strong>方向上</strong>的相对差异。</p>
+</blockquote>
+<p><strong>切比雪夫距离（横向纵向最大距离）: </strong></p>
+<p>​ dis=max(abs(x1-x2),abs(y1-y2))</p>
+<h2 id="其他问题">其他问题</h2>
+<h3 id="如何做特征组合">如何做特征组合</h3>
+<p>特征组合的思想很简单，<strong>通过将单独的特征进行组合（相乘或求笛卡尔积）而形成的合成特征。</strong>比如属性A有三个特征，属性B有两个特征，笛卡尔积后就有六个组合特征，<strong>然后用one hot 或其他embedding方式给新的特征编码</strong>。</p>
+<h3 id="为什么朴素贝叶斯如此朴素"><strong>为什么朴素贝叶斯如此“朴素”？</strong></h3>
+<p>因为它<strong>假定所有的特征在数据集中的作用是同样重要和独立的</strong>。正如我们所知，这个假设在现实世界中是很不真实的，因此，说朴素贝叶斯真的很“朴素”。</p>
+<h3 id="启发式搜索算法总结">启发式搜索算法总结</h3>
+<blockquote>
+<p>启发式搜索算法蕴含着许多人生哲学，它虽不是数学方法，其思想更类似于人类解决问题的思想和一些人生中总结的道理，值得好好体会。最后用网上一段描述各种搜索算法的例子来作为总结：</p>
+<p>为了找出地球上最高的山，一群有志气的兔子们开始想办法。 （1）兔子朝着比现在高的地方跳去。他们找到了不远处的最高山峰。但是这座山不一定是珠穆朗玛峰。这就是爬山法，它不能保证局部最优值就是全局最优值。 （2）兔子喝醉了。他随机地跳了很长时间。这期间，它可能走向高处，也可能踏入平地。但是，他渐渐清醒了并朝他踏过的最高方向跳去。这就是模拟退火。 （3）兔子们知道一个兔的力量是渺小的。他们互相转告着，哪里的山已经找过，并且找过的每一座山他们都留下一只兔子做记号。他们制定了下一步去哪里寻找的策略。这就是禁忌搜索。 （4）兔子们吃了失忆药片，并被发射到太空，然后随机落到了地球上的某些地方。他们不知道自己的使命是什么。但是，如果你过几年就杀死一部分海拔低的兔子，多产的兔子们自己就会找到珠穆朗玛峰。这就是遗传算法。</p>
+</blockquote>
+<h3 id="如何用根据特征重要性筛选特征">如何用根据特征重要性筛选特征</h3>
+<p>利用模型的 feature_importances_方法。</p>
+<p>阈值的选择会进行遍历并选择最佳的阈值</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="im">from</span> numpy <span class="im">import</span> sort</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> SelectFromModel <span class="co"># Fit model using each importance as a threshold</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">thresholds <span class="op">=</span> sort(model_XGB.feature_importances_)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="cf">for</span> thresh <span class="kw">in</span> thresholds:</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">  <span class="co"># select features using threshold</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">  selection <span class="op">=</span> SelectFromModel(model_XGB, threshold<span class="op">=</span>thresh, prefit<span class="op">=</span><span class="va">True</span>)</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">  select_X_train <span class="op">=</span> selection.transform(X_train)</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">  <span class="co"># train model</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">  selection_model <span class="op">=</span> XGBClassifier()</a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">  selection_model.fit(select_X_train, y_train)</a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co"># eval model</span></a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">  select_X_test <span class="op">=</span> selection.transform(X_test)</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">  y_pred <span class="op">=</span> selection_model.predict(select_X_test)</a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">  predictions <span class="op">=</span> [<span class="bu">round</span>(value) <span class="cf">for</span> value <span class="kw">in</span> y_pred]</a>
+<a class="sourceLine" id="cb8-15" data-line-number="15">  accuracy <span class="op">=</span> accuracy_score(y_test, predictions)</a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">  <span class="bu">print</span>(<span class="st">&quot;Thresh=</span><span class="sc">%.3f</span><span class="st">, n=</span><span class="sc">%d</span><span class="st">, Accuracy: </span><span class="sc">%.2f%%</span><span class="st">&quot;</span> <span class="op">%</span> (thresh, select_X_train.shape[<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">      accuracy<span class="op">*</span><span class="fl">100.0</span>))</a></code></pre></div>
+<h3 id="谈谈判别式模型和生成式模型">谈谈判别式模型和生成式模型？</h3>
+<p>判别方法：由数据直接学习决策函数 Y = f（X），或者由条件分布概率 P（Y|X）作为预测模型，即判别模型。</p>
+<p>生成方法：由数据学习联合概率密度分布函数 P（X,Y）,然后求出条件概率分布P(Y|X)作为预测的模型，即生成模型。</p>
+<p>由生成模型可以得到判别模型，但由判别模型得不到生成模型。</p>
+<p>常见的判别模型有：K近邻、SVM、决策树、感知机、线性判别分析（LDA）、线性回归、传统的神经网络、逻辑斯蒂回归、boosting、条件随机场</p>
+<p>常见的生成模型有：朴素贝叶斯、隐马尔可夫模型、高斯混合模型、文档主题生成模型（LDA）、限制玻尔兹曼机</p>

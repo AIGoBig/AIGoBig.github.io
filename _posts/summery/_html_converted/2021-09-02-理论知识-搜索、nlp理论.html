@@ -1,0 +1,607 @@
+<h3 id="介绍下tf-idf">✅介绍下TF-IDF</h3>
+<p>TF-IDF(term frequency–inverse document frequency)是一种用于信息检索与数据挖掘的<strong>常用加权技术</strong>，是基于<strong>统计特征</strong>的关键词提取算法，包含<strong>词频TF和逆文本频率指数IDF两部分</strong>，字词的重要性随着它在<strong>文件中出现的次数</strong>成正比增加，但同时会随着它<strong>在语料库中出现的频率</strong>成反比下降。</p>
+<p>就是说，如果某个词或短语在一篇文章中出现的频率TF高，并且在其他文章中很少出现，① 则认为此词或者短语，是文章的<strong>关键词</strong>，② 如果是分类任务，说明具有很好的类别区分能力，<strong>适合用来做分类</strong>。</p>
+<p>TF是词频(Term Frequency)</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/70-1074144_20240315120102Tw1cBb.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>IDF是逆文本频率指数(Inverse Document Frequency)</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/70-20210329165059230-1074144_202403151201030hEjTc.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>具体实现主要分两步：</p>
+<p><strong>CountVectorizer类</strong></p>
+<p>会将文本中的词语转换为<strong>词频矩阵</strong>，例如矩阵中包含一个元素<code>a[i][j]</code>，它表示j词在i类文本下的<strong>词频（个数）</strong>。形成一个m类*n维个词的矩阵。</p>
+<pre><code>#  通过fit_transform函数计算各个词语出现的次数，
+#  通过get_feature_names()可获取词袋中所有文本的关键字，
+#  通过toarray()可看到词频矩阵的结果。</code></pre>
+<p><strong>TfidfTransformer类</strong></p>
+<p>用于统计vectorizer中每个词语的<strong>TF-IDF值</strong>。形成一个m类*n维特征的矩阵。</p>
+<p><strong>可用于关键词提取</strong></p>
+<p>可以得到每个doc或类别里<strong>词的得分</strong>，将词进行倒序排序，获取TopK个词作为关键词。</p>
+<p><strong>也可提取文本特征+机器学习分类器</strong></p>
+<p>直接使用TF-IDF<strong>对文本提取特征</strong>，并<strong>使用分类器进行分类</strong>。在分类器的选择上，可以使用<strong>SVM、LR、或者XGBoost</strong>。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"> tfidf <span class="op">=</span> TfidfVectorizer(ngram_range<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">4</span>), max_features<span class="op">=</span><span class="dv">5000</span>).fit(train_df[<span class="st">&#39;text&#39;</span>].iloc[:].values)</a></code></pre></div>
+<blockquote>
+<p>ngram_range # 统计多少个词之间的的特征</p>
+<p>max_features # 转化为向量特征长度</p>
+<blockquote>
+<p><strong>可以看出max_features越大模型的精度越高</strong>，但是当max_features超过某个数之后，再增加max_features的值对模型精度的影响就不是很显著了。</p>
+</blockquote>
+<p>train_tfidf # Transform 后转化为 样本量<em>特征维度的稀疏矩阵(200000</em>4000) 🚩</p>
+</blockquote>
+<h4 id="优缺点">优缺点</h4>
+<p><strong>优点</strong>： 常用于挖掘文章中的<strong>关键词</strong>，而且算法<strong>简单高效</strong>，常被工业用于最开始的文本数据清洗。</p>
+<p><strong>缺点</strong>：</p>
+<ol type="1">
+<li>依赖<strong>语料库</strong></li>
+<li>精度不高</li>
+<li>不能反映<strong>位置信息</strong></li>
+</ol>
+<h4 id="section">———-</h4>
+<h4 id="tfidfvectorizer介绍">TfidfVectorizer介绍</h4>
+<p>在做文本分类之前，一定会涉及<strong>文本的向量化</strong>表示。TfidfVectorizer可以把原始文本转化为<strong>tf-idf的特征矩阵</strong>，从而为后续的文本相似度计算，主题模型(如<a href="https://blog.csdn.net/blmoistawinde/article/details/83446529">LSI</a>)，文本搜索排序等一系列应用奠定基础。</p>
+<p>运用到中文上还需要一些特别的处理介绍：</p>
+<p><strong>第一步：分词</strong></p>
+<p>采用著名的中文分词库jieba进行分词：</p>
+<p><strong>第二步：建模</strong></p>
+<p><strong>第三步：参数</strong></p>
+<ol type="1">
+<li>为匹配中文长度为1的词，需要修改<strong>token_pattern</strong>参数：
+<ol type="1">
+<li>默认参数为r“(?u)<em></em>+” ，改为token_pattern=r“(?u)+”</li>
+</ol></li>
+<li>stop_words: list类型</li>
+<li>vocabulary: dict类型
+<ol type="1">
+<li>只使用特定的词汇，比如做情感分析的时候</li>
+</ol></li>
+</ol>
+<h4 id="具体使用">具体使用</h4>
+<p><strong>CountVectorizer类</strong></p>
+<p>会将文本中的词语转换为<strong>词频矩阵</strong>，例如矩阵中包含一个元素<code>a[i][j]</code>，它表示j词在i类文本下的<strong>词频（个数）</strong>。</p>
+<pre><code>#  通过fit_transform函数计算各个词语出现的次数，
+#  通过get_feature_names()可获取词袋中所有文本的关键字，
+#  通过toarray()可看到词频矩阵的结果。</code></pre>
+<p><strong>TfidfTransformer类</strong></p>
+<p>用于统计vectorizer中每个词语的<strong>TF-IDF值</strong>。</p>
+<p><strong>核心代码</strong>：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfTransformer  </a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer  </a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">vectorizer<span class="op">=</span>CountVectorizer() <span class="co">#该类会将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频  </span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">transformer<span class="op">=</span>TfidfTransformer() <span class="co">#该类会统计每个词语的tf-idf权值 </span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">tfidf<span class="op">=</span>transformer.fit_transform(vectorizer.fit_transform(corpus)) <span class="co">#第一个fit_transform是计算tf-idf，第二个fit_transform是将文本转为词频矩阵  </span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># coding:utf-8  </span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">__author__ <span class="op">=</span> <span class="st">&quot;liuxuejiang&quot;</span>  </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="im">import</span> jieba  </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="im">import</span> jieba.posseg <span class="im">as</span> pseg  </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="im">import</span> os  </a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="im">import</span> sys  </a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="im">from</span> sklearn <span class="im">import</span> feature_extraction  </a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfTransformer  </a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer  </a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:  </a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    corpus<span class="op">=</span>[<span class="st">&quot;我 来到 北京 清华大学&quot;</span>,<span class="co">#第一类文本切词后的结果，词之间以空格隔开  </span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">        <span class="st">&quot;他 来到 了 网易 杭研 大厦&quot;</span>,<span class="co">#第二类文本的切词结果  </span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">        <span class="st">&quot;小明 硕士 毕业 与 中国 科学院&quot;</span>,<span class="co">#第三类文本的切词结果  </span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">        <span class="st">&quot;我 爱 北京 天安门&quot;</span>]<span class="co">#第四类文本的切词结果  </span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">    vectorizer<span class="op">=</span>CountVectorizer()<span class="co">#该类会将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频  </span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">    transformer<span class="op">=</span>TfidfTransformer()<span class="co">#该类会统计每个词语的tf-idf权值  </span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18">    tfidf<span class="op">=</span>transformer.fit_transform(vectorizer.fit_transform(corpus))<span class="co">#第一个fit_transform是计算tf-idf，第二个fit_transform是将文本转为词频矩阵  </span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">    word<span class="op">=</span>vectorizer.get_feature_names()<span class="co">#获取词袋模型中的所有词语  </span></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">    weight<span class="op">=</span>tfidf.toarray()<span class="co">#将tf-idf矩阵抽取出来，元素a[i][j]表示j词在i类文本中的tf-idf权重  </span></a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(weight)):<span class="co">#打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重  </span></a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">        <span class="bu">print</span> <span class="st">u&quot;-------这里输出第&quot;</span>,i,<span class="st">u&quot;类文本的词语tf-idf权重------&quot;</span>  </a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(word)):  </a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">            <span class="bu">print</span> word[j],weight[i][j]</a></code></pre></div>
+<h3 id="介绍textrank">✅介绍textrank</h3>
+<ul>
+<li>此种算法的一个<strong>重要特点</strong>是可以脱离语料库的背景，<strong>仅对单篇文档</strong>进行分析就可以提取该文档的关键词。</li>
+<li>基本思想来源于Google的PageRank算法。该公式仅仅比PageRank多了一个<strong>权重项Wji</strong>，用来表示<strong>两个节点之间的边连接有不同的重要程度</strong>。考虑到不同词对可能有不同的共现（co-occurrence），<strong>TextRank将共现作为无向图边的权值</strong>。与PageRank不同的是，PageRank中是有向边，而TextRank中是无向边，或者说是双向边。</li>
+<li>TextRank 用于关键词提取的<strong>算法流程</strong>是：①先对文本进行分割，②然后进行分词和词性标注处理，过滤掉停用词并保留指定词性的单词，③然后构建候选关键词图G，用候选关键词构建节点，用共现关系构建节点间的边。④采用公式，迭代传播节点权重直至收敛。⑤对权重倒序排序取topK个权重最大的词作为候选关键词。⑥在原始文档中标记，若构成相邻词组，则组成多词关键词。</li>
+</ul>
+<h4 id="textrank算法流程">textrank算法流程</h4>
+<p>TextRank 用于关键词提取的<strong>算法流程</strong>如下：</p>
+<ol type="1">
+<li>把给定的文本 T 按照完整句子进行<strong>分割</strong>，即:T=[S1,S2,…,Sm]</li>
+<li>对于每个句子，进行<strong>分词和词性标注</strong>处理，并过滤掉停用词，<strong>只保留指定词性的单词</strong>，如名词、动词、形容词，其中 ti,j 是保留后的候选关键词。Si=[ti,1,ti,2,…,ti,n]</li>
+<li><strong>构建候选关键词图</strong> G = (V,E)，其中 V 为节点集，由（2）生成的候选关键词组成，然后采用<strong>共现关系（Co-Occurrence）构造任两点之间的边</strong>，两个节点之间存在边仅当它们对应的词汇在长度为K 的窗口中共现，K表示窗口大小，即最多共现 K 个单词。</li>
+<li>根据 TextRank 的公式，<strong>迭代传播各节点的权重</strong>，直至收敛。</li>
+<li>对节点权重进行<strong>倒序排序</strong>，从而得到最重要的 T 个单词，作为候选关键词。</li>
+<li>由（5）得到最重要的 T 个单词，在原始文本中进行<strong>标记</strong>，若形成相邻词组，则<strong>组合成多词关键词。</strong></li>
+</ol>
+<h4 id="迭代计算公式">迭代计算公式：</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/68747470733a2f2f63646e2e6a7364656c6976722e6e65742f67682f73756e71696e6768752f5069635265706f2f696d672f323032302f76322d30346232633333306137663437316538623933663738393633653663313631395f373230772d32303231303530313230303232343139392e6a7067_20240315120104L0bIri.png" alt="img" style="zoom:50%;" /></p>
+<p>可以看出，该公式仅仅比PageRank多了一个<strong>权重项Wji</strong>，用来表示<strong>两个节点之间的边连接有不同的重要程度</strong>。考虑到不同词对可能有不同的共现（co-occurrence），<strong>TextRank将共现作为无向图边的权值</strong>。</p>
+<blockquote>
+<p>d是阻尼系数，防止没有出结点的情况 <br /><span class="math display">$$
+\sum_{所有进入链接j}\frac{j的权重}{j的出链数量}
+$$</span><br /> 我们可以看到单词的权重e<strong>取决于共现单词的权重</strong>。并且与PageRank相比多了一个<strong>权重项Wji</strong>，用来表示<strong>两个节点之间的边连接有不同的重要程度</strong>。</p>
+<p>我们需要运行这个迭代很多时间来获得最终的权重。初始化时，每个单词的重要性为1。</p>
+</blockquote>
+<h4 id="应用">应用</h4>
+<p>TextRank用于<strong>关键词提取</strong></p>
+<p>TextRank生成<strong>摘要</strong></p>
+<h4 id="优缺点-1">优缺点</h4>
+<p><strong>重要特点</strong>是可以脱离语料库的背景，<strong>仅对单篇文档</strong>进行分析就可以提取该文档的关键词。</p>
+<h3 id="介绍下rake">✅介绍下RAKE</h3>
+<p>RAKE是<strong>快速自动关键字提取算法</strong>(Rapid Automatic Keyword Extraction algorithm)的简称，是一种独立于域的关键字提取算法，它通过<strong>分析文字出现的频率及其与文本中其他词的共现</strong>来尝试确定文本主体中的关键短语。</p>
+<h3 id="介绍下keybert">✅介绍下KeyBert</h3>
+<p>具有<strong>相似潜在表征(嵌入)的句子或单词应该具有相似的语义</strong>。使用这种方法提取文本关键字的实现是KeyBERT。</p>
+<p>首先，使用BERT提取文档向量(嵌入)以获取<strong>文档级表示</strong>。 然后，针对N元语法词/短语提取<strong>词向量</strong>。 最后，我们使用<strong>余弦相似度</strong>来查找与文档最相似的词/短语。 然后，可以将最相似的词识定义为最能描述整个文档的词。</p>
+<h3 id="介绍下bm25">✅介绍下BM25</h3>
+<p><a href="https://www.shuzhiduo.com/A/KE5Q3lWMzL/">NLP-BM25算法理解</a></p>
+<ul>
+<li>bm25 是一种用来<strong>评价搜索词和文档之间相关性的算法</strong>， 是<strong>搜索算法</strong>中<strong>计算权重的一种度量方法</strong>，它是一种<strong>基于概率检索模型</strong>提出的算法。是由英国一批信息检索领域的计算机科学家开发的<strong>排序算法</strong>。这里的“BM”是“<strong>最佳匹配</strong>”（Best Match）的简称。BM25 算法<strong>实质</strong>上是一个用于信息检索中，对给定<strong>查询（query）</strong>和若干<strong>“相关”文档（document）</strong>进行<strong>相关性排序打分的排序函数</strong>。<br />
+</li>
+<li><strong>主要步骤</strong>可简述如下：
+<ol type="1">
+<li>对 query 进行特征提取分解，生成若干<strong>特征项（词）𝑞𝑖</strong>；</li>
+<li>然后对于每个搜索结果 𝐷，计算每个特征词 𝑞𝑖 与 𝐷的<strong>相关性得分</strong>，</li>
+<li>最后，将 𝑞𝑖 相对于 𝐷的相关性得分<strong>进行加权求和</strong>，从而得到 query 与 𝐷 的相关性得分。</li>
+</ol></li>
+<li><p>主要有三个部分：单词权重（idf）、单词和文档的<strong>相关度（tf）</strong>、单词和query（关键词）的<strong>相关性</strong>。</p></li>
+<li>与 <strong>TF-IDF 的区别： </strong>TF-IDF bm25算法可以理解以 <strong>TF-IDF 为基础的一种升级算法</strong>，在实际运用中更加灵活和强大，具有<strong>更高的实用性</strong>。主要体现在以下几个方面：
+<ol type="1">
+<li>BM25 在搜索关键词时增加了<strong>文档长度与平均长度的比值</strong>，以及对比值数的限制，</li>
+<li>BM25 还 <strong>normalize 了 TF</strong>，可以控制特别高的 TF 对 rank 的影响。</li>
+</ol></li>
+</ul>
+<h4 id="原理及公式">原理及公式</h4>
+<p><strong>Okapi BM25:一个非二值的模型</strong></p>
+<p>bm25 是一种用来<strong>评价搜索词和文档之间相关性的算法</strong>，它是一种<strong>基于概率检索模型</strong>提出的算法。</p>
+<p><strong>1.BM25模型</strong></p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/L3Byb3h5L2h0dHBzL2ltZy1ibG9nLmNzZG5pbWcuY24vMjAxOTExMTQxMTIwMzA5MzUucG5n_2024031512010576Xs7p.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>其实，这个公式不难理解，他只有三个部分</p>
+<p>1.计算<strong>单词权重（idf）</strong>：<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/L3Byb3h5L2h0dHBzL2ltZy1ibG9nLmNzZG5pbWcuY24vMjAxOTExMTQxMTIyMTQ1LnBuZw==_20240315120106r0xtHc.jpg" alt="img" /></p>
+<blockquote>
+<p>在上面我们已经看到了公式，但是还不是很理解是什么意思，所以这里我们慢慢理解体会： N：是所有的文档数目. dft:是我们的关键词通过倒排算法得出的<strong>包含t的文档数目</strong>（即为上述例子中，red 在1000个文档中出现的文档次数） 例如，我们在1000个文档中出现red的次数为10，那么<strong>N/dft</strong>=100，即可算出他的权重。</p>
+</blockquote>
+<p>2.单词和文档的<strong>相关度（tf）</strong>：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/L3Byb3h5L2h0dHBzL2ltZy1ibG9nLmNzZG5pbWcuY24vMjAxOTExMTQxMTIzMTkyMjQucG5n_20240315120107VEyngY.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>其实，BM25最主要的方面在于 idf*tf，就是查询词的权重*查询词和文档的相关性。</p>
+<p>tftd：tftd 是<strong>词项 t 在文档 d 中的权重</strong>。</p>
+<p>Ld 和 Lave ：分别是<strong>文档 d 的长度</strong>及<strong>整个文档集中文档的平均长度</strong>。</p>
+<p>k1：是一个取正值的<strong>调优参数</strong>，用于<u>对文档中的词项频率进行缩放控制</u>。如果 k 1 取 0，则相当于不考虑词频，如果 k 1取较大的值，那么对应于使用原始词项频率。</p>
+<p>b ：是另外一个<strong>调节参数</strong> （0≤ b≤ 1），决定文档长度的缩放程度：b = 1 表示基于文档长度对词项权重进行完全的缩放，b = 0 表示归一化时不考虑文档长度因素。</p>
+</blockquote>
+<p>3.单词和query（关键词）的<strong>相关性</strong>：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/L3Byb3h5L2h0dHBzL2ltZy1ibG9nLmNzZG5pbWcuY24vMjAxOTExMTQxMTIzNTg0MTcucG5n_20240315120108jrbilS.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>tftq：是<strong>词项t在查询q中的权重</strong>。</p>
+<p>k3： 是另一个取正值的<strong>调优参数</strong>，用于对查询中的词项tq 频率进行缩放控制。</p>
+<p>下面是调用<strong>AP90</strong>跑出来的数据结果（BM25）：</p>
+<figure>
+<img src="https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltZy1ibG9nLmNzZG5pbWcuY24vMjAxOTExMTQxNTQyNTQyMzQucG5nP3gtb3NzLXByb2Nlc3M9aW1hZ2Uvd2F0ZXJtYXJrLHR5cGVfWm1GdVozcG9aVzVuYUdWcGRHayxzaGFkb3dfMTAsdGV4dF9hSFIwY0hNNkx5OWliRzluTG1OelpHNHVibVYwTDNGeFh6UXdOVGswTlRVMCxzaXplXzE2LGNvbG9yX0ZGRkZGRix0Xzcw.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>同学们可以先了解BIM模型，这是一个较为简单的模型，BM25在很多地方都可以用到。</p>
+</blockquote>
+<h4 id="bm25的优势有哪些">BM25的优势有哪些</h4>
+<p>BM25 是<strong>搜索算法</strong>中<strong>计算权重的一种度量方法</strong>，可以理解以 <strong>TF-IDF 为基础的一种升级算法</strong>，在实际运用中更加灵活和强大，具有<strong>更高的实用性</strong>。</p>
+<p>BM25 在搜索关键词时增加了<strong>文档长度与平均长度的比值</strong>，以及对比值数的限制，相比 TF-IDF，除了引入长度比值外，BM25 还 <strong>normalize 了 TF</strong>，可以控制特别高的 TF 对 rank 的影响。</p>
+<blockquote>
+<p>从下图可以看到，文档越短，它逼近上限的速度越快，反之则越慢。 这是可以理解的，<u>对于只有几个词的内容，比如文章标题，只需要匹配很少的几个词，就可以确定相关性。而对于大篇幅的内容，比如一本书的内容，需要匹配很多词才能知道它的重点是讲什么。</u> 🚩？？</p>
+</blockquote>
+<h4 id="可调的参数有哪些">可调的参数有哪些？</h4>
+<p><strong>Okapi BM25</strong></p>
+<p>BM25 源自 <a href="http://en.wikipedia.org/wiki/Probabilistic_relevance_model">概率相关模型（probabilistic relevance model）</a> ，而<strong>不是向量空间模型</strong></p>
+<p>BM25 同样使用<strong>词频、逆向文档频率以及字段长归一化</strong>，但是每个因子的定义都有细微区别。</p>
+<p><strong>非线性词频饱和度</strong></p>
+<p>TF/IDF 和 BM25 同样使用 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scoring-theory.html#idf">逆向文档频率</a> 来区分普通词（不重要）和非普通词（重要），同样认为（参见 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scoring-theory.html#tf">词频</a> ）文档里的某个词出现次数越频繁，文档与这个词就越相关。</p>
+<p>不幸的是，<strong>普通词</strong>随处可见，实际上一个普通词在同一个文档中大量出现的作用会由于该词在 <em>所有</em> 文档中的大量出现而被抵消掉。</p>
+<blockquote>
+<p>曾经有个时期，将 <em>最</em> 普通的词（或 <em>停用词</em> ，参见 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/stopwords.html">停用词</a>）从索引中移除被认为是一种标准实践，TF/IDF 正是在这种背景下诞生的。TF/IDF 没有考虑词频上限的问题，因为高频停用词已经被移除了。</p>
+</blockquote>
+<p>Elasticsearch 的 <code>standard</code> 标准分析器（ <code>string</code> 字段默认使用）<strong>不会移除停用词，因为尽管这些词的重要性很低，但也不是毫无用处</strong>。这导致：在一个相当长的文档中，像 <code>the</code> 和 <code>and</code> 这样词出现的数量会高得离谱，以致它们的权重被人为放大。</p>
+<blockquote>
+<p>另一方面，BM25 有一个上限，文档里出现 5 到 10 次的词会比那些只出现一两次的对相关度有着显著影响。但是如图 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/pluggable-similarites.html#img-bm25-saturation">TF/IDF 与 BM25 的词频饱和度</a> 所见，文档中出现 20 次的词几乎与那些出现上千次的词有着相同的影响。 这就是 <strong>非线性词频饱和度</strong>（nonlinear term-frequency saturation） 。</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/elas_1706_20240315120109dH7Wp0.png" alt="TF/IDF 与 BM25 的词频饱和度" /><figcaption>TF/IDF 与 BM25 的词频饱和度</figcaption>
+</figure>
+</blockquote>
+<p><strong>字段长度归一化（Field-length normalization）</strong></p>
+<p>在 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scoring-theory.html#field-norm">字段长归一化</a> 中，我们提到过 Lucene 会认为较短字段比较长字段更重要：字段某个词的频度所带来的重要性会被这个字段长度抵消，但是实际的评分函数会将所有字段以同等方式对待。它认为所有较短的 <code>title</code> 字段比所有较长的 <code>body</code> 字段更重要。</p>
+<p>BM25 当然也认为较短字段应该有更多的权重，但是它会分别考虑每个字段内容的平均长度，这样就能区分短 <code>title</code> 字段和 <code>长</code> title 字段。</p>
+<p>在 <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/query-time-boosting.html">查询时权重提升</a> 中，已经说过 <code>title</code> 字段因为其长度比 <code>body</code> 字段 <em>自然</em> 有更高的权重提升值。由于字段长度的差异只能应用于单字段，这种自然的权重提升会在使用 BM25 时消失。</p>
+<p><strong>BM25 调优</strong></p>
+<p>BM25 有一个比较好的特性就是它提供了两个可调参数：</p>
+<ul>
+<li><strong><code>k1</code></strong> 这个参数控制着词频结果在<strong>词频饱和度中的上升速度</strong>。默认值为 <code>1.2</code> 。值越小饱和度变化越快，值越大饱和度变化越慢。</li>
+<li><strong><code>b</code></strong> 这个参数控制着<strong>字段长归一值所起的作用</strong>， <code>0.0</code> 会禁用归一化， <code>1.0</code> 会启用完全归一化。默认值为 <code>0.75</code> 。</li>
+</ul>
+<p>在实践中，调试 BM25 是另外一回事， <code>k1</code> 和 <code>b</code> 的<strong>默认值适用于绝大多数文档集合</strong>，但最优值还是会因为文档集不同而有所区别，为了找到文档集合的最优值，就必须对参数进行反复修改验证。</p>
+<h3 id="预训练词向量的方法有哪些">预训练词向量的方法有哪些</h3>
+<p>fasttext, word2vec, glove, bert</p>
+<h3 id="介绍下fasttext">介绍下<strong>fastText</strong></h3>
+<p><a href="https://blog.csdn.net/qq_16633405/article/details/80578431">原理总结</a></p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210719164522221_202403151201099Ac3Y7.png" alt="image-20210719164522221" /><figcaption>image-20210719164522221</figcaption>
+</figure>
+<p>FastText是<strong>入门款的词向量</strong>，利用Facebook提供的FastText工具，可以<strong>快速构建出分类器</strong>。</p>
+<p><strong>结构</strong>上：类似cbow，</p>
+<p><strong>原理</strong>是：</p>
+<ol type="1">
+<li>把句子中所有的<strong>词向量进行平均</strong>（某种意义上可以理解为只有一个avg pooling特殊CNN），</li>
+<li>然后直接接 softmax 层。</li>
+</ol>
+<p>第一部分：fastText的<strong>模型架构</strong>类似于CBOW，两种模型都是基于Hierarchical Softmax，都是三层架构：输入层、 隐藏层、输出层。</p>
+<p>第二部分：层次之间的映射。利用了==分层Softmax==</p>
+<p>==第三部分：fastText的N-gram特征==</p>
+<p><strong>优点</strong>：</p>
+<p>\1. 速度非常快，并且效果还可以。</p>
+<p>\2. 有开源实现，可以快速上手使用。</p>
+<p><strong>缺点</strong>：</p>
+<p>\1. 模型结构简单，所以目前来说，不是最优的模型，效果甚至不如tfidf。</p>
+<p>\2. 因为使用词袋思想，所以语义信息获取有限。</p>
+<h4 id="fasttext词向量与word2vec对比">FastText词向量与word2vec对比?</h4>
+<p>FastText其实是对word2vec中 <strong>cbow + h-softmax</strong> 的灵活使用，其灵活主要体现在两个方面：</p>
+<ul>
+<li>模型的输出层：word2vec的输出层，对应的是<strong>每一个term</strong>，计算某term的概率最大； 而fasttext的输出层对应的是<strong>分类的label</strong>。不过不管输出层对应的是什么内容，起对应的vector都不会被保留和使用；</li>
+<li>模型的输入层：word2vec的输入层，是 context <strong>window 内的term</strong>；而fasttext 对应的<strong>整个sentence的内容</strong>，包括term，也包括 n-gram的内容；</li>
+</ul>
+<p>两者本质的不同，体现在 h-softmax的使用：</p>
+<ul>
+<li>Word2vec 的目的是得到词向量，该词向量最终是在输入层得到，输出层对应的 h-softmax 也会生成一系列的向量，但最终都被抛弃，不会使用。</li>
+<li>fasttext 则充分利用了 h-softmax 的分类功能，遍历分类树的所有叶节点，找到<strong>概率最大的label</strong>（一个或者N个）。</li>
+</ul>
+<p>fastText模型的<strong>输入是一个词的序列</strong>（一段文本或者一句话)，<strong>输出是这个词序列属于不同类别的概率</strong>。</p>
+<h4 id="fasttext模型和cbow模型的区别和联系">Fasttext模型和CBOW模型的区别和联系</h4>
+<p>联系：</p>
+<p>\1. 都是Log-linear模型，模型非常简单。</p>
+<p>\2. 都是对输入的词向量做平均，然后进行 预测。</p>
+<p>\3. 模型结构完全一样。</p>
+<p>区别：</p>
+<p>\1. Fasttext提出的是句子特征，CBOW提出的是上 下文特征。</p>
+<p>\2. Fasttext需要标注语料，是监督学习，CBOW不 需要标注语料，是无监督学习。</p>
+<h3 id="textcnntextrnn或者bilstm"><strong>TextCNN</strong>、TextRNN或者<strong>BiLSTM。</strong></h3>
+<p><strong>WordVec是进阶款的词向量，并通过构建深度学习分类完成分类。</strong></p>
+<p>深度学习分类的网络结构可以选择<strong>TextCNN</strong>、TextRNN或者<strong>BiLSTM。</strong></p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-cc89511361127dadf0f831a67a5e3b60_1440w_20240315120110lL42pu.jpg" alt="自然语言中的CNN–TextCNN（基础篇）" /><figcaption>自然语言中的CNN–TextCNN（基础篇）</figcaption>
+</figure>
+<h4 id="结构">结构：</h4>
+<p><strong>1.1 Embedding layer</strong></p>
+<p><strong>输入</strong>是一个用<strong>预训练好的词向量</strong>（Word2Vector或者glove）方法得到的一个Embedding layer。每一个词向量都是通过无监督的方法训练得到的。</p>
+<p>词向量拼接起来就得到一个Embedding layer，类似一张二维的图（矩阵）了，利用CNN处理图像的思想进行后续操作。主要说一下不同的地方</p>
+<p><strong>1.2卷积(convolution)</strong></p>
+<p>相比于一般CNN中的卷积核，这里的<strong>卷积核的宽度一般需要和词向量的维度一样</strong>，图上的维度是6 。<strong>卷积核的高度则是一个超参数可以设置</strong>，比如设置为2、3等如图。然后剩下的就是正常的卷积过程了。</p>
+<p><strong>1.3池化(pooling)</strong></p>
+<p>这里的池化操作是<strong>max-overtime-pooling</strong>，其实就是在对应的feature map求一个最大值。最后把得到的值做concate。</p>
+<p><strong>1.4 优化、正则化</strong></p>
+<p>池化层后面加上<strong>全连接层和SoftMax层</strong>做分类任务，同时防止过拟合，一般会添加<strong>L2和Dropout正则化</strong>方法。最后整体使用<strong>梯度法</strong>进行参数的更新模型的优化。</p>
+<h4 id="结论"><strong>结论</strong></h4>
+<p>（1）使用预训练的word2vec 、 GloVe初始化效果会更好。一般不直接使用One-hot。</p>
+<p>（2）卷积核的大小影响较大，一般取1~10，对于句子较长的文本，则应选择大一些。</p>
+<p>（3）卷积核的数量也有较大的影响，一般取100~600 ，同时一般使用Dropout（0~0.5）。</p>
+<p>（4）激活函数一般选用<strong>ReLU</strong> 和 tanh。</p>
+<p>（5）池化使用1-max pooling。</p>
+<p>（6）随着feature map数量增加，性能减少时，试着尝试大于0.5的Dropout。</p>
+<p>（7）评估模型性能时，记得使用<strong>==交叉验证==</strong>。</p>
+<h3 id="词向量相比tfidf的好处"><strong>词向量相比tfidf的好处</strong>：</h3>
+<p>预训练词向量方法 — fasttext, word2vec, glove, bert</p>
+<p>如何使维度一致来训练模型 — 句子截取和填充</p>
+<p><strong>稠密模型</strong>，提取出128、256、784维的特征向量。</p>
+<p>textCNN 使用<strong>卷积的感受</strong>也来代替n-gram的作用</p>
+<h3 id="基于相似度的问答搜索推荐方式">✅基于相似度的问答搜索推荐方式</h3>
+<h4 id="jaccard相似度"><strong>Jaccard相似度</strong></h4>
+<ul>
+<li><strong>算法描述</strong></li>
+</ul>
+<p>两句子分词后词语的交集中词语数与并集中词语数之比。<strong>交比并</strong></p>
+<ul>
+<li><strong>代码实现</strong></li>
+</ul>
+<pre class="python3"><code>def sim_jaccard(s1, s2):
+    &quot;&quot;&quot;jaccard相似度&quot;&quot;&quot;
+    s1, s2 = set(s1), set(s2)
+    ret1 = s1.intersection(s2)  # 交集
+    ret2 = s1.union(s2)  # 并集
+    sim = 1.0 * len(ret1) / len(ret2)
+    return sim</code></pre>
+<h4 id="词向量平均求余弦相似度">词向量平均求余弦相似度</h4>
+<ul>
+<li><strong>算法描述</strong></li>
+</ul>
+<p>（1）使用词向量表示问句中的每一个单词；</p>
+<p>（2）累加求平均词向量得句子的向量表示；</p>
+<p>（3）最后计算两向量的余弦距离得相似度。</p>
+<ul>
+<li><strong>代码实现</strong></li>
+</ul>
+<pre class="python3"><code>def sim_vecave(s1, s2):
+    &quot;&quot;&quot;词向量平均后计算余弦距离&quot;&quot;&quot;
+    # 1.分词
+    s1_list, s2_list = jieba.lcut(s1), jieba.lcut(s2)
+    # 2.词向量平均得句向量
+    v1 = np.array([voc[s] for s in s1_list if s in voc])
+    v2 = np.array([voc[s] for s in s2_list if s in voc])
+    v1, v2 = v1.mean(axis=0), v2.mean(axis=0)
+    # 3.计算cosine，并归一化为相似度
+    sim = cosine(v1, v2)
+    return sim</code></pre>
+<h4 id="词向量通过词的idf加权平均求余弦相似度">词向量通过词的idf加权平均求余弦相似度</h4>
+<ul>
+<li><strong>算法描述</strong></li>
+</ul>
+<p>（1）使用词向量表示问句中的每一个单词；</p>
+<p>（2）使用词的idf值对词向量进行加权，按理来说应该使用词的tfidf值进行加权来体现此的重要性程度，由于问句所有词几乎都出现一次，所以使用idf和使用tfidf是等价的；</p>
+<p>（3）累加求平均词向量得句子的向量表示；</p>
+<p>（4）最后计算两向量的余弦距离得相似度。</p>
+<ul>
+<li><strong>代码实现</strong></li>
+</ul>
+<pre class="python3"><code>def sim_vecidf(self, s1, s2):
+    &quot;&quot;&quot;词向量通过idf加权平均后计算余弦距离&quot;&quot;&quot;
+    v1, v2 = [], []
+    # 1. 词向量idf加权平均
+    for s in jieba.cut(s1):
+        idf_v = idf.get(s, 1)
+        if s in voc:
+            v1.append(1.0 * idf_v * voc[s])
+    v1 = np.array(v1).mean(axis=0)
+    for s in jieba.lcut(s2):
+        idf_v = idf.get(s, 1)
+        if s in voc:
+            v2.append(1.0 * idf_v * voc[s])
+    v2 = np.array(v2).mean(axis=0)
+    # 2. 计算cosine
+    sim = self.cosine(v1, v2)
+    return sim</code></pre>
+<h3 id="embeddingtextcnn">embedding+textCNN</h3>
+<h3 id="dpr-模型">🚩 DPR 模型</h3>
+<h3 id="传统文本匹配方法有哪些">传统文本匹配方法有哪些</h3>
+<p><a href="https://zhuanlan.zhihu.com/p/138848302">传统文本匹配算法详解（附代码）</a></p>
+<h3 id="为什么有bert-了还要用传统方法">✅ 为什么有bert 了还要用传统方法</h3>
+<p><a href="#✅词袋模型的优势">词袋模型的优势有</a>：… (见下)</p>
+<p>cicada实习的时候因为有人在用bert比如DPR在做，所以我主要是用一些机器学习方法在做，也是希望可以快速迭代测试某些方法和尝试的效果。</p>
+<p>huawei实习和kaggle多模态：bm25，基于<strong>概率统计的模型</strong>，还是白盒模型，不像Embedding，也更容易调试。 像这种商品标题信息，更在意空间距离，而其实少一些语义距离，然而想bm25这种统计概率模型就更关注于物料的空间距离。像之前kaggle用的就是tfidf和bm25，效果已经做够好了，单模型甚至比bert要好些。</p>
+<h3 id="词袋模型的优势">✅词袋模型的优势</h3>
+<p>将自然语言文本的<strong>每个词作为一个特征</strong>。因此对应的<strong>特征向量即这些特征的组合</strong>。这种思路虽然朴素，但是很有效。基于这种思想的模型就是词袋模型（Bag of Words），也叫<strong>向量空间模型</strong>(Vector Space Model)。</p>
+<p>在最近的NLP领域中，主要有两种方式：</p>
+<ol type="1">
+<li><strong>嵌入技术（Embedding）</strong>是解决文本相关问题的成功方法, 并且其效果优于<strong>词袋模型（BoW）</strong></li>
+<li><strong>词袋模型</strong>在应用上是有一些限制的，比如<strong>巨大的特征维数，稀疏表示</strong>等等，词嵌入可以很好地解决这些问题。</li>
+</ol>
+<blockquote>
+<p>特征维数等问题可以通过一些参数解决。maxfeatures，ngram</p>
+</blockquote>
+<p><strong>二. 何时词袋模型比词嵌入更具优势？</strong></p>
+<p>实际上，在某些情况下，词袋模型会表现地更好。在以下情况下，您更倾向使用词袋模型而不是词嵌入：</p>
+<ol type="1">
+<li>建立一个基线（baseline）模型。通过使用scikit-learn，只需要几行代码就可以构建模型。之后可以用机器学习、深度学习的方法来改进它。</li>
+<li>如果你的数据集很小并且上下文<strong>是特定领域的</strong>，那么词袋模型会比词嵌入更有效。上下文是非常特定的领域，这意味着你<u>无法从预先训练好的词嵌入模型（比如GloVe, fastText等）中找到相应的向量</u>。</li>
+</ol>
+<h3 id="bert-的训练过程是怎么样的"><strong>BERT 的训练过程是怎么样的？</strong></h3>
+<p>在论文原文中，作者提出了<strong>两个预训练任务</strong>：Masked LM 和 Next Sentence Prediction。</p>
+<ul>
+<li>第一个任务是采用 <strong>MaskLM</strong> 的方式来训练语言模型，通俗地说就是在输入一句话的时候，随机地选一些要预测的词，然后用一个特殊的符号[MASK]来代替它们，之后<strong>让模型根据所给的标签去学习这些地方该填的词</strong>。</li>
+<li>第二个任务在双向语言模型的基础上额外增加了一个句子级别的连续性预测任务，即<strong>预测输入 BERT 的两段文本是否为连续的文本</strong>，引入这个任务可以更好地让模型学到连续的文本片段之间的关系。</li>
+</ul>
+<h3 id="介绍下bert">✅ 介绍下Bert</h3>
+<p><a href="https://www.cnblogs.com/ffjsls/p/12257158.html"><strong>BERT模型总结</strong></a></p>
+<p><strong>意义</strong>：BERT是一个<strong>无监督的NLP预训练模型</strong>，这个模型的<strong>最大意义</strong>是使得NLP任务可以向CV一样<strong>使用预训练模型</strong>，这极大的方便了一个新的任务开始，因为在NLP领域，海量数据的获取还是有难度的。</p>
+<p><strong>模型结构</strong>：主要有三部分构成<strong>：Embedding + Transformer Encoder + Loss优化</strong></p>
+<p><strong>Transformer的编码部分</strong>：，<strong>每个block</strong>主要由 ①多头self-Attention、 ②标准化(Norm)、 ③残差连接、 ④Feed Fordawrd组成。</p>
+<blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1401308-20200203201647617-492946927_20240315120112wfRMwm.png" alt="img" style="zoom:50%;" /></p>
+</blockquote>
+<p><strong>具体任务</strong>中：主要分为<strong>模型预训练</strong>和<strong>模型微调</strong>两个阶段。</p>
+<ol type="1">
+<li><strong>在模型预训练阶段</strong>，因为模型参数巨大，通常是上千万乃至上亿的数量级，所以需要大量的数据训练，所幸这时候模型是<strong>无监督的</strong>，只需要爬取或使用开源数据集即可；</li>
+<li><strong>在模型微调阶段，</strong>需要针对<strong>具体的任务</strong>来微调模型，已达到较好的效果。</li>
+</ol>
+<p><strong>预训练方式</strong>：设计了<strong>两个任务</strong>来预训练该模型。</p>
+<ol type="1">
+<li><p>Masked LM： 在BERT中, Masked LM(Masked language Model) 构建了语言模型, 这也是BERT的预训练中任务之一, 简单来说, 就是<strong>随机遮盖或替换</strong>一句话里面任意字或词, 然后让模型通过上下文的理解预测那一个被遮盖或替换的部分, 之后<strong>做loss的时候</strong>只计算被遮盖部分的ss</p></li>
+<li><p>Next Sentence Predict(NSP)： 首先我们拿到属于上下文的一对句子, 也就是两个句子, 之后我们要在这两段连续的句子里面加一些特殊token: [𝑐𝑙𝑠][cls]上一句话，[𝑠𝑒𝑝][sep]下一句话[𝑠𝑒𝑝][sep]。</p></li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20200908230948217_20240315120113Udr6le.png" alt="image-20200908230948217" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20200908232949639_20240315120114dXQvFs.png" alt="image-20200908232949639" style="zoom:50%;" /></p>
+<p><strong>优点</strong>：</p>
+<ol type="1">
+<li>BERT 相较于原来的 RNN、LSTM 可以做到<strong>并发执行</strong>，同时提取词在句子中的关系特征，并且能在<strong>多个不同层次提取关系特征</strong>，进而更全面反映句子语义。</li>
+<li>相较于 word2vec，<strong>其又能根据句子上下文获取词义</strong>，从而避免歧义出现。</li>
+</ol>
+<p><strong>缺点</strong>就是：</p>
+<ol type="1">
+<li>模型参数太多，而且模型太大，<strong>少量数据训练时，容易过拟合</strong>。</li>
+</ol>
+<p><strong>二、模型结构</strong></p>
+<p>其实概括一下，Bert主要有三部分构成<strong>：Embedding + Transformer Encoder + Loss优化</strong></p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1401308-20200203201647617-492946927_20240315120112wfRMwm.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>上图左侧为Transformer的编码部分，右侧为Transformer的解码部分。</p>
+<p>左侧的编码部分包括<strong>输入，添加位置编码，以self-Attention、Add&amp;Norm、Feed Fordward的block。</strong>下面就每个具体细节进行具体分析。</p>
+</blockquote>
+<p><strong>2. 位置编码</strong></p>
+<p>位置编码是用来捕获文本之间的时序关联性的，</p>
+<blockquote>
+<p>当对NLP文本处理时，位置更近的文本一般相关性更大，所以将位置编码融入到数据中是很有必要的。</p>
+</blockquote>
+<p><strong>3. self-Attention</strong></p>
+<p><strong>self-attention</strong>是BERT的重要思想，其与位置编码结合，解决了文本数据的<strong>时序相关性的问题</strong></p>
+<p>attention模型是经过训练，当不同信息传入时，自动的调整权重的一种结构。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1401308-20200203201541921-1102074962_20240315120115iQo2yI.png" alt="img" style="zoom:50%;" /></p>
+<p><strong>4. 残差连接</strong></p>
+<p>残差连接是训练深层模型时惯用的方法，主要是为了避免模型较深时，在进行反向传播时，梯度消失等问题。具体实现时，当网络进行前向传播时，不仅仅时按照网络层数进行逐层传播，还会由当前层隔一层或多层向前传播，如下图所示：</p>
+<p><strong>5. 模型实现</strong></p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1401308-20200203201610037-1152574151_20240315120116kQnxiK.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>以上是BERT的整体结构，Input输入的是文本数据，经过Embedding加上位置向量Positional Encoding。Multi-Head Atention为多头的self-Attention，实际上就是将<strong>self-attention的Q、K、V均分成n份，分别进行计算。</strong>Add&amp;Norm为残差计算和标准化；Feedward为全连接层，进行前向传播。其中𝑁𝑥Nx为基本单元的个数，是可以条调整的超参数。</p>
+<p><strong>6. Bert模型预训练策略</strong></p>
+<p>在预训练Bert模型时，论文提供了两种策略：</p>
+<p><strong>(1) Masked LM</strong></p>
+<p>在BERT中, Masked LM(Masked language Model)构建了语言模型, 这也是BERT的预训练中任务之一, 简单来说, 就是<strong>随机遮盖或替换</strong>一句话里面任意字或词, 然后让模型通过上下文的理解预测那一个被遮盖或替换的部分, 之后**做loss的时候只计算被遮盖部分的loss,</p>
+<p><strong>(2) Next Sentence Predict(NSP)</strong></p>
+<p>首先我们拿到属于上下文的一对句子, 也就是两个句子, 之后我们要在这两段连续的句子里面加一些特殊token:[𝑐𝑙𝑠][cls]上一句话，[𝑠𝑒𝑝][sep]下一句话[𝑠𝑒𝑝][sep]。</p>
+<h3 id="bert是怎么用的如何达到高分数">bert是怎么用的，如何达到高分数</h3>
+<p>https://cloud.tencent.com/developer/article/1687276</p>
+<h3 id="bert-的输入和输出分别是什么">🚩BERT 的输入和输出分别是什么？</h3>
+<p>BERT 模型的<strong>主要输入</strong>是<strong>文本中各个字/词(或者称为 token)的原始词向量</strong>，该向量既可以随机初始化，也可以<strong>利用 Word2Vector</strong> 等算法进行预训练以作为初始值；<strong>输出</strong>是文本中各个字/词融合了全文语义信息后的向量表示，如下图所示（为方便描述且与 BERT 模型的当前中文版本保持一致，统一以<strong>「字向量」</strong>作为输入）</p>
+<h3 id="sentence-transformer的使用及fine-tune教程">Sentence-Transformer的使用及fine-tune教程</h3>
+<p><a href="https://www.sbert.net/index.html">Sentence-Transformer（sbert）官方文档</a></p>
+<p><a href="https://blog.csdn.net/qq_37236745/article/details/109166024">Sentence-Transformer的使用及fine-tune<strong>教程</strong></a></p>
+<p>​</p>
+<p>从两种情况来介绍如何使用Sentence-Transformer：</p>
+<ol type="1">
+<li>一种是直接使用，</li>
+<li>另一种是在自己的数据集上fine-tune</li>
+</ol>
+<h4 id="安装">安装</h4>
+<pre><code>pip install -U sentence-transformers
+pip install -U transformers</code></pre>
+<h4 id="直接使用">直接使用</h4>
+<p>Sentence-Transformer提供了非常多的<strong>预训练模型</strong>供我们使用，对于文本相似度（Semantic Textual Similarity）任务来说，比较好的模型有以下几个：</p>
+<p>roberta-large-nli-stsb-mean-tokens - STSb performance: 86.39 roberta-base-nli-stsb-mean-tokens - STSb performance: 85.44 bert-large-nli-stsb-mean-tokens - STSb performance: 85.29 distilbert-base-nli-stsb-mean-tokens - STSb performance: 85.16</p>
+<p>这里我就选择最好的模型做一下<strong>语义文本相似度任务</strong></p>
+<blockquote>
+<p>语义文本相似度任务指的是给定一个句子（query），在整个语料库中寻找和该句子语义上最相近的几个句子</p>
+</blockquote>
+<ol type="1">
+<li><p>用一个list来代表整个<strong>语料库</strong>，list中存的是str类型的句子</p></li>
+<li><p>给定一个句子<code>sentence</code>，可以得到一个<strong>句子的向量表示</strong><code>embeddings</code></p></li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">model <span class="op">=</span> SentenceTransformer(<span class="st">&#39;roberta-large-nli-stsb-mean-tokens&#39;</span>)</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">sentences <span class="op">=</span> [<span class="st">&#39;Lack of saneness&#39;</span>,</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">        <span class="st">&#39;Absence of sanity&#39;</span>,</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">        <span class="st">&#39;A man is eating food.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">        <span class="st">&#39;A man is eating a piece of bread.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">        <span class="st">&#39;The girl is carrying a baby.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">        <span class="st">&#39;A man is riding a horse.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">        <span class="st">&#39;A woman is playing violin.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-11" data-line-number="11">        <span class="st">&#39;Two men pushed carts through the woods.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-12" data-line-number="12">        <span class="st">&#39;A man is riding a white horse on an enclosed ground.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-13" data-line-number="13">        <span class="st">&#39;A monkey is playing drums.&#39;</span>,</a>
+<a class="sourceLine" id="cb10-14" data-line-number="14">        <span class="st">&#39;A cheetah is running behind its prey.&#39;</span>]</a>
+<a class="sourceLine" id="cb10-15" data-line-number="15">sentence_embeddings <span class="op">=</span> model.encode(sentences)</a>
+<a class="sourceLine" id="cb10-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="cf">for</span> sentence, embedding <span class="kw">in</span> <span class="bu">zip</span>(sentences, sentence_embeddings):</a>
+<a class="sourceLine" id="cb10-18" data-line-number="18">    <span class="bu">print</span>(<span class="st">&quot;Sentence:&quot;</span>, sentence)</a>
+<a class="sourceLine" id="cb10-19" data-line-number="19">    <span class="bu">print</span>(<span class="st">&quot;Embedding:&quot;</span>, embedding)</a>
+<a class="sourceLine" id="cb10-20" data-line-number="20">    <span class="bu">print</span>(<span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<ol start="3" type="1">
+<li>下面定义query句子，并获得<strong>query的向量表示</strong></li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb11-1" data-line-number="1">query <span class="op">=</span> <span class="st">&#39;Nobody has sane thoughts&#39;</span>  <span class="co">#  A query sentence uses for searching semantic similarity score.</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">queries <span class="op">=</span> [query]</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">query_embeddings <span class="op">=</span> model.encode(queries)</a></code></pre></div>
+<ol start="4" type="1">
+<li>用scipy库计算两个向量的余弦距离，<strong>得到余弦相似度</strong>，找出与query句子余弦距离最小的前三个句子</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="im">import</span> scipy</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="bu">print</span>(<span class="st">&quot;Semantic Search Results&quot;</span>)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">number_top_matches <span class="op">=</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="cf">for</span> query, query_embedding <span class="kw">in</span> <span class="bu">zip</span>(queries, query_embeddings):</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">    distances <span class="op">=</span> scipy.spatial.distance.cdist([query_embedding], sentence_embeddings, <span class="st">&quot;cosine&quot;</span>)[<span class="dv">0</span>]</a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">    results <span class="op">=</span> <span class="bu">zip</span>(<span class="bu">range</span>(<span class="bu">len</span>(distances)), distances)</a>
+<a class="sourceLine" id="cb12-8" data-line-number="8">    results <span class="op">=</span> <span class="bu">sorted</span>(results, key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">    <span class="bu">print</span>(<span class="st">&quot;Query:&quot;</span>, query)</a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">    <span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Top </span><span class="sc">{}</span><span class="st"> most similar sentences in corpus:&quot;</span>.<span class="bu">format</span>(number_top_matches))</a>
+<a class="sourceLine" id="cb12-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12">    <span class="cf">for</span> idx, distance <span class="kw">in</span> results[<span class="dv">0</span>:number_top_matches]:</a>
+<a class="sourceLine" id="cb12-13" data-line-number="13">        <span class="bu">print</span>(sentences[idx].strip(), <span class="st">&quot;(Cosine Score: </span><span class="sc">%.4f</span><span class="st">)&quot;</span> <span class="op">%</span> (<span class="dv">1</span><span class="op">-</span>distance))</a></code></pre></div>
+<blockquote>
+<p>distance表示两个句子的余弦距离，<span class="math inline">1 − <em>d</em><em>i</em><em>s</em><em>t</em><em>a</em><em>n</em><em>c</em><em>e</em></span> 可以理解为两个<strong>句子的余弦分数（余弦相似度）</strong>，分数越大表示两个句子的语义越相近</p>
+</blockquote>
+<h4 id="fine-tune">Fine-Tune</h4>
+<p>Fine-Tune仍然是STS任务，我使用的数据集是query词对，</p>
+<ol type="1">
+<li>正样本： 同类query</li>
+<li><p>负样本：不同类query</p></li>
+<li><p>首先读取数据</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="im">import</span> xlrd</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">f <span class="op">=</span> xlrd.open_workbook(<span class="st">&#39;Ko2Cn.xlsx&#39;</span>).sheet_by_name(<span class="st">&#39;Xbench QA&#39;</span>)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">Ko_list <span class="op">=</span> f.col_values(<span class="dv">0</span>) <span class="co">#　所有的中文句子</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">Cn_list <span class="op">=</span> f.col_values(<span class="dv">1</span>) <span class="co">#　所有的韩语句子</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">shuffle_Cn_list <span class="op">=</span> shuffle(Cn_list) <span class="co"># 所有的中文句子打乱排序</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">shuffle_Ko_list <span class="op">=</span> shuffle(Ko_list) <span class="co">#　所有的韩语句子打乱排序</span></a></code></pre></div></li>
+<li><p>以下是构建数据集的代码</p></li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer, SentencesDataset, InputExample, evaluation, losses</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">train_size <span class="op">=</span> <span class="bu">int</span>(<span class="bu">len</span>(Ko_list) <span class="op">*</span> <span class="fl">0.8</span>)</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">eval_size <span class="op">=</span> <span class="bu">len</span>(Ko_list) <span class="op">-</span> train_size</a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="co"># Define your train examples.</span></a>
+<a class="sourceLine" id="cb14-8" data-line-number="8">train_data <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="cf">for</span> idx <span class="kw">in</span> <span class="bu">range</span>(train_size):</a>
+<a class="sourceLine" id="cb14-10" data-line-number="10">  train_data.append(InputExample(texts<span class="op">=</span>[Ko_list[idx], Cn_list[idx]], label<span class="op">=</span><span class="fl">1.0</span>))</a>
+<a class="sourceLine" id="cb14-11" data-line-number="11">  train_data.append(InputExample(texts<span class="op">=</span>[shuffle_Ko_list[idx], shuffle_Cn_list[idx]], label<span class="op">=</span><span class="fl">0.0</span>))</a>
+<a class="sourceLine" id="cb14-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb14-13" data-line-number="13"><span class="co"># Define your evaluation examples</span></a>
+<a class="sourceLine" id="cb14-14" data-line-number="14">sentences1 <span class="op">=</span> Ko_list[train_size:]</a>
+<a class="sourceLine" id="cb14-15" data-line-number="15">sentences2 <span class="op">=</span> Cn_list[train_size:]</a>
+<a class="sourceLine" id="cb14-16" data-line-number="16">sentences1.extend(<span class="bu">list</span>(shuffle_Ko_list[train_size:]))</a>
+<a class="sourceLine" id="cb14-17" data-line-number="17">sentences2.extend(<span class="bu">list</span>(shuffle_Cn_list[train_size:]))</a>
+<a class="sourceLine" id="cb14-18" data-line-number="18">scores <span class="op">=</span> [<span class="fl">1.0</span>] <span class="op">*</span> eval_size <span class="op">+</span> [<span class="fl">0.0</span>] <span class="op">*</span> eval_size</a>
+<a class="sourceLine" id="cb14-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb14-20" data-line-number="20">evaluator <span class="op">=</span> evaluation.EmbeddingSimilarityEvaluator(sentences1, sentences2, scores)</a>
+<a class="sourceLine" id="cb14-21" data-line-number="21"><span class="co"># Define your train dataset, the dataloader and the train loss</span></a>
+<a class="sourceLine" id="cb14-22" data-line-number="22">train_dataset <span class="op">=</span> SentencesDataset(train_data, model)</a>
+<a class="sourceLine" id="cb14-23" data-line-number="23">train_dataloader <span class="op">=</span> DataLoader(train_dataset, shuffle<span class="op">=</span><span class="va">True</span>, batch_size<span class="op">=</span><span class="dv">32</span>)</a>
+<a class="sourceLine" id="cb14-24" data-line-number="24">train_loss <span class="op">=</span> losses.CosineSimilarityLoss(model)</a></code></pre></div>
+<blockquote>
+<p>Sentence-Transformer在fine-tune的时候，数据必须保存到list中，list里是Sentence-Transformer库的作者自己定义的<strong>InputExample()</strong>对象</p>
+<p>InputExample()对象需要传两个参数texts和label，其中，texts也是个list类型，里面保存了一个句子对，label必须为float类型，表示这个句子对的相似程度<code>([-1,1])</code></p>
+<p>比方说下面的示例代码</p>
+<pre><code>train_examples = [InputExample(texts=[&#39;My first sentence&#39;, &#39;My second sentence&#39;], label=0.8),
+InputExample(texts=[&#39;Another pair&#39;, &#39;Unrelated sentence&#39;], label=0.3)]</code></pre>
+</blockquote>
+<p>然后<strong>定义模型开始训练</strong>，</p>
+<ol type="1">
+<li>用的是multilingual预训练模型，因为这个数据集既包含<strong>多种语言</strong>。Sentence-Transformer提供了三个可使用的多语言预训练模型</li>
+<li>每隔100次训练集的迭代，进行一次验证，并且它会自动将在验证集上表现最好的模型保存到<code>output_path</code></li>
+</ol>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co">#Define the model. Either from scratch of by loading a pre-trained model</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">model <span class="op">=</span> SentenceTransformer(<span class="st">&#39;distiluse-base-multilingual-cased&#39;</span>)</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="co"># Tune the model</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">model.fit(train_objectives<span class="op">=</span>[(train_dataloader, train_loss)], epochs<span class="op">=</span><span class="dv">1</span>, warmup_steps<span class="op">=</span><span class="dv">100</span>, evaluator<span class="op">=</span>evaluator, evaluation_steps<span class="op">=</span><span class="dv">100</span>, output_path<span class="op">=</span><span class="st">&#39;./Ko2CnModel&#39;</span>)</a></code></pre></div>
+<p>如果要<strong>加载模型做测试</strong>，使用如下代码即可</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer, util</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">model <span class="op">=</span> SentenceTransformer(<span class="st">&#39;./Ko2CnModel&#39;</span>)</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="co"># Sentences are encoded by calling model.encode()</span></a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">emb1 <span class="op">=</span> model.encode(<span class="st">&quot;터너를 이긴 푸들.&quot;</span>)</a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">emb2 <span class="op">=</span> model.encode(<span class="st">&quot;战胜特纳的泰迪。&quot;</span>)</a>
+<a class="sourceLine" id="cb17-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">cos_sim <span class="op">=</span> util.pytorch_cos_sim(emb1, emb2)</a>
+<a class="sourceLine" id="cb17-9" data-line-number="9"><span class="bu">print</span>(<span class="st">&quot;Cosine-Similarity:&quot;</span>, cos_sim)</a></code></pre></div>
+<h3 id="如何将bert轻量化">如何将bert轻量化</h3>
+<p>https://cloud.tencent.com/developer/article/1542897</p>
+<p><strong>模型轻量化</strong></p>
+<p>模型轻量化是业界一直在探索的一个课题，尤其是当你使用了BERT系列的预训练语言模型，inference速度始终是个绕不开的问题，而且训练平台可能还会对训练机器、速度有限制，训练时长也是一个难题。</p>
+<p>目前业界上主要的轻量化方法如下：</p>
+<ul>
+<li><p>蒸馏<strong>：将大模型蒸馏至小模型</strong>，思路是先训练好一个大模型，输入原始数据得到logits作为小模型的soft label，而原始数据的标签则为hard label，使用soft label和hard label训练小模型，旨在将大模型的能力教给小模型。</p></li>
+<li><p>剪枝：不改变模型结构，减小模型的维度，以减小模型量级。</p></li>
+<li><p>量化：将高精度的浮点数转化为低精度的浮点数，例如4-bit、8-bit等。</p></li>
+<li><p>OP重建：合并底层操作，加速矩阵运算。</p></li>
+<li><p>低秩分解：将原始的权重张量分解为多个张量，并对分解张量进行优化。</p>
+<p>我们团队对这些轻量化方法都进行了尝试，简单总结如下：</p></li>
+<li><p>蒸馏：可以很好地将大模型的能力教给小模型，将12层BERT蒸馏至2层BERT，可以达到非常接近的效果。但这种方法需要先训练出一个大模型。</p></li>
+<li><p>剪枝：速度有非常显著的提升，结合蒸馏，可以达到很好的效果；即使不结合蒸馏，也能达到不错的效果。</p></li>
+<li><p>量化：主要用于模型压缩，可以将大文件压缩成小<a href="https://cloud.tencent.com/product/cfs?from=10680">文件存储</a>，方便部署于移动端，但是在速度上无明显提升。</p></li>
+<li><p>OP重建：有明显加速功能，但是操作较为复杂，需要修改底层C++代码。</p></li>
+<li><p>低秩分解：基于PCA算法，有一倍多的加速作用，但是效果也下降了许多。</p>
+<p>在这些方法中，剪枝显得非常简单又高效，如果你想快速得对BERT模型进行轻量化，不仅inference快，还希望训练快，模型文件小，效果基本维持，那么剪枝将是一个非常好的选择，本文将介绍如何为BERT系列模型剪枝，并附上代码，教你十分钟剪枝。</p></li>
+</ul>
+<h3 id="如何缓解分布不均衡的问题">🚩如何缓解分布不均衡的问题？？？？？</h3>
+<h3 id="介绍下transformer">🚩介绍下Transformer</h3>

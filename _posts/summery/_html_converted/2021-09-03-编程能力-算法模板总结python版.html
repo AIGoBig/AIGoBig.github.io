@@ -1,0 +1,609 @@
+<h2 id="二分查找">二分查找</h2>
+<h3 id="二分查找框架">二分查找框架</h3>
+<ul>
+<li><strong>基本原理</strong>：根据目标值所处的位置共分为三种查找情况，分别是：找任意位置、找左边界和找右边界。</li>
+<li><strong>出题形式</strong>: 有序数组、<span class="math inline"><em>l</em><em>o</em><em>g</em>(<em>n</em>)</span>复杂度。</li>
+<li><strong>基本步骤</strong>：
+<ol type="1">
+<li>定义左右指针为数组两端。</li>
+<li>当左指针小于右指针时，遍历：
+<ol type="1">
+<li>中间指针为<code>(l+r)//2</code>。</li>
+<li>如果中间指针处数值小于目标值，收缩搜索区间为右半部分，</li>
+<li>如果中间指针处数值大于目标值，收缩搜索区间为左半部分。</li>
+<li>如果中间指针处数值等于目标值，返回当前位置。</li>
+</ol></li>
+</ol></li>
+<li><strong>找中间模板</strong></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">def</span> binary_search(nums:List[<span class="bu">int</span>], target:<span class="bu">int</span>):</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">  l, r <span class="op">=</span> <span class="dv">0</span>, <span class="bu">len</span>(nums)<span class="op">-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="cf">while</span> l <span class="op">&lt;=</span> r:</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    mid <span class="op">=</span> (l<span class="op">+</span>r)<span class="op">//</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">    <span class="cf">if</span> nums[mid] <span class="op">&lt;</span> target:</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">      l <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="cf">elif</span> nums[mid] <span class="op">&gt;</span> target:</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">      r <span class="op">=</span> mid <span class="op">-</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    <span class="cf">elif</span> nums[mid] <span class="op">==</span> target:</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">      <span class="cf">return</span> l</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  <span class="cf">return</span> <span class="dv">-1</span></a></code></pre></div>
+<ul>
+<li><strong>找左边界模板</strong></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">def</span> left_bound(nums:List[<span class="bu">int</span>], target:<span class="bu">int</span>):</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  l, r <span class="op">=</span> <span class="dv">0</span>, <span class="bu">len</span>(nums)<span class="op">-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="cf">while</span> l <span class="op">&lt;=</span> r:</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">    mid <span class="op">=</span> (l<span class="op">+</span>r)<span class="op">//</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">    <span class="cf">if</span> nums[mid] <span class="op">&lt;</span> target:</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">      l <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">    <span class="cf">elif</span> nums[mid] <span class="op">&gt;</span> target:</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">      r <span class="op">=</span> mid <span class="op">-</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    <span class="cf">elif</span> nums[mid] <span class="op">==</span> target:</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">      r <span class="op">=</span> mid <span class="op">-</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="cf">if</span> l <span class="op">&gt;</span> <span class="bu">len</span>(nums)<span class="op">-</span><span class="dv">1</span> <span class="kw">or</span> nums[l] <span class="op">!=</span> target:</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">      <span class="cf">return</span> <span class="dv">-1</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">  <span class="cf">return</span> l</a></code></pre></div>
+<ul>
+<li><strong>找右边界模板</strong></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">def</span> right_bound(nums:List[<span class="bu">int</span>], target:<span class="bu">int</span>):</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  l, r <span class="op">=</span> <span class="dv">0</span>, <span class="bu">len</span>(nums)<span class="op">-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="cf">while</span> l <span class="op">&lt;=</span> r:</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">    mid <span class="op">=</span> (l<span class="op">+</span>r)<span class="op">//</span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="cf">if</span> nums[mid] <span class="op">&lt;</span> target:</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">      l <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="cf">elif</span> nums[mid] <span class="op">&gt;</span> target:</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">      r <span class="op">=</span> mid <span class="op">-</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">    <span class="cf">elif</span> nums[mid] <span class="op">==</span> target:</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">      l <span class="op">=</span> mid <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">  <span class="cf">if</span> r <span class="op">&lt;</span> <span class="dv">0</span> <span class="kw">or</span> nums[r] <span class="op">!=</span> target:</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">      <span class="cf">return</span> <span class="dv">-1</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  <span class="cf">return</span> r</a></code></pre></div>
+<h2 id="动态规划">动态规划</h2>
+<h3 id="动态规划框架">动态规划框架</h3>
+<ul>
+<li><strong>基本原理</strong>：使用自底向上使用DP表来消除重叠子问题，从而优化时间复杂度。</li>
+<li><strong>出题形式</strong>: 一般形式就是<strong>求最值</strong>，存在“重叠子问题”或存在“最优子结构”（比如求最⻓递增子序列、最小编辑距离等）</li>
+<li><strong>基本步骤:</strong>
+<ol type="1">
+<li>确定问题的 <strong>base case</strong>（最简单的情况）</li>
+<li>确定问题的 <strong>状态</strong> （原问题和子问题中的变量）</li>
+<li>确定问题的 <strong>选择</strong> （导致状态发生变化的行为）</li>
+<li>确定 <strong>动态转移方程</strong> 的定义 （状态和选择的关系）</li>
+</ol></li>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">dp <span class="op">=</span> [[<span class="dv">0</span>] <span class="op">*</span> <span class="bu">len</span>(s2) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(s1))]  <span class="co"># 注意：是先j后i</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co"># 确定 base case</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">dp[<span class="dv">0</span>][<span class="dv">0</span>][...] <span class="op">=</span> base case </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># 确定 状态</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="cf">for</span> 状态1 <span class="kw">in</span> 状态1的取值:</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="cf">for</span> 状态2 <span class="kw">in</span> 状态2的取值:</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="co"># 确定 选择</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="co"># 确定 状态转移方程</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">    dp[状态1][状态2][...] <span class="op">=</span> 求最值(选择1,选择2,...)</a></code></pre></div>
+<h2 id="二叉树">二叉树</h2>
+<h3 id="二叉树遍历框架">二叉树遍历框架</h3>
+<ul>
+<li><strong>基本原理:</strong> 明确一个节点要做的事情,然后剩下的事抛给框架。</li>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">class</span> TreeNode:</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x):</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">        <span class="va">self</span>.val <span class="op">=</span> x</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">        <span class="va">self</span>.left <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">        <span class="va">self</span>.right <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">        </a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="kw">def</span> traverse(root) :</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="cf">if</span> <span class="kw">not</span> root: <span class="cf">return</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">      <span class="co"># 节点 需要做什么在这里做, 其他的交给框架</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="co"># 你的任务</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">    <span class="co"># 前序遍历位置</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    traverse(root.left)</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">    <span class="co"># 中序遍历位置</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    traverse(root.right)</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    <span class="co"># 后序遍历位置</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">/* 基本的二叉树节点 */</span> </a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">class TreeNode {     </a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">int</span> val;     </a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">  TreeNode left, right; </a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">} </a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="dt">void</span> traverse(TreeNode root) {     </a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="co">// 前序遍历位置    </span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    traverse(root.left)     </a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="co">// 中序遍历位置    </span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">    traverse(root.right)     </a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    <span class="co">// 后序遍历位置</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">}</a></code></pre></div>
+<h3 id="二叉数的dfs遍历示例"><strong>二叉数的dfs遍历示例</strong></h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">def</span> binaryTreePaths(<span class="va">self</span>, root: TreeNode) <span class="op">-&gt;</span> List[<span class="bu">str</span>]:</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="cf">if</span> <span class="kw">not</span> root: <span class="cf">return</span> []</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">  ans <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">  path <span class="op">=</span> <span class="st">&#39;&#39;</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">  <span class="kw">def</span> dfs(root, path):</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="cf">if</span> root: </a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">      <span class="co"># do sth</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">      path<span class="op">+=</span><span class="bu">str</span>(root.val)</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">      <span class="co"># 满足条件</span></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">      <span class="cf">if</span> <span class="kw">not</span>(root.left <span class="kw">or</span> root.right): </a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">        ans.append(path)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">      <span class="co"># 不满足继续循环</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">      <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">        path <span class="op">+=</span> <span class="st">&#39;-&gt;&#39;</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">        dfs(root.left, path)</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17">        dfs(root.right, path)</a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">    dfs(root,path)</a>
+<a class="sourceLine" id="cb7-20" data-line-number="20">    <span class="cf">return</span> ans</a></code></pre></div>
+<h3 id="二叉搜索树遍历框架"><strong>二叉搜索树遍历框架</strong></h3>
+<ul>
+<li><strong>基本原理</strong>：二叉搜索树(Binary Search Tree)中，任意节点的值要<strong>大于等于</strong>左子树所有节点的值, 且要<strong>小于等于</strong>右边子树的所有节点的值。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210116112419058-0325694_20240315120153m5F2FP.png" alt="image-20210116112419058" style="zoom: 33%;" /></p>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">class</span> TreeNode:</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x):</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">        <span class="va">self</span>.val <span class="op">=</span> x</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">        <span class="va">self</span>.left <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">        <span class="va">self</span>.right <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">        </a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw">def</span> BST(root:TreeNode, target:<span class="bu">int</span>):</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">  <span class="cf">if</span> root.val <span class="op">==</span> target:</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">    <span class="co"># do something</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">  <span class="cf">if</span> root.val <span class="op">&gt;</span> target:</a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">    BST(root.left, target)</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">  <span class="cf">if</span> root.val <span class="op">&lt;</span> target:</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">    BST(root.right, target)</a></code></pre></div>
+<ul>
+<li><strong>算法框架-C++版</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">/* 基本的二叉树节点 */</span> </a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">class TreeNode {     </a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">  <span class="dt">int</span> val;     </a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">  TreeNode left, right; </a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">} </a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="dt">void</span> BST(TreeNode root, <span class="dt">int</span> target) {     </a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">  <span class="cf">if</span> (root.val == target)         </a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">    <span class="co">// 找到目标,做点什么    </span></a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">  <span class="cf">if</span> (root.val &lt; target)         </a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">    BST(root.right, target);     </a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">  <span class="cf">if</span> (root.val &gt; target)         </a>
+<a class="sourceLine" id="cb9-13" data-line-number="13">    BST(root.left, target); </a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">} </a></code></pre></div>
+<h3 id="n-叉树遍历框架"><strong>N 叉树遍历框架</strong></h3>
+<ul>
+<li><strong>基本原理</strong>：二叉树框架可以扩展为 N 叉树的遍历框架:</li>
+<li><strong>遍历框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">class</span> TreeNode:</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, val, children):</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">    <span class="va">self</span>.val <span class="op">=</span> val</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="va">self</span>.children <span class="op">=</span> chrildren</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">    </a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="kw">def</span> traverse(root:TreeNode):</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">  <span class="cf">for</span> child <span class="kw">in</span> root.children:</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">    traverse(child)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">/* 基本的 N 叉树节点 */</span> </a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">class TreeNode {     </a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">int</span> val;     </a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  TreeNode[] children; </a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">} </a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="dt">void</span> traverse(TreeNode root) {     </a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">  <span class="cf">for</span> (TreeNode child : root.children)         </a>
+<a class="sourceLine" id="cb11-9" data-line-number="9">    traverse(child) </a>
+<a class="sourceLine" id="cb11-10" data-line-number="10">}</a></code></pre></div>
+<h3 id="图遍历框架"><strong>图遍历框架</strong></h3>
+<ul>
+<li><strong>基本原理</strong>：N 叉树的遍历可以扩展为图的遍历, 因为图就是多个N叉棵树的结合体, 用布尔数组 <code>visited</code> 标记以防止重复访问。</li>
+</ul>
+<h2 id="链表">链表</h2>
+<h3 id="链表遍历框架">链表遍历框架</h3>
+<ul>
+<li><strong>算法框架-迭代遍历+递归</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">class</span> ListNode:    </a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, val<span class="op">=</span><span class="dv">0</span>, <span class="bu">next</span><span class="op">=</span><span class="va">None</span>):        </a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">    <span class="va">self</span>.val <span class="op">=</span> val        </a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">    <span class="va">self</span>.<span class="bu">next</span> <span class="op">=</span> <span class="bu">next</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  <span class="kw">def</span> traverse(head):       </a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">    p <span class="op">=</span> head    </a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">    <span class="cf">while</span> p:                </a>
+<a class="sourceLine" id="cb12-8" data-line-number="8">      <span class="co"># 迭代访问 p.val              </span></a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">      p <span class="op">=</span> p.<span class="bu">next</span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">    <span class="kw">def</span> traverse(head):    </a>
+<a class="sourceLine" id="cb12-11" data-line-number="11">      <span class="co"># 递归访问 head.val         </span></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12">      traverse(head.<span class="bu">next</span>)</a></code></pre></div>
+<ul>
+<li><strong>算法框架-迭代遍历+递归-C++版</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">/* 基本的单链表节点 */</span> </a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">class ListNode {     </a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">    <span class="dt">int</span> val;     </a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">    ListNode next; </a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">} </a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="dt">void</span> traverse(ListNode head) {     </a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">    <span class="cf">for</span> (ListNode p = head; p != null; p = p.next) {         </a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">        <span class="co">// 迭代访问 p.val     </span></a>
+<a class="sourceLine" id="cb13-9" data-line-number="9">    } </a>
+<a class="sourceLine" id="cb13-10" data-line-number="10">} </a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="dt">void</span> traverse(ListNode head) {     </a>
+<a class="sourceLine" id="cb13-12" data-line-number="12">    <span class="co">// 递归访问 head.val     </span></a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">    traverse(head.next)</a>
+<a class="sourceLine" id="cb13-14" data-line-number="14">}</a></code></pre></div>
+<h2 id="深度优先dfs">深度优先DFS</h2>
+<ul>
+<li><strong>基本原理</strong>：在for循环里进行递归，在递归调用之前做选择，在调用之后撤销选择。</li>
+<li><strong>基本步骤</strong>：
+<ol type="1">
+<li>路径<strong>：已经做的选择</strong></li>
+<li>选择列表：当前<strong>可做的选择</strong></li>
+<li>结束条件：到达决策树底层，<strong>无法再做选择的条件</strong></li>
+</ol></li>
+</ul>
+<h3 id="深度优先遍历框架">深度优先遍历框架</h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">def</span> backtrack(选择列表, path):</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">    <span class="cf">if</span> 满足结束条件:</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">    result.add(path)</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">    <span class="cf">return</span> </a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">  </a>
+<a class="sourceLine" id="cb14-6" data-line-number="6">  <span class="cf">for</span> 选择 <span class="kw">in</span> 选择列表:</a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">    path.append(选择)</a>
+<a class="sourceLine" id="cb14-8" data-line-number="8">    backtrack(选择列表, path)</a>
+<a class="sourceLine" id="cb14-9" data-line-number="9">    path.pop()</a>
+<a class="sourceLine" id="cb14-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11">result <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb14-12" data-line-number="12">path <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb14-13" data-line-number="13">backtrack(选择列表, path)</a>
+<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="cf">return</span> result</a></code></pre></div>
+<h3 id="带有visited-的-深度优先遍历框架"><strong>带有visited 的 深度优先遍历框架</strong></h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">def</span> DFS(选择列表, path):</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">    <span class="cf">if</span> 满足结束条件:</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">    result.add(path)</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">    <span class="cf">return</span> </a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">  </a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">  visited.add(start)</a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">  <span class="cf">for</span> 选择 <span class="kw">in</span> 选择列表:</a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">    path.append(选择)</a>
+<a class="sourceLine" id="cb15-9" data-line-number="9">    backtrack(选择列表, path)</a>
+<a class="sourceLine" id="cb15-10" data-line-number="10">    path.pop()</a>
+<a class="sourceLine" id="cb15-11" data-line-number="11">  visited.remove(start)</a>
+<a class="sourceLine" id="cb15-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb15-13" data-line-number="13">visited <span class="op">=</span> <span class="bu">set</span>()</a>
+<a class="sourceLine" id="cb15-14" data-line-number="14">result <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb15-15" data-line-number="15">path <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb15-16" data-line-number="16">DFS(选择列表, path)</a>
+<a class="sourceLine" id="cb15-17" data-line-number="17"><span class="cf">return</span> result</a></code></pre></div>
+<h3 id="二叉树的-深度优先遍历示例"><strong>二叉树的 深度优先遍历示例</strong>：</h3>
+<ul>
+<li><strong>基本原理</strong>：此时的选择只有左子树和右子树，而且无需用 visited 标记是否访问。</li>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">def</span> dfs(root, targetSum):        </a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">    <span class="cf">if</span> <span class="kw">not</span> root:</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">        <span class="cf">return</span>   <span class="co"># 注意 return  </span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">    </a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">    path.append(root.val)  <span class="co"># 添加路径</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6">    </a>
+<a class="sourceLine" id="cb16-7" data-line-number="7">    targetSum <span class="op">-=</span> root.val</a>
+<a class="sourceLine" id="cb16-8" data-line-number="8">    <span class="cf">if</span> <span class="kw">not</span> root.left <span class="kw">and</span> <span class="kw">not</span> root.right <span class="kw">and</span> targetSum <span class="op">==</span> <span class="dv">0</span>: <span class="co"># 如果满足条件</span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9">        res.append(path[:])        </a>
+<a class="sourceLine" id="cb16-10" data-line-number="10">    </a>
+<a class="sourceLine" id="cb16-11" data-line-number="11">    dfs(root.left, targetSum)</a>
+<a class="sourceLine" id="cb16-12" data-line-number="12">    dfs(root.right, targetSum)</a>
+<a class="sourceLine" id="cb16-13" data-line-number="13">    </a>
+<a class="sourceLine" id="cb16-14" data-line-number="14">    path.pop()                          <span class="co"># 注意要 去掉路径</span></a>
+<a class="sourceLine" id="cb16-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb16-16" data-line-number="16">res <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb16-17" data-line-number="17">path <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb16-18" data-line-number="18">dfs(root,targetSum)</a>
+<a class="sourceLine" id="cb16-19" data-line-number="19"><span class="cf">return</span> res</a></code></pre></div>
+<h2 id="宽度优先bfs">宽度优先BFS</h2>
+<h3 id="宽度优先遍历框架">宽度优先遍历框架</h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">def</span> BFS(start, target):</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">  q <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">  visited <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">  </a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">  q.append(start)  <span class="co"># 队列queue</span></a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">  visited.add(start)  <span class="co"># 像二叉树一样的结构，没有子节点到父节点的指针，不会走回头路，就不需要visited</span></a>
+<a class="sourceLine" id="cb17-7" data-line-number="7">  step <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">  </a>
+<a class="sourceLine" id="cb17-9" data-line-number="9">  <span class="cf">while</span> q:</a>
+<a class="sourceLine" id="cb17-10" data-line-number="10">    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(queue)):</a>
+<a class="sourceLine" id="cb17-11" data-line-number="11">      cur <span class="op">=</span> q.pop(<span class="dv">0</span>)  <span class="co"># Notice is 0</span></a>
+<a class="sourceLine" id="cb17-12" data-line-number="12">      <span class="cf">if</span> cur <span class="kw">is</span> target:</a>
+<a class="sourceLine" id="cb17-13" data-line-number="13">        <span class="cf">return</span> step</a>
+<a class="sourceLine" id="cb17-14" data-line-number="14">      <span class="cf">for</span> x <span class="kw">in</span> cur.adj():  <span class="co"># 将 cur 的相邻节点加⼊队列</span></a>
+<a class="sourceLine" id="cb17-15" data-line-number="15">        <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> visited:</a>
+<a class="sourceLine" id="cb17-16" data-line-number="16">          q.append(x)</a>
+<a class="sourceLine" id="cb17-17" data-line-number="17">          visited.add(x)</a>
+<a class="sourceLine" id="cb17-18" data-line-number="18">    step <span class="op">+=</span> <span class="dv">1</span>  <span class="co"># 遍历完一层后step++</span></a>
+<a class="sourceLine" id="cb17-19" data-line-number="19">      </a></code></pre></div>
+<ul>
+<li><strong>算法框架-C++版</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co">// 计算从起点 start 到终点 target 的最近距离</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="dt">int</span> BFS(Node start, Node target) {</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">    Queue&lt;Node&gt; q;  <span class="co">// 核⼼数据结构</span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    Set&lt;Node&gt; visited;  <span class="co">// 避免⾛回头路</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">    q.offer(start);  <span class="co">// 将起点加⼊队列</span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7">    visited.add(start);</a>
+<a class="sourceLine" id="cb18-8" data-line-number="8">    <span class="dt">int</span> step = <span class="dv">0</span>;  <span class="co">// 记录扩散的步数</span></a>
+<a class="sourceLine" id="cb18-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10">    <span class="cf">while</span> (q not empty) {</a>
+<a class="sourceLine" id="cb18-11" data-line-number="11">        <span class="dt">int</span> sz = q.size();</a>
+<a class="sourceLine" id="cb18-12" data-line-number="12">        <span class="co">/* 将当前队列中的所有节点向四周扩散 */</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13">        <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; sz; i++) {</a>
+<a class="sourceLine" id="cb18-14" data-line-number="14">            Node cur = q.poll();</a>
+<a class="sourceLine" id="cb18-15" data-line-number="15">            <span class="co">/* 划重点：这⾥判断是否到达终点 */</span></a>
+<a class="sourceLine" id="cb18-16" data-line-number="16">            <span class="cf">if</span> (cur is target) </a>
+<a class="sourceLine" id="cb18-17" data-line-number="17">                <span class="cf">return</span> step; </a>
+<a class="sourceLine" id="cb18-18" data-line-number="18">            <span class="co">/* 将 cur 的相邻节点加⼊队列 */</span> </a>
+<a class="sourceLine" id="cb18-19" data-line-number="19">            <span class="cf">for</span> (Node x : cur.adj()) </a>
+<a class="sourceLine" id="cb18-20" data-line-number="20">                <span class="cf">if</span> (x not in visited) { </a>
+<a class="sourceLine" id="cb18-21" data-line-number="21">                    q.offer(x); </a>
+<a class="sourceLine" id="cb18-22" data-line-number="22">                    visited.add(x); </a>
+<a class="sourceLine" id="cb18-23" data-line-number="23">                } </a>
+<a class="sourceLine" id="cb18-24" data-line-number="24">        }</a>
+<a class="sourceLine" id="cb18-25" data-line-number="25">        <span class="co">/* 划重点：更新步数在这⾥ */</span> </a>
+<a class="sourceLine" id="cb18-26" data-line-number="26">        step++; </a>
+<a class="sourceLine" id="cb18-27" data-line-number="27">    } </a>
+<a class="sourceLine" id="cb18-28" data-line-number="28">}</a></code></pre></div>
+<h2 id="双指针">双指针</h2>
+<h3 id="快慢指针框架"><strong>快慢指针框架</strong></h3>
+<ul>
+<li><strong>基本原理</strong>：</li>
+<li><strong>出题形式</strong>：
+<ol type="1">
+<li>判断是否有环</li>
+<li>寻找环的起始节点</li>
+</ol></li>
+<li><strong>基本步骤</strong>：
+<ol type="1">
+<li>找到相遇节点</li>
+<li>让slow指向head</li>
+<li>slow和fast都一次一步</li>
+<li>相遇节点即为起始节点（又走了k-m步）</li>
+</ol></li>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb19-1" data-line-number="1">slow <span class="op">=</span> fast <span class="op">=</span> head</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="cf">while</span> fast <span class="kw">and</span> fast.<span class="bu">next</span>:</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">  slow <span class="op">=</span> slow.<span class="bu">next</span></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">  fast <span class="op">=</span> fast.<span class="bu">next</span>.<span class="bu">next</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">  <span class="cf">if</span> fast <span class="op">==</span> slow:</a>
+<a class="sourceLine" id="cb19-6" data-line-number="6">    <span class="cf">return</span> <span class="va">True</span></a></code></pre></div>
+<h3 id="滑动窗口框架"><strong>滑动窗口框架</strong></h3>
+<ul>
+<li><p><strong>基本原理</strong>：使用滑动窗口的方式将枚举的时间复杂度从 <span class="math inline"><em>O</em>(<em>N</em><sup>2</sup>)</span> 减少至 <span class="math inline"><em>O</em>(<em>N</em>)</span>。</p>
+<blockquote>
+<p>为什么是 O(N) 呢？这是因为在枚举的过程每一步中，「左指针」会向右移动一个位置(也就是题目中的 b)，而「右指针」会向左移动若干个位置，这个与数组的元素有关，但我们知道它一共会移动的位置数为 O(N)，均摊下来，每次也向左移动一个位置，因此时间复杂度为 O(N)。</p>
+<p><strong>参考链接</strong>：https://leetcode-cn.com/problems/3sum/solution/san-shu-zhi-he-by-leetcode-solution/</p>
+</blockquote></li>
+<li><p><strong>出题形式</strong>：当我们需要枚举数组中的两个元素时，如果我们发现随着第一个元素的递增，第二个元素是递减的，那么就可以使用双指针的方法。</p></li>
+<li><p><strong>算法框架</strong>：</p></li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">def</span> slidingWindow(s:<span class="bu">str</span>, t:<span class="bu">str</span>):</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">  need <span class="op">=</span> <span class="bu">set</span>(c)</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">  window <span class="op">=</span> <span class="bu">set</span>()</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">  </a>
+<a class="sourceLine" id="cb20-5" data-line-number="5">  left, right <span class="op">=</span> <span class="dv">0</span>, <span class="dv">0</span></a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">  valid <span class="op">=</span> <span class="dv">0</span>  <span class="co"># 注意</span></a>
+<a class="sourceLine" id="cb20-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">  <span class="cf">while</span> right <span class="op">&lt;</span> <span class="bu">len</span>(s):</a>
+<a class="sourceLine" id="cb20-9" data-line-number="9">    <span class="co"># 增大窗口</span></a>
+<a class="sourceLine" id="cb20-10" data-line-number="10">    c <span class="op">=</span> s[right]</a>
+<a class="sourceLine" id="cb20-11" data-line-number="11">    window.add(s[right])</a>
+<a class="sourceLine" id="cb20-12" data-line-number="12">    right <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb20-13" data-line-number="13">    <span class="bu">print</span>(<span class="st">&quot;window:&quot;</span>, left, right)</a>
+<a class="sourceLine" id="cb20-14" data-line-number="14">    <span class="cf">while</span> ...:  <span class="co"># window needs shrink</span></a>
+<a class="sourceLine" id="cb20-15" data-line-number="15">      <span class="co"># 缩小窗口</span></a>
+<a class="sourceLine" id="cb20-16" data-line-number="16">          d <span class="op">=</span> s[left]</a>
+<a class="sourceLine" id="cb20-17" data-line-number="17">      window.remove(s[left])</a>
+<a class="sourceLine" id="cb20-18" data-line-number="18">      left <span class="op">+=</span> <span class="dv">1</span></a></code></pre></div>
+<h2 id="排序算法">排序算法</h2>
+<ul>
+<li><p><strong>基本原理</strong>：</p>
+<ul>
+<li>冒泡排序：逐个比较，最大的后移</li>
+<li>选择排序：遍历选择最小的，放到最前</li>
+<li>插入排序：发现小数字，向前交换（样本小且基本有序时，效率较高，效果好）</li>
+<li>希尔排序：改进的插入排序，间隔由大到小排序<br />
+</li>
+<li>归并排序：最坏情况效果最好</li>
+<li>快速排序：速度快，效果好</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/cde64bf682850738153e6c76dd3f6fb32201ce3c73c23415451da1eead9eb7cb-20190624173156-0426489_20240315120209JJHzC1.jpg" alt="20190624173156.jpg" style="zoom:50%;" /></p></li>
+<li><p><strong>出题形式</strong>：需要重点掌握快速排序、归并排序、插入排序和冒泡排序。</p></li>
+</ul>
+<h3 id="冒泡排序框架">冒泡排序框架</h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">def</span> bubbleSort(nums):</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(nums)):</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">        <span class="co"># Last i elements are already in place</span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4">        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(nums)<span class="op">-</span>i<span class="dv">-1</span>):</a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">                            <span class="cf">if</span> nums[j] <span class="op">&gt;</span> nums[j<span class="op">+</span><span class="dv">1</span>]:</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6">                nums[j], nums[j<span class="op">+</span><span class="dv">1</span>] <span class="op">=</span> nums[j<span class="op">+</span><span class="dv">1</span>], nums[j]</a></code></pre></div>
+<h3 id="插入排序框架">插入排序框架</h3>
+<ul>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">class</span> Solution:</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">    <span class="kw">def</span> sortArray(<span class="va">self</span>, nums: List[<span class="bu">int</span>]) <span class="op">-&gt;</span> List[<span class="bu">int</span>]:</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">        <span class="cf">for</span> ind <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>,<span class="bu">len</span>(nums)):</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">            i <span class="op">=</span> ind</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">            <span class="cf">while</span> i <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> nums[i] <span class="op">&lt;</span> nums[i<span class="dv">-1</span>]:</a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">                nums[i], nums[i<span class="dv">-1</span>] <span class="op">=</span> nums[i<span class="dv">-1</span>], nums[i]</a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">                i <span class="op">-=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">        <span class="cf">return</span> nums</a></code></pre></div>
+<h3 id="堆排序框架">堆排序框架</h3>
+<ul>
+<li><strong>基本原理</strong>： 先将待排序的序列建成大顶堆，使得每个父节点的元素大于等于它的子节点。此时整个序列最大值即为堆顶元素，我们将其与末尾元素交换，使末尾元素为最大值，然后再调整堆顶元素使得剩下的 n-1个元素仍为大根堆，再重复执行以上操作我们即能得到一个有序的序列。</li>
+<li><strong>算法框架</strong>：</li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co"># 使用heapq返回topk个数示例</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="kw">class</span> Solution:</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">    <span class="kw">def</span> topKFrequent(<span class="va">self</span>, nums: List[<span class="bu">int</span>], k: <span class="bu">int</span>) <span class="op">-&gt;</span> List[<span class="bu">int</span>]:</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">        counter <span class="op">=</span> collections.Counter(nums)</a>
+<a class="sourceLine" id="cb23-5" data-line-number="5">        h <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb23-6" data-line-number="6">        <span class="cf">for</span> key, val <span class="kw">in</span> counter.items():</a>
+<a class="sourceLine" id="cb23-7" data-line-number="7">            heapq.heappush(h, (val, key))</a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">            <span class="cf">if</span> <span class="bu">len</span>(h) <span class="op">&gt;</span> k:</a>
+<a class="sourceLine" id="cb23-9" data-line-number="9">                heapq.heappop(h)</a>
+<a class="sourceLine" id="cb23-10" data-line-number="10">        <span class="cf">return</span> [x[<span class="dv">1</span>] <span class="cf">for</span> x <span class="kw">in</span> h]</a></code></pre></div>
+<blockquote>
+<p><strong>heapq库使用参考链接</strong>：https://blog.csdn.net/brucewong0516/article/details/79042839</p>
+<ul>
+<li><p><strong>heappush(heap,n)数据堆入</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co">#定义heap列表</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">In [<span class="dv">6</span>]: heap <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="co">#使用heapq库的heappush函数将数据堆入</span></a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">In [<span class="dv">7</span>]: <span class="cf">for</span> i <span class="kw">in</span> data:</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">   ...:     hq.heappush(heap,i)</a></code></pre></div></li>
+<li><p><strong>heappop(heap)将数组堆中的最小元素弹出</strong></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb25-1" data-line-number="1">In [<span class="dv">11</span>]: hq.heappop(heap)</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">Out[<span class="dv">11</span>]: <span class="dv">0</span></a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">In [<span class="dv">12</span>]: hq.heappop(heap)</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">Out[<span class="dv">12</span>]: <span class="fl">0.5</span></a></code></pre></div></li>
+<li><p><strong>heapify(heap) 将heap属性强制应用到任意一个列表</strong></p>
+<blockquote>
+<p>heapify 函数将使用任意列表作为参数，并且尽可能少的移位操作，，将其转化为合法的堆。如果没有建立堆，那么在使用heappush和heappop前应该使用该函数。</p>
+</blockquote>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb26-1" data-line-number="1">In [<span class="dv">13</span>]: heap <span class="op">=</span> [<span class="dv">5</span>,<span class="dv">8</span>,<span class="dv">0</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">In [<span class="dv">14</span>]: hq.heapify(heap)</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">In [<span class="dv">15</span>]: heap</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">Out[<span class="dv">15</span>]: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">6</span>]</a></code></pre></div></li>
+<li><p><strong>heapreplace(heap，n)弹出最小的元素被n替代</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb27-1" data-line-number="1">In [<span class="dv">17</span>]: hq.heapreplace(heap,<span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">Out[<span class="dv">17</span>]: <span class="dv">0</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">In [<span class="dv">18</span>]: heap</a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">Out[<span class="dv">18</span>]: [<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">6</span>]</a></code></pre></div></li>
+<li><p><strong>nlargest(n,iter)、nsmallest(n,iter)</strong></p>
+<blockquote>
+<p>heapq中剩下的两个函数nlargest(n.iter)和nsmallest(n.iter)分别用来寻找任何可迭代的对象iter中第n大或者第n小的元素。可以通过使用排序（sorted函数）和分片进行完成。</p>
+</blockquote>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co">#返回第一个最大的数</span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2">In [<span class="dv">19</span>]: hq.nlargest(<span class="dv">1</span>,heap)</a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">Out[<span class="dv">19</span>]: [<span class="dv">9</span>]</a>
+<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="co">#返回第一个最小的数</span></a>
+<a class="sourceLine" id="cb28-5" data-line-number="5">In [<span class="dv">20</span>]: hq.nsmallest(<span class="dv">1</span>,heap)</a>
+<a class="sourceLine" id="cb28-6" data-line-number="6">Out[<span class="dv">20</span>]: [<span class="fl">0.5</span>]</a></code></pre></div></li>
+</ul>
+</blockquote>
+<h3 id="归并排序">归并排序</h3>
+<ul>
+<li><strong>基本原理</strong>：归并排序利用了<strong>分治</strong>的思想来对序列进行排序。对一个长为 n的待排序的序列：</li>
+<li><strong>基本步骤</strong>：
+<ol type="1">
+<li>我们将其分解成两个长度为 <span class="math inline">$\frac{n}{2}$</span>的子序列。</li>
+<li>每次先递归调用函数使两个子序列有序，</li>
+<li>然后我们再线性合并两个有序的子序列使整个序列有序。</li>
+</ol></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/912_fig4-0426491_20240315120211wce9i4.gif" alt="fig4" style="zoom: 50%;" /></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">class</span> Solution:</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">    <span class="kw">def</span> merge_sort(<span class="va">self</span>, nums, l, r):</a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">        <span class="cf">if</span> l <span class="op">==</span> r:</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">            <span class="cf">return</span></a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">        mid <span class="op">=</span> (l <span class="op">+</span> r) <span class="op">//</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">        <span class="va">self</span>.merge_sort(nums, l, mid)</a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">        <span class="va">self</span>.merge_sort(nums, mid <span class="op">+</span> <span class="dv">1</span>, r)</a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">        <span class="co"># 两个有序列表的归并</span></a>
+<a class="sourceLine" id="cb29-9" data-line-number="9">        tmp <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb29-10" data-line-number="10">        i, j <span class="op">=</span> l, mid <span class="op">+</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb29-11" data-line-number="11">        <span class="cf">while</span> i <span class="op">&lt;=</span> mid <span class="kw">or</span> j <span class="op">&lt;=</span> r:</a>
+<a class="sourceLine" id="cb29-12" data-line-number="12">            <span class="cf">if</span> i <span class="op">&gt;</span> mid <span class="kw">or</span> (j <span class="op">&lt;=</span> r <span class="kw">and</span> nums[j] <span class="op">&lt;</span> nums[i]):  </a>
+<a class="sourceLine" id="cb29-13" data-line-number="13">                tmp.append(nums[j])</a>
+<a class="sourceLine" id="cb29-14" data-line-number="14">                j <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb29-15" data-line-number="15">            <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb29-16" data-line-number="16">                tmp.append(nums[i])</a>
+<a class="sourceLine" id="cb29-17" data-line-number="17">                i <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb29-18" data-line-number="18">        nums[l: r <span class="op">+</span> <span class="dv">1</span>] <span class="op">=</span> tmp</a>
+<a class="sourceLine" id="cb29-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb29-20" data-line-number="20">    <span class="kw">def</span> sortArray(<span class="va">self</span>, nums: List[<span class="bu">int</span>]) <span class="op">-&gt;</span> List[<span class="bu">int</span>]:</a>
+<a class="sourceLine" id="cb29-21" data-line-number="21">        <span class="va">self</span>.merge_sort(nums, <span class="dv">0</span>, <span class="bu">len</span>(nums) <span class="op">-</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb29-22" data-line-number="22">        <span class="cf">return</span> nums</a></code></pre></div>
+<blockquote>
+<p><strong>算法解释</strong>：定义 <code>mergeSort(nums, l, r)</code> 函数表示对 nums 数组里 [l,r] 的部分进行排序，整个函数流程如下：</p>
+<ol type="1">
+<li>递归调用函数 <code>mergeSort(nums, l, mid)</code> 对 nums 数组里 [l,mid] 部分进行排序。</li>
+<li>递归调用函数 <code>mergeSort(nums, mid + 1, r)</code> 对 nums 数组里 [mid+1,r] 部分进行排序。</li>
+<li>此时 nums 数组里 [l,mid] 和 [mid+1,r] 两个区间已经有序，我们对两个有序区间<strong>线性归并</strong>即可使 nums 数组里[l,r] 的部分有序。
+<ol type="1">
+<li>线性归并的过程并不难理解，由于两个区间均有序，所以我们维护<strong>两个指针 i 和 j</strong> 表示当前考虑到 [l,mid] 里的第 i个位置和 [mid+1,r] 的第 j个位置。</li>
+<li>如果 <code>nums[i] &lt;= nums[j]</code> ，那么我们就将nums[i] 放入临时数组 tmp 中并让 i += 1 ，即指针往后移。 否则我们就将 nums[j] 放入临时数组 tmp 中并让 j += 1 。</li>
+<li>如果有一个指针已经移到了区间的<strong>末尾</strong>，那么就把另一个区间里的数按顺序加入 tmp 数组中即可。</li>
+<li>这样能保证我们每次都是让两个区间中较小的数加入临时数组里，那么整个归并过程结束后 [l,r] 即为有序的。</li>
+</ol></li>
+<li>函数递归调用的入口为 <code>mergeSort(nums, 0, nums.length - 1)</code>，递归结束当且仅当 <code>l &gt;= r</code>。</li>
+</ol>
+<p><strong>时间复杂度</strong>：<span class="math inline"><em>O</em>(<em>n</em><em>l</em><em>o</em><em>g</em><em>n</em>)</span>。由于归并排序每次都将当前待排序的序列折半成两个子序列递归调用，然后再合并两个有序的子序列，而每次合并两个有序的子序列需要 O(n) 的时间复杂度，合并次数为<span class="math inline"><em>l</em><em>o</em><em>g</em>(<em>n</em>)</span>次，所以我们可以列出归并排序运行时间 <span class="math inline"><em>T</em>(<em>n</em>)</span> 的递归表达式：<span class="math inline"><em>T</em>(<em>n</em>) = 2<em>T</em>(2/<em>n</em>) + <em>O</em>(<em>n</em>)</span>。</p>
+<p><strong>空间复杂度</strong>：<span class="math inline"><em>O</em>(<em>n</em>)</span>。我们需要额外 <span class="math inline"><em>O</em>(<em>n</em>)</span> 空间的 tmp 数组，且归并排序递归调用的层数最深为nlogn，所以我们还需要额外的 <span class="math inline"><em>O</em>(<em>l</em><em>o</em><em>g</em><em>n</em>)</span> 的栈空间，所需的空间复杂度即为<span class="math inline"><em>O</em>(<em>n</em> + <em>l</em><em>o</em><em>g</em><em>n</em>) = <em>O</em>(<em>n</em>)</span>.</p>
+</blockquote>
+<h3 id="快速排序">快速排序</h3>
+<ul>
+<li><strong>基本原理</strong>：快速排序算法其实很简单，采用<strong>分治策略</strong>。使用分治法来把一个串(list)分为两个子串(sub-lists), 其中一部分记录的关键字均比另一部分的关键字小,则可分别对这两部分记录继续进行排序,以达到整个序列有序。</li>
+<li><strong>算法步骤</strong>：
+<ol type="1">
+<li>从数列中挑出一个元素,称为 <strong>“基准”(pivot);</strong></li>
+<li><strong>分区(partition)</strong>操作： 重新排序数列, 比pivot小的放到pivot左边，比pivot大的放到pivot右边。在这个分区退出之后,该基准就处于数列的中间位置。</li>
+<li><strong>递归地(recursive)</strong> 把小于基准值元素的子数列和大于基准值元素的子数列排序。</li>
+</ol></li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">class</span> Solution:</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">    <span class="kw">def</span> sortArray(<span class="va">self</span>, nums: List[<span class="bu">int</span>]) <span class="op">-&gt;</span> List[<span class="bu">int</span>]:</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">        <span class="kw">def</span> partition(nums, left_bound, right_bound):</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">            <span class="co"># 随机算法加上这两步</span></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">            <span class="co"># pivot = random.randint(left_bound, right_bound)  </span></a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">            <span class="co"># nums[pivot], nums[right_bound] = nums[right_bound], nums[pivot]</span></a>
+<a class="sourceLine" id="cb30-7" data-line-number="7">            pivot <span class="op">=</span> nums[right_bound]</a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">            l,r <span class="op">=</span> left_bound, right_bound <span class="op">-</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">            <span class="cf">while</span> l <span class="op">&lt;=</span> r:</a>
+<a class="sourceLine" id="cb30-10" data-line-number="10">                <span class="cf">while</span> l <span class="op">&lt;=</span> r <span class="kw">and</span> nums[l] <span class="op">&lt;=</span> pivot:</a>
+<a class="sourceLine" id="cb30-11" data-line-number="11">                    l <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">                <span class="cf">while</span> l <span class="op">&lt;=</span> r <span class="kw">and</span> nums[r] <span class="op">&gt;</span> pivot:</a>
+<a class="sourceLine" id="cb30-13" data-line-number="13">                    r <span class="op">-=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb30-14" data-line-number="14">                <span class="cf">if</span> l <span class="op">&lt;</span> r:</a>
+<a class="sourceLine" id="cb30-15" data-line-number="15">                    nums[l], nums[r] <span class="op">=</span> nums[r], nums[l]</a>
+<a class="sourceLine" id="cb30-16" data-line-number="16">            <span class="co"># 注意要把轴放在中间, 因为最后一次循环一定是走的l++，即当前l和r指向的是大值，互换l和锚点</span></a>
+<a class="sourceLine" id="cb30-17" data-line-number="17">            nums[l], nums[right_bound] <span class="op">=</span> nums[right_bound], nums[l]</a>
+<a class="sourceLine" id="cb30-18" data-line-number="18">            <span class="cf">return</span> l  </a>
+<a class="sourceLine" id="cb30-19" data-line-number="19">        <span class="kw">def</span> quick_sort(nums, left_bound, right_bound):</a>
+<a class="sourceLine" id="cb30-20" data-line-number="20">            <span class="cf">if</span> left_bound<span class="op">&gt;=</span>right_bound: </a>
+<a class="sourceLine" id="cb30-21" data-line-number="21">                <span class="cf">return</span></a>
+<a class="sourceLine" id="cb30-22" data-line-number="22">            mid <span class="op">=</span> partition(nums, left_bound, right_bound)</a>
+<a class="sourceLine" id="cb30-23" data-line-number="23">            quick_sort(nums, left_bound, mid <span class="op">-</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb30-24" data-line-number="24">            quick_sort(nums, mid <span class="op">+</span> <span class="dv">1</span>, right_bound) <span class="co"># 注意是mid+1</span></a>
+<a class="sourceLine" id="cb30-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb30-26" data-line-number="26">        quick_sort(nums, <span class="dv">0</span>, <span class="bu">len</span>(nums)<span class="op">-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb30-27" data-line-number="27">        <span class="cf">return</span> nums</a></code></pre></div>
+<blockquote>
+<p><strong>最坏情况</strong>：当划分产生的两个子问题分别包含 n-1 和 0 个元素时，<strong>最坏情况</strong>发生。划分操作的时间复杂度为Θ(𝑛)，𝑇(0)=O(1)，这时算法运行时间的递归式为 <span class="math inline"><em>𝑇</em>(<em>𝑛</em>) = <em>𝑇</em>(<em>𝑛</em> − 1) + <em>𝑇</em>(0) + <em>O</em>(<em>𝑛</em>) = <em>𝑇</em>(<em>𝑛</em> − 1) + <em>O</em>(<em>𝑛</em>)</span>，解为<span class="math inline"><em>𝑇</em>(<em>𝑛</em>) = <em>O</em>(<em>𝑛</em><sup>2</sup>)<em>T</em>(<em>n</em>) = <em>O</em>(<em>n</em><sup>2</sup>)</span>。</p>
+<p><strong>最好情况</strong>：当划分产生的两个子问题分别包含⌊𝑛/2⌋和⌈𝑛/2⌉−1个元素时，<strong>最好情况</strong>发生。算法运行时间递归式为<span class="math inline"><em>𝑇</em>(<em>𝑛</em>) = 2<em>𝑇</em>(<em>𝑛</em>/2) + <em>O</em>(<em>𝑛</em>)</span>，解为<span class="math inline"><em>𝑇</em>(<em>𝑛</em>) = <em>O</em>(<em>𝑛</em><em>l</em><em>g</em><em>𝑛</em>)</span>。</p>
+<p><strong>时间复杂度</strong>：平均情况下快速排序的时间复杂度是<span class="math inline"><em>O</em>(<em>n</em><em>l</em><em>o</em><em>g</em><em>n</em>)</span>，最坏情况是<span class="math inline"><em>O</em>(<em>n</em><sup>2</sup>)</span>，但通过<strong>随机算法可以避免最坏情况</strong>。</p>
+<p><strong>空间复杂度</strong>：快排的空间复杂度<span class="math inline"><em>O</em>(<em>l</em><em>o</em><em>g</em><em>n</em>)</span>。因为快排的实现是<strong>递归调用</strong>的， 而且每次函数调用中只使用了常数的空间，因此空间复杂度等于递归深度<span class="math inline"><em>O</em>(<em>l</em><em>o</em><em>g</em><em>n</em>)</span>。</p>
+</blockquote>

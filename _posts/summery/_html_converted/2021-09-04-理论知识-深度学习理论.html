@@ -1,0 +1,462 @@
+<h2 id="常问问题">常问问题</h2>
+<h3 id="gap层的原理">Gap层的原理</h3>
+<p>全局平均池化，是替代FC的一种方式，可以将每个二维的特征通道变成一个实数，该实数某种程度上具有该特征通道的全局信息。最开始主要是从模型压缩的应用中得到的灵感。</p>
+<ul>
+<li><p><strong>使用原因</strong>：</p>
+<ul>
+<li><p>FC层的权值参数最多，现在的趋势是尽量<strong>避免全连接</strong>，近期的大部分论文多用全局平均池化层代替。</p>
+<blockquote>
+<p>因为全连接层的每一个节点都与上一层每个节点连接，是把前一层的输出特征都综合起来</p>
+</blockquote></li>
+<li><p>更重要的是实验效果并不比用 FC 差</p></li>
+</ul></li>
+<li><p><strong>整体思想</strong>：</p>
+<ul>
+<li>用 feature map直接表示属于某个类的 confidence map</li>
+<li>每个feature map中的值加起来求平均值，直接作为属于某个类别的<strong>置信度</strong></li>
+<li>把一维的置信度输入softmax中分类</li>
+</ul></li>
+<li><p><strong>GAP的优势</strong>：</p>
+<ul>
+<li>因为FC的参数众多，GAP减少了参数的数量（在最近比较火的<strong>模型压缩</strong>中，这个优势可以很好的压缩模型的大小）</li>
+<li>因为在这种特别小样本的情况下是非常容易过拟合的，GAP可以很好的<strong>减轻过拟合</strong>的发生</li>
+</ul></li>
+</ul>
+<h3 id="过拟合">过拟合</h3>
+<ul>
+<li><p><strong>原理</strong>：</p>
+<ul>
+<li>根本原因：特征维度过多，模型假设过于复杂，参数过多，训练数据过少，噪声过多。</li>
+<li>导致拟合的函数过度的拟合了训练集，但没有考虑到泛化能力从而对新数据的测试集预测结果差。</li>
+<li>因此需要：减少特征维度，或者正则化降低参数值。</li>
+</ul></li>
+<li><p><strong>避免方法</strong>：交叉验证、正则化、数据增强、Dropout、降低模型复杂程度、early stopping 等</p>
+<ul>
+<li><p>交叉验证</p>
+<blockquote>
+<p>即<u>重复使用数据</u>，把得到的样本数据进行切分，组合为不同的训练集和测试集，用训练集训练模型，用测试集来评估模型预测的好坏。</p>
+<p>由于在此基础上可以得到多组不同的训练集和测试集，某次训练集中的某样本在下次可能成为测试集中的样本，即所谓“交叉”。</p>
+<p>当数据量不是很充足的时候，会使用交叉验证。</p>
+<p>在训练过程中，我们<strong>经常使用交叉验证来确定一些超参数</strong>。比方依据validation data上的accuracy来确定early stopping的epoch大小、learning rate等等</p>
+</blockquote></li>
+<li><p>正则化(L1和L2)：通过改动代价函数实现。</p></li>
+<li><p>数据增强：去除非共性特征。</p></li>
+<li><p>Dropout：通过改动神经网络本身来实现。例如，训练前，随机删除一部分隐层单元，保持输入输出层不变，依照BP算法更新上图神经网络中的权值。</p></li>
+<li><p>降低模型复杂程度。</p></li>
+<li><p>early stopping：即提前终止迭代来防止过拟合。</p></li>
+<li><p>Bagging用不同的模型拟合不同部分的训练集；</p></li>
+<li><p>Boosting只使用简单的神经网络；</p></li>
+<li><p>数据清洗：将错误的label纠正或者删除错误的数据。</p></li>
+</ul></li>
+</ul>
+<h3 id="小样本问题-模型方面">小样本问题-模型方面</h3>
+<ul>
+<li>迁移学习</li>
+<li>无监督、半监督</li>
+<li>GAN网络</li>
+<li><p>结构优化</p>
+<ul>
+<li>利用样本相关性</li>
+<li>使用残差学习和<strong>特征融合</strong></li>
+</ul></li>
+</ul>
+<h3 id="欠拟合">欠拟合</h3>
+<ul>
+<li><p><strong>原理</strong>：</p>
+<ul>
+<li>欠拟合的根本原因：<strong>特征维度过少，模型过于简单</strong></li>
+<li>导致拟合的函数无法满足训练集，误差较大；</li>
+<li><strong>因此需要增加特征维度，增加训练数据。</strong></li>
+</ul></li>
+<li><p><strong>避免方法</strong>：</p>
+<ul>
+<li><p>模型方面：模型复杂化、调整参数和超参数、降低正则化约束</p></li>
+<li><p>特征方面：增加更多的特征</p></li>
+<li><p><strong>模型复杂化</strong></p>
+<blockquote>
+<p>对同一个算法复杂化。例如回归模型添加更多的高次项，增加决策树的深度，增加神经网络的隐藏层数和隐藏单元数等</p>
+<p>弃用原来的算法，使用一个更加复杂的算法或模型。例如用神经网络来替代线性回归，用随机森林来代替决策树等</p>
+</blockquote></li>
+<li><p><strong>增加更多的特征，使输入数据具有更强的表达能力</strong></p>
+<blockquote>
+<p>特征挖掘十分重要，尤其是具有强表达能力的特征，往往可以抵过大量的弱表达能力的特征</p>
+<p>特征的数量往往并非重点，质量才是，总之强特最重要</p>
+<p>能否挖掘出强特，还在于对数据本身以及具体应用场景的深刻理解，往往依赖于经验</p>
+</blockquote></li>
+<li><p><strong>调整参数和超参数</strong></p>
+<blockquote>
+<p>超参数包括：神经网络中：学习率、学习衰减率、隐藏层数、隐藏层的单元数、Adam优化算法中的β1β1和β2β2参数、batch_size数值等</p>
+<p>其他算法中：随机森林的树数量，k-means中的cluster数，正则化参数λλ等</p>
+</blockquote></li>
+<li><p><strong>降低正则化约束</strong></p>
+<blockquote>
+<p>正则化约束是为了防止模型过拟合，如果模型压根不存在过拟合而是欠拟合了，那么就考虑是否降低正则化参数λλ或者直接去除正则化项</p>
+</blockquote></li>
+<li><p><strong>增加训练数据往往没有用</strong></p>
+<blockquote>
+<p>欠拟合本来就是模型的学习能力不足，增加再多的数据给它训练它也没能力学习好</p>
+</blockquote></li>
+</ul></li>
+</ul>
+<h3 id="样本不均衡问题">样本不均衡问题</h3>
+<ul>
+<li><p><strong>原理</strong>：</p>
+<ul>
+<li>某类数据不均衡（某一标签数量太多，其余标签数量太少）的问题，在机器学习中被称为“<strong>长尾问题</strong>”。</li>
+<li>这个问题导致，数据集中（尤其是大型数据集）样本数量少的物体，<strong>泛化效果</strong>会非常差。</li>
+</ul></li>
+<li><p><strong>方法</strong>：重采样、<strong>数据合成</strong> 、重加权、<strong>迁移学习</strong> 、度量学习、元学习/域自适应、<strong>解耦特征和分类器</strong></p>
+<ul>
+<li><strong>重采样</strong> （re-sampling）：分为对少样本的<strong>过采样</strong>、及多样本的<strong>欠采样</strong>。但这2种方法，都有欠缺：过采样容易发生少样本过拟合，无法学习更鲁棒、易泛化的特征，在不平衡数据上表现较差；欠采样会造成多样本严重信息损失，导致发生欠拟合。</li>
+<li><strong>数据合成</strong> （synthetic samples）<strong>：生成和少样本相似的新数据</strong>。以SMOTE方法为例，对于任意选取的少类样本，它用K近邻选取相似样本，并通过对样本线性插值得到新样本。这里与mixup方法相似，因此，也有非均衡的mixup版本出现。</li>
+<li><strong>重加权</strong> （re-weighting）：为不同类别（甚至不同样本）分配不同的权重。其中，权重可以自适应。这一方法诞生出很多变种，如对类别数目的倒数进行加权、对“有效”样本数加权、对样本数优化分类间距的损失加权等等。</li>
+<li><strong>迁移学习</strong> （transfer learning）：对多类和少类样本<strong>分别建模</strong>，将学到的多类样本信息/表示/知识迁移给少类别使用。</li>
+</ul>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-623aef46d94f448786ff163b15635872_720w-5034007-0044321_202109212116495s8yqw_%E5%89%AF%E6%9C%AC_20210922094438i7QNOe_20210922095932lw40Yl-20240315120329684_20240315120329ecHY8s.png" alt="v2-623aef46d94f448786ff163b15635872_720w-5034007-0044321_202109212116495s8yqw_副本" /><figcaption>v2-623aef46d94f448786ff163b15635872_720w-5034007-0044321_202109212116495s8yqw_副本</figcaption>
+</figure>
+<ul>
+<li><strong>度量学习</strong> （metric learning）：希望能<strong>学到更好的嵌入</strong>，以对少类附近的边界/边缘更好地建模。</li>
+<li><strong>元学习/域自适应</strong> （meta learning/domain adaptation）：分别对头、尾部数据进行不同处理，自适应地学习如何重加权，或是规划成域自适应问题。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/v2-0303f1faccc24c84435a5070c1b55bdf_720w-0044321_20210921211655eEOQWD_20210922094608KPxPZy_20210922095932Np3Hch.jpeg" alt="v2-0303f1faccc24c84435a5070c1b55bdf_720w-0044321_20210921211655eEOQWD" style="zoom:50%;" /></p>
+<ul>
+<li><strong>解耦特征和分类器</strong> （decoupling representation &amp; classifier）：研究发现，<strong>将特征学习和分类器学习解耦</strong>、将不平衡学习分为两个阶段，并在特征学习阶段正常采样、在分类器学习阶段平衡采样，可以带来更好的长尾学习效果。这是目前最优的长尾分类算法。</li>
+<li><strong>自监督预训练</strong>： 但这些，在样本极端失衡的情况下也没法用，如果真的只有几个样本，模型的性能差异就无法避免。所以可以考虑如下的自监督预训练。</li>
+</ul></li>
+</ul>
+<h3 id="自监督学习方法">自监督学习方法</h3>
+<ul>
+<li><p><strong>训练数据集</strong>：不是由人手动标记的，每个样本的标签是通过利用输入的相关性生成的（如来自不同的传感器模式）。</p></li>
+<li><strong>标签</strong>：通常来自于数据本身: 即模型直接从无标签数据中自行学习，无需标注数据。</li>
+<li><strong>训练</strong>：通过使用各种辅助任务 (auxiliary task ) 训练网络, 来提高学习表征 (representation) 的质量.</li>
+<li><strong>核心</strong>：如何自动为数据产生标签。如随机旋转, 均匀分割而自动产生的标注</li>
+<li><p><strong>性能评价</strong>：通过模型学出来的<strong>feature的质量</strong>来评价. feature质量是通过迁移学习的方式，把feature用到其它视觉任务中通过结果的好坏来评价。</p></li>
+</ul>
+<h3 id="分类评价指标">分类评价指标</h3>
+<ul>
+<li><p>整体精度OA（overall accuracy），将测试集上<strong>正确分类的像素点的个数除以总的像素个数</strong></p></li>
+<li><p>平均精度AA（average accuracy），将测试集上<strong>每类正确分类的像素点个数除以该类所有像素的总数</strong>，然后计算所有类别的精度的平均值称为平均精度AA。</p></li>
+<li><p>Kappa（Kappa Coefficient），Kappa系数是定义在混淆矩阵X上的一个评价指标，综合考虑<strong>混淆矩阵</strong>对角线上的元素和<strong>偏离对角线</strong>的元素，可以惩罚模型的“偏向性”，更客观地反映了算法的分类性能, Kappa 的值在-1~1的范围 。</p></li>
+</ul>
+<blockquote>
+<p>各个类别的样本数量<strong>往往不太平衡</strong>时，模型很容易偏向大类别而放弃小类别 (eg: 正负样本比例1:9，直接全部预测为负，acc也有90%。但正样本就完全被“抛弃”了)。 导致<strong>整体acc挺高，但是部分类别完全不能被召回</strong>。</p>
+</blockquote>
+<h3 id="resnet为什么有效">ResNet为什么有效</h3>
+<ul>
+<li><p>从梯度弥散、网络退化角度看</p>
+<ul>
+<li><strong>梯度消失/爆炸</strong>已经通过 normalized 、initialization 等方式得到缓解。残差结构是为了解决<strong>网络退化</strong>的问题提出的，跨层输入相当于一个恒等映射，中间层只需拟合残差，因此层的加入不会使效果变差</li>
+<li>在网络上堆叠这样的结构，<strong>就算梯度消失，我什么也学不到，我至少把原来的样子恒等映射了过去</strong>，相当于在浅层网络上堆叠了“<strong>复制层</strong>”，这样<strong>至少不会比浅层网络差</strong>。</li>
+</ul></li>
+<li><p>从<strong>梯度反向传播的角度</strong>解释</p>
+<ul>
+<li>即过于深的网络在反传时容易发生梯度弥散，一旦某一步开始导数小于1，此后<strong>继续反传</strong>，传到前面时，用float32位数字已经无法表示梯度的变化了，相当于梯度没有改变，也就是浅层的网络学不到东西了。<strong>这是网络太深反而效果下降的原因</strong>。</li>
+<li>加入ResNet中的shortcut结构之后，在<strong>反传时，每两个block之间不仅传递了梯度，还加上了求导之前的梯度</strong>，这相当于把每一个block中向前传递的梯度人为加大了，也就会<strong>减小梯度弥散的可能性</strong>。</li>
+</ul></li>
+<li><p>解决<strong>欠拟合</strong>问题角度解释(待研究)</p>
+<ul>
+<li>在正向卷积时，对每一层做卷积其实只提取了图像的一部分信息，这样一来，越到深层，原始图像信息的丢失越严重，而仅仅是对原始图像中的一小部分特征做提取。 这显然会发生类似欠拟合的现象。 加入shortcut结构，相当于在<strong>每个block中又加入了上一层图像的全部信息，一定程度上保留了更多的原始信息。</strong></li>
+<li>由于每做一次卷积（包括对应的激活操作）都会浪费掉一些信息：比如卷积核参数的随机性（盲目性）、激活函数的抑制作用等等。这时，<strong>ResNet中的shortcut相当于把以前处理过的信息直接再拿到现在一并处理，起到了减损的效果。</strong></li>
+</ul></li>
+<li><p>模型集成角度解释（加入shortcut后<strong>相当于一个ensemble模型</strong>）</p>
+<ul>
+<li><strong>输出的结果是前面各个block及其组合一起做的一个投票选出的结果</strong>。即可以把ResNet网络看成是多个子网络并行，从实验中看，真实起作用的路径长度并不深，主要走是中等深度的网络。简单来说，就是<strong>做了不同层次上的特征组合。</strong></li>
+</ul></li>
+<li><p>特征具有层次性的角度解释</p>
+<ul>
+<li><strong>回到网络结构上面，浅层网络提取的是简单的特征</strong>，而简单和复杂的特征适用于不同的样本，没有shortcut时，对所有样本的分类都是利用最复杂的特征判断，费时费力；<strong>加入shortcut后，相当于保留了一些简单的特征用于判断，变得省时。这一观点主要解释了为什么ResNet网络能够更快收敛。</strong></li>
+</ul></li>
+</ul>
+<h3 id="dropout解决过拟合现象">Dropout(解决过拟合现象)</h3>
+<ul>
+<li><strong>原理</strong>：
+<ul>
+<li>往往在模型参数太多，训练样本少，易产生过拟合情况下。</li>
+<li>在神经网络训练过程中 ，对于神经单元<strong>按一定的概率令其停止工作</strong>（置零），</li>
+<li>这样可以提升模型的<strong>泛化能力</strong>，使其不会太依赖某些<strong>局部特征</strong>。</li>
+<li>相当于每次训练都是不同的网络，bagging思想</li>
+</ul></li>
+<li><strong>具体操作</strong>：每次迭代，重复下述过程
+<ol type="1">
+<li>一定概率将某些隐层神经元置零</li>
+<li>前向传播</li>
+<li>反向传播，更新未被删除神经元的权重</li>
+<li>恢复被删除的神经元</li>
+</ol></li>
+<li><strong>作用</strong>：
+<ul>
+<li>减少神经元之间复杂的<strong>共适应关系</strong>，权值更新不再依赖于有固定关系的隐含节点的共同作用。</li>
+<li>阻止了某些特征仅仅在其他特定特征下才有效的情况，<strong>增强了模型的鲁棒性。</strong></li>
+</ul></li>
+</ul>
+<h3 id="bn层的原理归一化变换重构">BN层的原理（归一化+变换重构）</h3>
+<ul>
+<li><p><strong>原理</strong>：</p>
+<ul>
+<li>BN的本质是利用<strong>优化</strong>的方法来改变方差大小和均值的位置</li>
+<li>可以加快收敛速度、减小梯度消失和梯度爆炸、控制过拟合等。<img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/v2-0b0f8a8ffd52e44bbc0330f32e1f5907_1440w_2021092121170929oUjf_20210922094717Q7PHAT_20210922095933fWthP3.jpeg" alt="v2-0b0f8a8ffd52e44bbc0330f32e1f5907_1440w_2021092121170929oUjf" /></li>
+</ul></li>
+<li><p><strong>具体操作</strong>：</p>
+<ul>
+<li>首先进行<strong>归一化</strong>：对输入数据进行一个标准的“减均值除方差”的归一化过程（为了防止分母为0加了一个ε）。但这样会影响到本层网络所学习到的特征，因为特征分布会被破坏。</li>
+<li>所以还需要<strong>变换重构</strong>：增加了<code>γ</code>和<code>β</code>这2个需要学习的参数，这两个参数是在每个batch的数据上计算得到的，可以通过优化改变方差大小和均值的位置。</li>
+<li><strong>具体实现</strong>是：在网络的每一层输入的时候，又<strong>插入了一个归一化层</strong>，也就是先做一个归一化处理（归一化至：均值0、方差为1），然后再进入网络的下一层。</li>
+</ul></li>
+<li><p><strong>细节</strong>：</p>
+<ul>
+<li><strong>训练阶段</strong>：因为每个batch的数据分布是不同的，所以在训练阶段对每个batch都会进行BN归一化，并通过滑窗平均的方式在训练结束后保存下全部数据的分布参数。</li>
+<li><strong>测试阶段</strong>：因为训练阶段完成后，均值、方差、γ、β已经是固定数值了，所以即可直接用训练阶段得到的参数来进行BN即可。</li>
+<li><strong>BN参数量</strong>：因为每个通道上会进行BN，所以个数为c。</li>
+</ul></li>
+<li><p><strong>优化方式</strong>：</p>
+<ul>
+<li>将BN和CNN进行结合，加速计算，减少参数量（因为一堆参数都可以改成一个参数，减少计算和参数量）</li>
+</ul></li>
+<li><p><strong>BN层的作用</strong></p>
+<ul>
+<li><p>加快<strong>训练速度</strong>, 增大学习率（BN使每一层的<strong>输入分布稳定</strong>，使激活函数能够有效地利用输入信息，确保随着训练，网络层可以持续学习输入的分布，因此可以使训练加速）</p>
+<blockquote>
+<p>如果每层的数据分布都不一样的话，将会导致网络非常难收敛和训练，而如果把 每层的数据都在转换在均值为零，方差为1 的状态下，这样<strong>每层数据的分布都一样</strong>, 训练会比较容易收敛。</p>
+<p>使激活函数能够更有效地利用输入信息，确保层能持续的学习输入的分布，内部协方差不断变小，加速训练过程。</p>
+</blockquote></li>
+<li><p>减小<strong>梯度消失和梯度爆炸</strong> (做归一化可以将数据分布<strong>映射到一个比较合适的范围内</strong>, 否则, 当x到了一定的大小，经过sigmoid函数后输出范围就会变得很小)</p>
+<blockquote>
+<p>以sigmoid函数为例，sigmoid函数使得输出在[0,1]之间，实际上当x到了一定的大小，经过sigmoid函数后输出范围就会变得很小</p>
+</blockquote></li>
+<li><p>改善正则化策略，控制<strong>过拟合</strong>，可以少用或者不用dropout和正则（因为BN本身就是一个归一化网络层）</p>
+<blockquote>
+<p>在网络的训练中，BN的使用<strong>使得一个minibatch中所有样本都被关联在了一起</strong>，因此网络不会从某一个训练样本中生成确定的结果，即同样一个样本的输出不再仅仅取决于样本的本身，也取决于跟这个样本同属一个batch的其他样本，而每次网络都是随机取batch，这样就会使得整个网络不会朝这一个方向使劲学习。一定程度上避免了过拟合。</p>
+</blockquote></li>
+<li><p>使网络对参数设置不敏感,如学习率, 初始权重等</p></li>
+</ul></li>
+</ul>
+<h3 id="梯度消失和梯度爆炸">梯度消失和梯度爆炸</h3>
+<ul>
+<li>原理：
+<ul>
+<li>梯度消失：因为各层<strong>权值</strong>（特征值）过小，使用了sigmoid等激活函数（最大梯度0.25）</li>
+<li>梯度爆炸：因为各层<strong>权值</strong>（特征值）过大。</li>
+<li>梯度的连续反向传播是通过<strong>权重层w连乘</strong>进行的。</li>
+<li>参数的更新为： <span class="math inline"><em>w</em> +  △ <em>w</em> → <em>w</em></span></li>
+<li>如果要更新第二隐藏层的权值信息，根据<strong>链式求导法则，更新梯度信息</strong>：</li>
+</ul></li>
+</ul>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/20190422161352350_20210921211736gMFJ56.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<ul>
+<li><strong>解决方法</strong>：
+<ol type="1">
+<li>换用Relu、<strong>LeakyRelu、Elu</strong>等激活函数</li>
+<li>Batch Normalization</li>
+<li>ResNet 残差结构</li>
+<li>预训练 + finetunning(微调)</li>
+<li>梯度剪切、L1、L2正则</li>
+<li>🚩LSTM 结构</li>
+</ol></li>
+</ul>
+<h3 id="池化层的反向传播">池化层的反向传播</h3>
+<blockquote>
+<p>参考链接：https://blog.csdn.net/Jason_yyz/article/details/80003271</p>
+</blockquote>
+<ul>
+<li>mean-pooling：梯度平均传播</li>
+<li>max-pooling：把梯度直接传给前一层<strong>某一个像素</strong>，而其他像素不接受梯度，也就是为0（有保存位置的maxid）</li>
+</ul>
+<h3 id="l1和l2正则化">l1和l2正则化</h3>
+<h4 id="原理"><strong>原理</strong></h4>
+<ul>
+<li><p>正则化的主要作用是防止过拟合，对模型添加正则化项可以<strong>限制模型的复杂度</strong>，使得模型在复杂度和性能达到平衡。</p></li>
+<li><p>L1正则化和L2正则化可以看做是<strong>损失函数的惩罚项</strong>。所谓『惩罚』是指对损失函数中的某些参数做一些限制。<strong>无约束变成有约束</strong>。</p></li>
+<li><p>L1正则化是指权值向量w中各个元素的<strong>绝对值之和</strong>， L2正则化是指权值向量w中各个元素的<strong>平方和然后再求平方根</strong></p></li>
+<li><p><strong>从先验的角度分析可以防止过拟合的原理</strong>： 过拟合表现在训练数据上的误差非常小，而在测试数据上误差反而增大。其原因一般是模型过于复杂，过分得去拟合数据的噪声。<strong>正则化则是对模型参数添加先验，使得模型复杂度较小，对于噪声扰动相对较小</strong>。最简单的解释就是加了先验。在数据少的时候，先验知识可以防止过拟合。</p>
+<blockquote>
+<p>举个例子：硬币，推断正面朝上的概率。如果只能抛5次，很可能5次全正面朝上，这样你就得出错误的结论：正面朝上的概率是1——–过拟合！如果你在模型里加正面朝上概率是0.5的先验，结果就不会那么离谱。这其实就是正则</p>
+</blockquote></li>
+</ul>
+<h4 id="种类">种类</h4>
+<ul>
+<li><p><span class="math inline"><em>l</em>1</span>正则化：</p>
+<ul>
+<li><p><strong>优点</strong>是可以产生稀疏权值矩阵，即产生一个<strong>稀疏模型</strong>，可以用于特征选择</p></li>
+<li><p><strong>缺点</strong>是目标函数在<strong>原点不可导</strong>，需要做特殊处理（比如：使用smooth l1）</p>
+<blockquote>
+<p>画出损失函数等值线和L1正则化的函数。（二维特征）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/format,png-7290731_20210921211742hvMCJc.png" alt="@图1 L1正则化" style="zoom: 50%;" /></p>
+<p><strong>多维情况下，顶点角更多，在这些角上，很多权值等于0</strong>，产生模型，可用于特征选择。</p>
+</blockquote></li>
+</ul></li>
+<li><p><span class="math inline"><em>l</em>2</span>正则化：</p>
+<ul>
+<li><p><strong>优点</strong>是实现简单，能够起<strong>正则化</strong>作用，<strong>防止模型过拟合</strong></p>
+<blockquote>
+<p><strong>为什么可以避免过拟合？</strong></p>
+<p>拟合过程中通常都倾向于让<strong>权值尽可能小</strong>，最后构造一个所有参数都比较小的模型。因为一般认为参数值小的<strong>模型比较简单</strong>，能适应不同的数据集，也在一定程度上<strong>避免了过拟合现象</strong>。否则如果参数很大，小的变动就能对结构有很大的影响，这样模型不稳定。</p>
+</blockquote></li>
+<li><p><strong>缺点</strong>是无法获得稀疏模型</p>
+<blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/format,png-20210726171411062_20210921211746GUEbUq-20210922095933369_20210922095933G4JlMo.png" alt="@图2 L2正则化" style="zoom: 50%;" /></p>
+<p><strong>为什么无法获得稀疏模型？</strong></p>
+<p>权值等于0的概率比L1小了很多。</p>
+</blockquote></li>
+</ul></li>
+<li><p>改进版 - <span class="math inline"><em>s</em><em>m</em><em>o</em><em>o</em><em>t</em><em>h</em> <em>l</em>1</span>：</p>
+<ul>
+<li>该函数实际上就是一个分段函数,</li>
+<li>在[-1,1]之间实际上就是L2损失，这样解决了<strong>L1的不光滑</strong>问题，</li>
+<li>在[-1,1]区间外，实际上就是L1损失，这样就解决了<strong>离群点梯度爆炸</strong>的问题。</li>
+</ul></li>
+</ul>
+<h4 id="l1和l2区别">L1和L2区别</h4>
+<p>相同点：都用于避免过拟合</p>
+<p>不同点：</p>
+<ol type="1">
+<li><strong>L1正则是拉普拉斯先验，而L2正则则是高斯先验。</strong></li>
+<li>L1可以产生稀疏解,可以让一部分特征的系数缩小到0，从而间接实现特征选择。</li>
+<li>所以L1适用于特征之间有关联的情况。L2让所有特征的系数都缩小，但是不会减为0，它会使优化求解稳定快速。所以L2适用于特征之间没有关联的情况</li>
+<li>因为L1和服从拉普拉斯分布，所以L1在0点处不可导，难以计算，这个方法可以使用Proximal Algorithms或者ADMM来解决。</li>
+<li><strong>l1和l2的鲁棒性</strong>
+<ul>
+<li>与最小平方相比，<strong>最小绝对值偏差方法的鲁棒性更好</strong>，<strong>能更好的处理数据中的异常值</strong>。如果需要考虑任一或全部的异常值，那么最小绝对值偏差是更好的选择。</li>
+<li>从直观上说，因为<strong>L2范数将误差平方化</strong>（如果误差大于1，则误差会放大很多），模型的误差会比L1范数来得大，因此模型会对这个样本更加敏感，这就需要调整模型来最小化误差。如果这个样本是一个异常值，模型就需要调整以适应单个的异常值，这会牺牲许多其它正常的样本，因为这些正常样本的误差比这单个的异常值的误差小。</li>
+<li>重建任务中不希望异常值对重建损失带来太大的影响，所以用l1距离鲁棒性更高、效果更好。</li>
+</ul></li>
+</ol>
+<h4 id="l2产生稀疏解原因">l2产生稀疏解原因</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo@master/uPic/v2-f2f9e95b70a7ce926beed810e80045a9_1440w_20210921211753EWviQF-20210922095933930_20210922095934u0X5pJ.jpg" alt="img" style="zoom: 33%;" /></p>
+<blockquote>
+<p>上图中的模型是线性回归，有两个特征，要优化的参数分别是w1和w2，<strong>左图的正则化是l2，右图是l1</strong>。</p>
+<p>蓝色线就是优化过程中遇到的等高线，一圈代表一个目标函数值，圆心就是样本观测值（假设一个样本），半径就是误差值，受限条件就是红色边界（就是正则化那部分），二者相交处，才是最优参数。</p>
+<p>可见右边的最优参数只可能在坐标轴上，所以就会出现0权重参数，使得模型稀疏。</p>
+</blockquote>
+<h3 id="网络优化器总结">网络优化器总结</h3>
+<h4 id="梯度下降法gradient-descent">梯度下降法(Gradient Descent)</h4>
+<p><strong>标准梯度下降法(GD)</strong></p>
+<blockquote>
+<ul>
+<li>从表达式来看，模型参数的更新调整，与代价函数<strong>关于模型参数的梯度有关</strong>，即沿着梯度的方向不断减小模型参数，从而最小化代价函数。</li>
+<li>基本策略可以理解为”<strong>在有限视距内寻找最快路径下山</strong>“，因此每走一步，参考当前位置最陡的方向(即<strong>梯度</strong>)进而迈出下一步。可以形象的表示为：</li>
+</ul>
+</blockquote>
+<ul>
+<li><p>缺点</p>
+<ul>
+<li><strong>训练速度慢</strong>：（每一步调整）</li>
+<li><strong>容易陷入局部最优解</strong>（无法跳出局部最优点）</li>
+</ul></li>
+</ul>
+<p><strong>批量梯度下降法(BGD)</strong></p>
+<ul>
+<li>模型参数的调整更新与全部输入样本的<strong>代价函数的和</strong>（即批量/全局误差）有关。</li>
+<li>优点
+<ul>
+<li>批量梯度下降法比标准梯度下降法训练时间短，且每次下降的方向都很正确。</li>
+</ul></li>
+</ul>
+<p><strong>随机梯度下降法(SGD)</strong></p>
+<ul>
+<li>优点
+<ul>
+<li>但是对梯度的要求很低（计算梯度快）</li>
+<li>应用大型数据集时，训练速度很快。</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>SGD在随机选择梯度的同时会引入噪声，使得<strong>权值更新的方向</strong>不一定正确。</li>
+<li>此外，SGD也没能单独克服<strong>局部最优解</strong>的问题。</li>
+</ul></li>
+</ul>
+<h4 id="动量优化法"><strong>动量优化法</strong></h4>
+<blockquote>
+<p>动量优化方法是在梯度下降法的基础上进行的改变，具有<strong>加速梯度下降</strong>的作用。一般有标准动量优化方法Momentum、NAG（Nesterov accelerated gradient）动量优化方法。</p>
+</blockquote>
+<p><strong>Momentum</strong></p>
+<ul>
+<li>使用动量(Momentum)的随机梯度下降法(SGD)，主要思想是<strong>引入一个积攒历史梯度信息动量</strong>来加速SGD。由于当前权值的改变会受到上一次权值改变的影响，类似于小球向下滚动的时候带上了<strong>惯性</strong>。这样可以加快小球向下滚动的速度。</li>
+<li>优点：主要解决SGD的两个问题，
+<ul>
+<li>一是随机梯度的方法（引入的噪声）；</li>
+<li>二是Hessian矩阵病态问题（可以理解为SGD在收敛过程中和正确梯度相比来回摆动比较大的问题）。</li>
+</ul></li>
+</ul>
+<p><strong>牛顿加速梯度（NAG, Nesterov accelerated gradient）算法</strong></p>
+<ul>
+<li>是Momentum动量算法的变种。理解策略：在Momentun中小球会盲目地跟从下坡的梯度，容易发生错误。所以需要一个更聪明的小球，能提前知道它要去哪里，还要知道走到坡底的时候速度慢下来而不是又冲上另一个坡。</li>
+</ul>
+<h4 id="自适应学习率优化算法"><strong>自适应学习率优化算法</strong></h4>
+<blockquote>
+<p><strong>AdaGrad算法</strong>，<strong>RMSProp算法</strong>，<strong>Adam算法</strong>以及<strong>AdaDelta算法</strong>。</p>
+</blockquote>
+<p><strong>AdaGrad算法</strong></p>
+<ul>
+<li>从表达式可以看出，对出现比较多的类别数据，Adagrad给予越来越小的学习率，而对于比较少的类别数据，会给予较大的学习率。因此Adagrad适用于数据稀疏或者分布不平衡的数据集。</li>
+<li>优势
+<ul>
+<li><strong>不需要人为的调节学习率</strong>，它可以自动调节；</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>随着迭代次数增多，学习率会越来越小，最终会趋近于0。</li>
+</ul></li>
+</ul>
+<p><strong>RMSProp算法</strong></p>
+<ul>
+<li>RMSProp借鉴了Adagrad的思想，观察表达式，分母为由于取了个加权平均，RMSProp算法在经验上已经被证明是一种有效且实用的深度神经网络优化算法。目前它是深度学习从业者<strong>经常采用</strong>的优化方法之一。</li>
+<li>优点：
+<ul>
+<li>避免了学习率越来越低的的问题，而且能自适应地调节学习率。</li>
+</ul></li>
+</ul>
+<p><strong>AdaDelta算法</strong></p>
+<ul>
+<li>优点：
+<ul>
+<li>在模型训练的初期和中期，AdaDelta表现很好，加速效果不错，训练速度快。</li>
+</ul></li>
+<li>缺点：
+<ul>
+<li>在模型训练的后期，模型会反复地在局部最小值附近抖动。</li>
+</ul></li>
+</ul>
+<h3 id="adam">Adam</h3>
+<ol type="1">
+<li><code>Adam</code>来自于<code>Adaptive moments</code>，它是另一种引入了动量的<code>RMSProp</code>算法。</li>
+</ol>
+<h4 id="adam-算法">5.4.1 Adam 算法</h4>
+<ol type="1">
+<li><p><code>Adam</code>算法输入：</p>
+<ul>
+<li>学习率 （建议默认为 0.001）</li>
+<li>矩估计的指数衰减速率 ，它们都位于区间 （建议默认值分别为： 0.9 和 0.999）</li>
+<li>用于数值稳定的小常数 （建议默认为 ）</li>
+<li>初始参数</li>
+</ul></li>
+<li><p><code>RMSProp</code> 算法中，通过累计平方梯度（采用指数移动平均）来修正学习率。</p>
+<p>而 <code>Adam</code>算法中，不仅采用同样的方式来修正学习率，还通过累计梯度（采用指数移动平均） 来修正梯度。</p></li>
+<li><p>动量的计算可以类似<code>Nesterov</code>动量的思想：计算<code>mini-batch</code>的梯度时，采用更新后的参数 。</p>
+<p>此时称作<code>NAdam</code> 算法。</p></li>
+</ol>
+<h4 id="adam-算法性质">5.4.2 Adam 算法性质</h4>
+<ol type="1">
+<li><p>假设迭代过程中，梯度刚好是固定的某个量，则有： 对于某个方向，假设其分量为 ，则对于 <code>Adam</code> 算法有：</p>
+<ul>
+<li><p>无论梯度的大小如何，<code>Adam</code> 算法的参数更新步长几乎都是</p>
+<p>相比较而言，<code>AdaGrad</code> 和 <code>RMSProp</code> 算法的参数更新步长随时间在减少。</p></li>
+<li><p>虽然最终结果不包含 ，但是这是由于假定梯度保持不变这一特殊情况推导的。</p>
+<p>实际中梯度很少保持不变，因此 还是比较重要。</p></li>
+</ul></li>
+<li><p><code>Adam</code> 算法之所以需要使用一阶矩的修正和二阶矩的修正，是为了剔除时间因子 的影响。</p></li>
+<li><p>在某些情况下，<code>Adam</code> 可能导致训练不收敛。主要原因是：随着时间窗口的变化，遇到的数据可能发生巨变。这就使得 可能会时大时小，从而使得调整后的学习率 不再是单调递减的。</p>
+<p>这种学习率的震荡可能导致模型无法收敛。</p>
+<blockquote>
+<p><code>AdaDelta</code>、<code>RMSProp</code> 算法也都存在这样的问题。</p>
+</blockquote>
+<p>解决方案为：对二阶动量的变化进行控制，避免其上下波动（确保 是单调递增的)：</p></li>
+<li><p>实践证明，虽然在训练早期<code>Adam</code> 具有很好的收敛速度，但是最终模型的泛化能力并不如使用朴素的<code>SGD</code> 训练得到的模型好：<code>Adam</code> 训练的模型得到的测试集误差会更大。</p>
+<ul>
+<li><p>其主要原因可能是：训练后期，<code>Adam</code> 的更新步长过小。</p></li>
+<li><p>一种改进策略为：在训练的初期使用<code>Adam</code> 来加速训练，并在合适的时期切换为<code>SGD</code> 来追求更好的泛化性能。</p>
+<p>这种策略的缺陷是：切换的时机不好把握，需要人工经验来干预。</p></li>
+</ul></li>
+</ol>

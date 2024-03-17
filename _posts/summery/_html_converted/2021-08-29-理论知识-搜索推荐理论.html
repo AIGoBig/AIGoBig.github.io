@@ -1,0 +1,510 @@
+<h3 id="gbdtlr">🚩GBDT+LR</h3>
+<p><strong>https://zhuanlan.zhihu.com/p/37522339</strong></p>
+<p><strong>使用GBDT的好处</strong>：利用GBDT可以自动进行特征筛选和特征组合，进而生成新的离散特征向量。因为回归树中每个节点的分裂是一个自然的特征选择的过程，而多层节点的结构则对特征进行了有效地自动组合。所以可以非常高效地解决棘手的特征选择和特征组合的问题。</p>
+<p><strong>实验中设置30棵树，深度为8。每颗树都相当于一个类别特征，每棵树的叶子结点数相当于特征值的个数。</strong></p>
+<ol type="1">
+<li><strong>首先将数值型的连续特征作为lgb的输入</strong>，（假设100棵树，设置的叶子节点数num_leaves=64）然后进行特征转换。</li>
+</ol>
+<ul>
+<li>训练GBDT模型 本文使用lightgbm包来训练我们的GBDT模型，训练共100棵树，每棵树有64个叶子结点。</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1">df_train <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/train.csv&#39;</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">df_test <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/test.csv&#39;</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">NUMERIC_COLS <span class="op">=</span> [</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">    <span class="st">&quot;ps_reg_01&quot;</span>, <span class="st">&quot;ps_reg_02&quot;</span>, <span class="st">&quot;ps_reg_03&quot;</span>,</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">    <span class="st">&quot;ps_car_12&quot;</span>, <span class="st">&quot;ps_car_13&quot;</span>, <span class="st">&quot;ps_car_14&quot;</span>, <span class="st">&quot;ps_car_15&quot;</span>,</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">]</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="bu">print</span>(df_test.head(<span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">y_train <span class="op">=</span> df_train[<span class="st">&#39;target&#39;</span>]  <span class="co"># training label</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">y_test <span class="op">=</span> df_test[<span class="st">&#39;target&#39;</span>]  <span class="co"># testing label</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">X_train <span class="op">=</span> df_train[NUMERIC_COLS]  <span class="co"># training dataset</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">X_test <span class="op">=</span> df_test[NUMERIC_COLS]  <span class="co"># testing dataset</span></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># create dataset for lightgbm</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">lgb_train <span class="op">=</span> lgb.Dataset(X_train, y_train)</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">lgb_eval <span class="op">=</span> lgb.Dataset(X_test, y_test, reference<span class="op">=</span>lgb_train)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">params <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="st">&#39;task&#39;</span>: <span class="st">&#39;train&#39;</span>,</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">    <span class="st">&#39;boosting_type&#39;</span>: <span class="st">&#39;gbdt&#39;</span>,</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">    <span class="st">&#39;objective&#39;</span>: <span class="st">&#39;binary&#39;</span>,</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    <span class="st">&#39;metric&#39;</span>: {<span class="st">&#39;binary_logloss&#39;</span>},</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">    <span class="st">&#39;num_leaves&#39;</span>: <span class="dv">64</span>,</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">    <span class="st">&#39;num_trees&#39;</span>: <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">    <span class="st">&#39;learning_rate&#39;</span>: <span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">    <span class="st">&#39;feature_fraction&#39;</span>: <span class="fl">0.9</span>,</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">    <span class="st">&#39;bagging_fraction&#39;</span>: <span class="fl">0.8</span>,</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">    <span class="st">&#39;bagging_freq&#39;</span>: <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">    <span class="st">&#39;verbose&#39;</span>: <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">}</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb1-34" data-line-number="34"><span class="co"># number of leaves,will be used in feature transformation</span></a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">num_leaf <span class="op">=</span> <span class="dv">64</span></a>
+<a class="sourceLine" id="cb1-36" data-line-number="36"></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37"><span class="bu">print</span>(<span class="st">&#39;Start training...&#39;</span>)</a>
+<a class="sourceLine" id="cb1-38" data-line-number="38"><span class="co"># train</span></a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">gbm <span class="op">=</span> lgb.train(params,</a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">                lgb_train,</a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">                num_boost_round<span class="op">=</span><span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">                valid_sets<span class="op">=</span>lgb_train)</a>
+<a class="sourceLine" id="cb1-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb1-44" data-line-number="44"><span class="bu">print</span>(<span class="st">&#39;Save model...&#39;</span>)</a>
+<a class="sourceLine" id="cb1-45" data-line-number="45"><span class="co"># save model to file</span></a>
+<a class="sourceLine" id="cb1-46" data-line-number="46">gbm.save_model(<span class="st">&#39;model.txt&#39;</span>)</a>
+<a class="sourceLine" id="cb1-47" data-line-number="47"></a>
+<a class="sourceLine" id="cb1-48" data-line-number="48"><span class="bu">print</span>(<span class="st">&#39;Start predicting...&#39;</span>)</a>
+<a class="sourceLine" id="cb1-49" data-line-number="49"><span class="co"># predict and get data on leaves, training data</span></a></code></pre></div>
+<ul>
+<li><strong>特征转换</strong></li>
+</ul>
+<p>在训练得到100棵树之后，我们需要得到的不是GBDT的预测结果，而是<strong>每一条训练数据落在了每棵树的哪个叶子结点上</strong>，因此需要使用下面的语句：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1">y_pred <span class="op">=</span> gbm.predict(X_train, pred_leaf<span class="op">=</span><span class="va">True</span>)</a></code></pre></div>
+<p>打印上面结果的输出，可以看到shape是(8001,100)，即训练数据量*树的棵树</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="bu">print</span>(np.array(y_pred).shape)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="bu">print</span>(y_pred[<span class="dv">0</span>]) <span class="co"># 看第一条样本的输出，包含100颗数的输出节点，即每个样本在不同类别特征上的取值。</span></a></code></pre></div>
+<p>结果为：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">(<span class="dv">8001</span>, <span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">[[<span class="dv">43</span> <span class="dv">26</span> <span class="dv">47</span> <span class="dv">47</span> <span class="dv">47</span> <span class="dv">19</span> <span class="dv">36</span> <span class="dv">19</span> <span class="dv">50</span> <span class="dv">52</span> <span class="dv">29</span>  <span class="dv">0</span>  <span class="dv">0</span>  <span class="dv">0</span> <span class="dv">46</span> <span class="dv">23</span> <span class="dv">13</span> <span class="dv">27</span> <span class="dv">27</span> <span class="dv">13</span> <span class="dv">10</span> <span class="dv">22</span>  <span class="dv">0</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">   <span class="dv">4</span> <span class="dv">57</span> <span class="dv">17</span> <span class="dv">55</span> <span class="dv">54</span> <span class="dv">57</span> <span class="dv">59</span> <span class="dv">42</span> <span class="dv">22</span> <span class="dv">22</span> <span class="dv">22</span> <span class="dv">13</span>  <span class="dv">8</span>  <span class="dv">5</span> <span class="dv">27</span>  <span class="dv">5</span> <span class="dv">58</span> <span class="dv">23</span> <span class="dv">58</span> <span class="dv">14</span> <span class="dv">16</span> <span class="dv">16</span> <span class="dv">10</span> <span class="dv">32</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  <span class="dv">60</span> <span class="dv">32</span>  <span class="dv">4</span>  <span class="dv">4</span>  <span class="dv">4</span>  <span class="dv">4</span>  <span class="dv">4</span> <span class="dv">46</span> <span class="dv">57</span> <span class="dv">48</span> <span class="dv">57</span> <span class="dv">34</span> <span class="dv">54</span>  <span class="dv">6</span> <span class="dv">35</span>  <span class="dv">6</span>  <span class="dv">4</span> <span class="dv">55</span> <span class="dv">13</span> <span class="dv">23</span> <span class="dv">15</span> <span class="dv">51</span> <span class="dv">40</span>  <span class="dv">0</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="dv">47</span> <span class="dv">40</span> <span class="dv">10</span> <span class="dv">29</span> <span class="dv">24</span> <span class="dv">24</span> <span class="dv">31</span> <span class="dv">24</span> <span class="dv">55</span>  <span class="dv">3</span> <span class="dv">41</span>  <span class="dv">3</span> <span class="dv">22</span> <span class="dv">57</span>  <span class="dv">6</span>  <span class="dv">0</span>  <span class="dv">6</span>  <span class="dv">6</span> <span class="dv">57</span> <span class="dv">55</span> <span class="dv">57</span> <span class="dv">16</span> <span class="dv">12</span> <span class="dv">18</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  <span class="dv">30</span> <span class="dv">15</span> <span class="dv">17</span> <span class="dv">30</span>]]</a></code></pre></div>
+<p><strong>其实实验中到这一步就可以了，得到了每个样本落到每颗树的叶子节点位置，相当于这样样本在每个类别特征中的取值。</strong></p>
+<hr />
+<ul>
+<li>然后我们需要将每棵树的特征进行one-hot处理，如前面所说，假设第一棵树落在43号叶子结点上，那我们需要建立一个64维的向量，除43维之外全部都是0。因此用于LR训练的特征维数共num_trees * num_leaves。</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="bu">print</span>(<span class="st">&#39;Writing transformed training data&#39;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">transformed_training_matrix <span class="op">=</span> np.zeros([<span class="bu">len</span>(y_pred), <span class="bu">len</span>(y_pred[<span class="dv">0</span>]) <span class="op">*</span> num_leaf],</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">                                       dtype<span class="op">=</span>np.int64)  <span class="co"># N * num_tress * num_leafs</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(y_pred)):</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    temp <span class="op">=</span> np.arange(<span class="bu">len</span>(y_pred[<span class="dv">0</span>])) <span class="op">*</span> num_leaf <span class="op">+</span> np.array(y_pred[I])</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    transformed_training_matrix[i][temp] <span class="op">+=</span> <span class="dv">1</span></a></code></pre></div>
+<ul>
+<li>当然，对于测试集也要进行同样的处理:</li>
+</ul>
+<pre class="pyhton"><code>y_pred = gbm.predict(X_test, pred_leaf=True)
+print(&#39;Writing transformed testing data&#39;)
+transformed_testing_matrix = np.zeros([len(y_pred), len(y_pred[0]) * num_leaf], dtype=np.int64)
+for i in range(0, len(y_pred)):
+    temp = np.arange(len(y_pred[0])) * num_leaf + np.array(y_pred[I])
+    transformed_testing_matrix[i][temp] += 1</code></pre>
+<ul>
+<li>LR训练 然后我们可以用转换后的训练集特征和label训练我们的LR模型，并对测试集进行测试：</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb7-1" data-line-number="1">lm <span class="op">=</span> LogisticRegression(penalty<span class="op">=</span><span class="st">&#39;l2&#39;</span>,C<span class="op">=</span><span class="fl">0.05</span>) <span class="co"># logestic model construction</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">lm.fit(transformed_training_matrix,y_train)  <span class="co"># fitting the data</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">y_pred_test <span class="op">=</span> lm.predict_proba(transformed_testing_matrix)   <span class="co"># Give the probabilty on each label</span></a></code></pre></div>
+<p>我们这里得到的不是简单的类别，而是<strong>每个类别的概率</strong>。</p>
+<h3 id="deepfm介绍">✅deepfm介绍</h3>
+<p><a href="https://cloud.tencent.com/developer/article/1450677">【通俗易懂】手把手带你实现DeepFM！</a></p>
+<p>DeepFM 模型在<strong>解决特征交叉问题</strong>上非常有优势，它会使用一个独特的 FM 层来专门处理特征之间的交叉问题。</p>
+<p>具体来说，就是使用<strong>点积、元素积</strong>等操作让不同特征之间进行两两组合，再把组合后的结果输入的输出神经元中，这会大大加强模型特征组合的能力。因此，DeepFM 模型相比于 Embedding MLP、Wide&amp;Deep 等模型，往往具有更好的推荐效果。</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/4dbb2c9760199311b38b32a15daba176_20240315115906onl8pU.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<ul>
+<li><p>DeepFM包含两部分<strong>：因子分解机部分</strong>与<strong>神经网络部分</strong>，分别负责<strong>低阶特征的提取</strong>和<strong>高阶特征的提取</strong>。这两部分<strong>共享同样的嵌入层输入</strong>。</p></li>
+<li><p>嵌入层： 主要根据<strong>特征索引</strong>得到对应特征的embedding。</p>
+<blockquote>
+<p>通过嵌入层，尽管不同field的长度不同（不同离散变量的取值个数可能不同），<strong>但是embedding之后向量的长度均为K</strong></p>
+</blockquote></li>
+<li><p>FM： FM部分是一个因子分解机。因为<strong>引入了隐变量</strong>的原因，对于几乎不出现或者很少出现的隐变量，FM也可以很好的学习。FM的<strong>输出公式</strong>包含了线性项和二阶特征项： <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1602764448337_20240315115915hwC66A.png" alt="FM" style="zoom:67%;" /></p></li>
+<li><p>深度部分： 深度部分是一个<strong>多层前馈神经网络</strong>。其中使用relu作为网络的激活函数，输出层使用sigmoid作为激活函数。</p></li>
+<li><p>DeepFM的<strong>预测结果</strong>可以写为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210703231952611-0044321_20240315115916PXJel3.png" alt="image-20210703231952611" style="zoom:25%;" /></p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210703231615635_20240315115917bZ3NnQ.png" alt="image-20210703231615635" style="zoom: 25%;" /></p>
+<h4 id="embedding介绍">Embedding介绍</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210703232513030_20240315115918eZtRyQ.png" alt="image-20210703232513030" style="zoom:50%;" /></p>
+<p>嵌入层(embedding layer)的结构如上图所示。通过嵌入层，尽管不同field的长度不同（不同离散变量的取值个数可能不同），<strong>但是embedding之后向量的长度均为K</strong>（我们提前设定好的embedding-size)。通过代码可以发现，在得到embedding之后，我们还将对应的<strong>特征值</strong>乘到了embedding上，这主要是由于fm部分和dnn部分共享嵌入层作为输入，而fm中的二次项如下：🚩</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210703232532535-0044322_20240315115919Gp3i8t.png" alt="image-20210703232532535" style="zoom: 25%;" /></p>
+<blockquote>
+<p>Vi,vj是embedding向量（内积），xj1·xj2是特征值，若：</p>
+<ol type="1">
+<li>类别向量： xji 是类别向量，xji取1</li>
+<li>数值特征：按原来取值</li>
+</ol>
+</blockquote>
+<p>DeepFM中，很重要的一项就是embedding操作，所以我们先来看看什么是embedding，可以简单的理解为，<strong>将一个特征转换为一个向量</strong>。</p>
+<blockquote>
+<p>在推荐系统当中，我们经常会遇到<strong>离散变量</strong>，如userid、itemid。对于离散变量，我们一般的做法是将其转换为one-hot，但对于itemid这种离散变量，转换成one-hot之后<strong>维度非常高</strong>，但里面只有一个是1，其余都为0。这种情况下，我们的通常做法就是将其转换为<strong>embedding</strong>。</p>
+</blockquote>
+<p>embedding的过程是什么样子的呢？它其实就是一层<strong>全连接的神经网络</strong>，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704092830904-0044322_20240315115920IEbxCk.png" alt="image-20210704092830904" style="zoom: 25%;" /></p>
+<blockquote>
+<p>假设一个离散变量共有5个取值，也就是说one-hot之后会变成5维，我们想将其转换为embedding表示，其实就是接入了一层全连接神经网络。由于只有一个位置是1，其余位置是0，因此得到的<u>embedding就是与其相连的图中红线上的<strong>权重</strong>。</u></p>
+</blockquote>
+<h4 id="tf.nn.embedding_lookup函数介绍">tf.nn.embedding_lookup函数介绍</h4>
+<p>在tf1.x中，我们使用<code>embedding_lookup</code>函数来实现embedding，代码如下：</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb8-1" data-line-number="1">get_embedding1 <span class="op">=</span> tf.nn.embedding_lookup(embedding,feature_batch)</a></code></pre></div>
+<blockquote>
+<p>在embedding_lookup中，第一个参数相当于一个二维的词表，并根据第二个参数中指定的索引，去词表中寻找并返回对应的行。上面的过程为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704151508258_20240315115921RlblFO.png" alt="image-20210704151508258" />因此，使用embedding_lookup的话，我们不需要将数据转换为one-hot形式，只需要传入对应的feature的index即可。</p>
+</blockquote>
+<h4 id="数据处理">数据处理</h4>
+<p>接下来进入代码实战部分。</p>
+<p>首先我们来看看数据处理部分，通过刚才的讲解，想要给每一个特征对应一个k维的embedding，如果我们使用embedding_lookup的话，需要<strong>得到连续变量或者离散变量对应的特征索引feature index</strong>。</p>
+<p>可以看到，此时共有5个field，一个连续特征就对应一个field。</p>
+<p>但是在FM的公式中，不光是embedding的内积，特征取值也同样需要。<strong>对于离散变量来说，特征取值就是1，对于连续变量来说，特征取值是其本身</strong>，因此，我们想要得到的数据格式如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704153224321_20240315115922ovVvEd.png" alt="image-20210704153224321" style="zoom: 25%;" /></p>
+<p>部分数据集如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704160448652-0044323_20240315115923KnpBTb.png" alt="image-20210704160322600" style="zoom: 25%;" /></p>
+<p>接下来，想要得到一个feature-map。<u>这个<strong>featrue-map</strong>定义了如何将变量的不同取值转换为其对应的特征索引feature-index</u>。</p>
+<p>定义了<strong>total_feature</strong>来得到总的特征数量，定义了<strong>feature_dict</strong>来得到变量取值到特征索引的对应关系，结果如下：</p>
+<p>可以看到，对于连续变量，直接是变量名到索引的映射，对于离散变量，内部会嵌套一个二级map，这个二级map定义了该离散变量的不同取值到索引的映射。</p>
+<p>下一步，需要将训练集和测试集转换为两个新的数组，分别是feature-index，将每一条数据转换为对应的特征索引，以及feature-value，将每一条数据转换为对应的特征值。</p>
+<p>此时的训练集的特征索引：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704160448652-0044323_20240315115923KnpBTb.png" alt="image-20210704160448652" style="zoom: 25%;" /></p>
+<blockquote>
+<p>特征值：离散变量特征取值为1，连续变量特征取值为本身</p>
+</blockquote>
+<h4 id="模型参数及输入">模型参数及输入</h4>
+<p>接下来定义模型的一些<strong>参数</strong>，如：学习率(0.001)、embedding的大小（8）、深度网络的参数（Epoch:30 batch_size:1024 Optimizer：adam）、激活函数（tf.nn.relu）等等，还有两个比较重要的参数，分别是feature的大小和field的大小：</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">&quot;&quot;&quot;模型参数&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">dfm_params <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    <span class="st">&quot;use_fm&quot;</span>:<span class="va">True</span>,</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">    <span class="st">&quot;use_deep&quot;</span>:<span class="va">True</span>,</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">    <span class="st">&quot;embedding_size&quot;</span>:<span class="dv">8</span>,</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">    <span class="st">&quot;dropout_fm&quot;</span>:[<span class="fl">1.0</span>,<span class="fl">1.0</span>],</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">    <span class="st">&quot;deep_layers&quot;</span>:[<span class="dv">32</span>,<span class="dv">32</span>],</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">    <span class="st">&quot;dropout_deep&quot;</span>:[<span class="fl">0.5</span>,<span class="fl">0.5</span>,<span class="fl">0.5</span>],</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">    <span class="st">&quot;deep_layer_activation&quot;</span>:tf.nn.relu,</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">    <span class="st">&quot;epoch&quot;</span>:<span class="dv">30</span>,</a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">    <span class="st">&quot;batch_size&quot;</span>:<span class="dv">1024</span>,</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">    <span class="st">&quot;learning_rate&quot;</span>:<span class="fl">0.001</span>,</a>
+<a class="sourceLine" id="cb9-13" data-line-number="13">    <span class="st">&quot;optimizer&quot;</span>:<span class="st">&quot;adam&quot;</span>,</a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">    <span class="st">&quot;batch_norm&quot;</span>:<span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15">    <span class="st">&quot;batch_norm_decay&quot;</span>:<span class="fl">0.995</span>,</a>
+<a class="sourceLine" id="cb9-16" data-line-number="16">    <span class="st">&quot;l2_reg&quot;</span>:<span class="fl">0.01</span>,</a>
+<a class="sourceLine" id="cb9-17" data-line-number="17">    <span class="st">&quot;verbose&quot;</span>:<span class="va">True</span>,</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18">    <span class="st">&quot;eval_metric&quot;</span>:<span class="st">&#39;gini_norm&#39;</span>,</a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">    <span class="st">&quot;random_seed&quot;</span>:<span class="dv">3</span></a>
+<a class="sourceLine" id="cb9-20" data-line-number="20">}</a>
+<a class="sourceLine" id="cb9-21" data-line-number="21">dfm_params[<span class="st">&#39;feature_size&#39;</span>] <span class="op">=</span> total_feature</a>
+<a class="sourceLine" id="cb9-22" data-line-number="22">dfm_params[<span class="st">&#39;field_size&#39;</span>] <span class="op">=</span> <span class="bu">len</span>(train_feature_index.columns)</a></code></pre></div>
+<p>而<strong>训练模型的输入</strong>有三个，分别是刚才转换得到的<strong>特征索引和特征值，以及label</strong>：</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="st">&quot;&quot;&quot;开始建立模型&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">feat_index <span class="op">=</span> <span class="va">tf</span>.<span class="at">placeholder</span>(<span class="va">tf</span>.<span class="at">int32</span><span class="op">,</span>shape<span class="op">=</span>[None<span class="op">,</span>None]<span class="op">,</span>name<span class="op">=</span><span class="st">&#39;feat_index&#39;</span>)</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">feat_value <span class="op">=</span> <span class="va">tf</span>.<span class="at">placeholder</span>(<span class="va">tf</span>.<span class="at">float32</span><span class="op">,</span>shape<span class="op">=</span>[None<span class="op">,</span>None]<span class="op">,</span>name<span class="op">=</span><span class="st">&#39;feat_value&#39;</span>)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">label <span class="op">=</span> <span class="va">tf</span>.<span class="at">placeholder</span>(<span class="va">tf</span>.<span class="at">float32</span><span class="op">,</span>shape<span class="op">=</span>[None<span class="op">,</span><span class="dv">1</span>]<span class="op">,</span>name<span class="op">=</span><span class="st">&#39;label&#39;</span>)</a></code></pre></div>
+<p>定义好输入之后，再定义一下<strong>模型中所需要的weights</strong>：</p>
+<p>介绍两个比较重要的参数：</p>
+<ul>
+<li>weights[‘feature_embeddings’]是<strong>每个特征所对应的embedding</strong>，它的大小为feature-size * embedding-size，</li>
+<li>weights[‘feature_bias’] ，这个是FM部分计算时所用到的<strong>一次项的权重参数</strong>，可以理解为embedding-size为1的embedding table，它的大小为feature-size * 1。</li>
+</ul>
+<h4 id="嵌入层">2.5 嵌入层</h4>
+<p>嵌入层，主要根据特征索引得到对应特征的embedding：</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="st">&quot;&quot;&quot;embedding&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">embeddings <span class="op">=</span> <span class="va">tf</span>.<span class="va">nn</span>.<span class="at">embedding_lookup</span>(weights[<span class="st">&#39;feature_embeddings&#39;</span>]<span class="op">,</span>feat_index)</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">reshaped_feat_value <span class="op">=</span> <span class="va">tf</span>.<span class="at">reshape</span>(feat_value<span class="op">,</span>shape<span class="op">=</span>[<span class="op">-</span><span class="dv">1</span><span class="op">,</span>dfm_params[<span class="st">&#39;field_size&#39;</span>]<span class="op">,</span><span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">embeddings <span class="op">=</span> <span class="va">tf</span>.<span class="at">multiply</span>(embeddings<span class="op">,</span>reshaped_feat_value)</a></code></pre></div>
+<p>这里注意的是，在<strong>得到对应的embedding之后，还乘上了对应的特征值</strong>，这个主要是根据FM的公式得到的。过程表示如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704175531989-0044322_20240315115924YoFmij.png" alt="image-20210704175531989" style="zoom:25%;" /></p>
+<h4 id="fm部分">FM部分</h4>
+<p>我们先来回顾一下FM的公式，在传统的一阶线性回归之上，加了一个二次项，可以表达两两特征的相互关系。</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1602764448337_20240315115915hwC66A.png" alt="FM" /><figcaption>FM</figcaption>
+</figure>
+<p>在传统的一阶线性回归之上，加了一个二次项，可以表达两两特征的相互关系。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1602764632765_20240315115925IdTRnC.png" alt="特征相互关系" style="zoom:67%;" /></p>
+<p>这里的公式可以简化，减少计算量，</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/1602765047458_20240315115926BTJrGP.png" alt="FM" /><figcaption>FM</figcaption>
+</figure>
+<h4 id="deep部分">Deep部分</h4>
+<p>Deep部分很简单了，就是多层全连接网络。</p>
+<h4 id="输出部分">输出部分</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210704194711291-0044322_202403151159273ApgpV.png" alt="image-20210704194711291" style="zoom: 15%;" /></p>
+<h4 id="deepfm的实现流程">🚩Deepfm的实现流程</h4>
+<ol type="1">
+<li><strong>导入包；读取数据；定义稀疏特征（类别特征）和稠密特征（连续特征）；对空值进行处理，稀疏特征’-1’填充， 稠密特征用0填充。</strong></li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> LabelEncoder, MinMaxScaler</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="im">from</span> deepctr.models <span class="im">import</span> DeepFM</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="im">from</span> deepctr.feature_column <span class="im">import</span> SparseFeat, DenseFeat,get_feature_names</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">data <span class="op">=</span> pd.read_csv(<span class="st">&#39;./criteo_sample.txt&#39;</span>) <span class="co">#读取数据</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">sparse_features <span class="op">=</span> [<span class="st">&#39;C&#39;</span> <span class="op">+</span> <span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">27</span>)] <span class="co">#稀疏特征一般是类别特征</span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">dense_features <span class="op">=</span> [<span class="st">&#39;I&#39;</span><span class="op">+</span><span class="bu">str</span>(i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">14</span>)]</a>
+<a class="sourceLine" id="cb12-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12">data[sparse_features] <span class="op">=</span> data[sparse_features].fillna(<span class="st">&#39;-1&#39;</span>, ) <span class="co"># fillna是对空值的填充处理函数</span></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13">data[dense_features] <span class="op">=</span> data[dense_features].fillna(<span class="dv">0</span>,)</a>
+<a class="sourceLine" id="cb12-14" data-line-number="14">target <span class="op">=</span> [<span class="st">&#39;label&#39;</span>] </a></code></pre></div>
+<ol start="2" type="1">
+<li><strong>数据预处理：神经网络输入的都是数字，因此需要对类别特征进行编码，LabelEncoder。</strong></li>
+</ol>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="cf">for</span> feat <span class="kw">in</span> sparse_features:</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">    lbe <span class="op">=</span> LabelEncoder()</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">    data[feat] <span class="op">=</span> lbe.fit_transform(data[feat])</a></code></pre></div>
+<ol start="3" type="1">
+<li><strong>生成特征列：将类别特征通过嵌入技术将其转化成稠密向量，与稠密特征一起拼接，作为神经网络的输入向量。</strong></li>
+</ol>
+<p>稠密特征只有一个取值，<strong>疑问：稠密特征怎么计算embedding？</strong>答：在得到对应的embedding之后，还乘上了对应的特征值，这个主要是根据FM的公式得到的。对于类别特征乘的值是1，对于稠密特征来说需要乘的值是特征值50/100/…，所以对每个稠密特征相当于构造了一个1*k的embedding向量，只不过不同的取值需要对embedding向量乘特征值。</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># 标签编码</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">fixlen_feature_columns <span class="op">=</span> [SparseFeat(feat, vocabulary_size<span class="op">=</span>data[feat].<span class="bu">max</span>() <span class="op">+</span> <span class="dv">1</span>,embedding_dim<span class="op">=</span><span class="dv">4</span>) <span class="co"># 设置embedding维度8</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">                       <span class="cf">for</span> i,feat <span class="kw">in</span> <span class="bu">enumerate</span>(sparse_features)] <span class="op">\</span> <span class="co"># 因为之前编码从0开始，所以特征值的个数为data[feat].max()+1</span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">                        <span class="op">+</span> [DenseFeat(feat, <span class="dv">1</span>,) <span class="cf">for</span> feat <span class="kw">in</span> dense_features]  <span class="co"># 稠密特征只有一个取值，疑问：稠密特征怎么计算embedding？</span></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="co"># 或者</span></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7">fixlen_feature_columns <span class="op">=</span> [SparseFeat(feat, data[feat].nunique())</a>
+<a class="sourceLine" id="cb14-8" data-line-number="8">                          <span class="cf">for</span> feat <span class="kw">in</span> sparse_features] <span class="op">+</span> [DenseFeat(feat, <span class="dv">1</span>, ) <span class="cf">for</span> feat <span class="kw">in</span> dense_features]</a>
+<a class="sourceLine" id="cb14-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="co">#生成特征列</span></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11">dnn_feature_columns <span class="op">=</span> fixlen_feature_columns  <span class="co">#用做dnn的输入向量</span></a>
+<a class="sourceLine" id="cb14-12" data-line-number="12">linear_feature_columns <span class="op">=</span> fixlen_feature_columns <span class="co">#用在线性模型的输入特征</span></a>
+<a class="sourceLine" id="cb14-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb14-14" data-line-number="14"><span class="co">#获取所有特征的名字</span></a>
+<a class="sourceLine" id="cb14-15" data-line-number="15">feature_names <span class="op">=</span> get_feature_names(linear_feature_columns <span class="op">+</span> dnn_feature_columns) </a></code></pre></div>
+<ol start="4" type="1">
+<li><strong>生成训练样本和模型</strong></li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb15-1" data-line-number="1">train, test <span class="op">=</span> train_test_split(data, test_size<span class="op">=</span><span class="fl">0.2</span>) <span class="co">#按照8:2的比例划分数据集为训练集合测试集</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">train_model_input <span class="op">=</span> {name:train[name].values <span class="cf">for</span> name <span class="kw">in</span> feature_names} </a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">test_model_input <span class="op">=</span> {name:test[name].values <span class="cf">for</span> name <span class="kw">in</span> feature_names}</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">model <span class="op">=</span> DeepFM(linear_feature_columns, dnn_feature_columns, embedding_size<span class="op">=</span><span class="dv">8</span>,</a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">               use_fm<span class="op">=</span><span class="va">True</span>, dnn_hidden_units<span class="op">=</span>(<span class="dv">256</span>, <span class="dv">256</span>, <span class="dv">256</span>), l2_reg_linear<span class="op">=</span><span class="fl">0.001</span>,</a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">               l2_reg_embedding<span class="op">=</span><span class="fl">0.001</span>, l2_reg_dnn<span class="op">=</span><span class="dv">0</span>, init_std<span class="op">=</span><span class="fl">0.0001</span>, seed<span class="op">=</span><span class="dv">1024</span>,</a>
+<a class="sourceLine" id="cb15-9" data-line-number="9">              dnn_dropout<span class="op">=</span><span class="fl">0.5</span>, dnn_activation<span class="op">=</span><span class="st">&#39;relu&#39;</span>, dnn_use_bn<span class="op">=</span><span class="va">True</span>, task<span class="op">=</span><span class="st">&#39;binary&#39;</span>) <span class="co">#调用deepctr库中的DeepFM模型，执行二分类任务</span></a>
+<a class="sourceLine" id="cb15-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb15-11" data-line-number="11">model.<span class="bu">compile</span>(<span class="st">&quot;adam&quot;</span>, <span class="st">&quot;binary_crossentropy&quot;</span>,</a>
+<a class="sourceLine" id="cb15-12" data-line-number="12">              metrics<span class="op">=</span>[<span class="st">&#39;accuracy&#39;</span>, <span class="st">&#39;AUC&#39;</span>], ) <span class="co">#设置优化器，损失函数类型和评估指标</span></a>
+<a class="sourceLine" id="cb15-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb15-14" data-line-number="14">history <span class="op">=</span> model.fit(train_model_input, train[target].values,</a>
+<a class="sourceLine" id="cb15-15" data-line-number="15">                    batch_size<span class="op">=</span><span class="dv">256</span>, epochs<span class="op">=</span><span class="dv">10</span>, verbose<span class="op">=</span><span class="dv">2</span>, validation_split<span class="op">=</span><span class="fl">0.2</span>, ) <span class="co">#fit数据</span></a>
+<a class="sourceLine" id="cb15-16" data-line-number="16">pred_ans <span class="op">=</span> model.predict(test_model_input, batch_size<span class="op">=</span><span class="dv">256</span>) <span class="co"># 预测</span></a></code></pre></div>
+<h3 id="deepfm面试问题">deepfm面试问题</h3>
+<h4 id="deepfm的优点有哪些">deepfm的优点有哪些</h4>
+<p>1、DeepFM（FM Component + Deep Component）包含两部分：因子分解机（FM）部分与（DNN）部分，FM部分负责<strong>低阶特征的提取</strong>（包括一阶和二阶，虽然FM也可以实现高于二阶的特征提取，但是由于计算复杂度的限制，一般只计算到二阶），<strong>DNN部分负责高阶特征的提取</strong>，这样<strong>可以避免人工构造复杂的特征工程。</strong></p>
+<p>2、<strong>共享feature embedding</strong>。FM和Deep共享输入和feature embedding不但使得<strong>训练更快</strong>，而且使得<strong>训练更加准确</strong>。</p>
+<h4 id="与widedeep区别">与wide&amp;deep区别</h4>
+<p><strong>DeepFM：在Wide&amp;Deep的基础上进行改进，</strong></p>
+<ol type="1">
+<li><p><strong>把wide模型部分的LR替换为FM</strong>，借助FM的显示交叉帮助DNN更好的完成Embedding。不需要预训练FM得到隐向量，不需要人工特征工程，能同时学习低阶和高阶的组合特征； 使用FM取代Wide部分的LR，这样<strong>可以避免人工构造复杂的特征工程。</strong></p></li>
+<li><p>FM模块和Deep模块<strong>共享Feature Embedding部分</strong>，可以<strong>更快的训练，以及更精确的训练学习</strong></p></li>
+</ol>
+<blockquote>
+<p>Wide&amp;Deep：同时学习低阶和高阶组合特征，它混合了一个线性模型（Wide part）和Deep模型(Deep part)。这两部分模型需要不同的输入，而Wide part部分的输入，依旧依赖人工特征工程。</p>
+</blockquote>
+<h3 id="widedeep">wide&amp;deep</h3>
+<h4 id="不同输入">不同输入</h4>
+<p>这是google paly 商店的推荐应用，wide模型和deep模型接受了不同的特征。 deep模型直接<strong>接收连续特征和embedding后的离散特征。</strong>其输出的即 <img src="/img/in-post/20_07/math-0044321." alt="a{l}=W{l}a{l-1}+b{l}" /> wide模型<strong>只接受了部分离散特征</strong>：user installed app即用户安装的app，impression app即用户看到的被展示的app(看到了但没下载)，以及这两部分<strong>特征的交叉</strong>。其输出即 <img src="/img/in-post/20_07/math-20210827140521671" alt="[x,(/img/in-post/20_07/math-20210827140521671)]" />其中</p>
+<p><img src="/img/in-post/20_07/math-20210827140521704" alt="(/img/in-post/20_07/math-20210827140521704)" /> 是交叉特征。</p>
+<h4 id="wide与deep分别代表了什么">wide与deep分别代表了什么？</h4>
+<p>wide是简单的线性模型，他会记住训练数据中<strong>已经出现</strong>的模式，并赋予权重。这代表了<strong>记忆</strong> deep是深度的复杂模型，会在一层层的网络中计算出训练数据中<strong>未出现</strong>的模式的权重。这代表了<strong>泛化</strong> 这里的模式，可以简单理解为特征组合。</p>
+<h3 id="word2vec介绍">✅ Word2vec介绍</h3>
+<ul>
+<li><p>google 2013年提出的经典embedding方法,<strong>生成对词的向量表达</strong>。</p>
+<blockquote>
+<p>用onehot表示，实际词表很大维度很高，所以需要适当的降维方式将向量稠密化。Word2vec 只关心模型训练完后的副产物——模型参数（这里特指<strong>神经网络的权重（输入向量）</strong>），并将这些参数，作为输入 x 的某种向量化的表示，这个向量便叫做——词向量。</p>
+</blockquote></li>
+<li><p>有<strong>2种</strong>训练模型：Skip-Gram和CBOW。Skip-gram认为每个词决定了相邻的词，所以是由中心词预测周围词，CBOW认为每个词都由相邻的词决定，所以是由周围词预测中心词，一般是用周围词的求和平均预测中心词。</p>
+<ul>
+<li><strong>代价函数</strong>就是可以最小化这两个矩阵的交叉熵。这里我们需要注意的是，<strong>隐层神经元是没有激活函数的</strong>，或者说采用了输入即输出的<strong>恒等函数</strong>作为激活函数，而<strong>输出层神经元采用了 softmax 作为激活函数。</strong></li>
+</ul>
+<blockquote>
+<p>训练样本生成方式：选取滑窗大小,在一个句子中滑动一次即一条训练样本。</p>
+<p>因为词意主要由上下文决定，所以<strong>联系上下文</strong>确定出的词向量的含义更加准确。</p>
+</blockquote></li>
+<li><p>🚩 有<strong>2种</strong>加速训练的方法：层次softmax和负采样。</p>
+<ul>
+<li><p>层次softmax基本思想是:使用Huffman树的结构实现，把softmax转化为多次的sigmoid，复杂度由O(n)变为O(log(n))。</p></li>
+<li><p>负采样的基本思想是：把多分类问题转化为二分类问题，正样本是（一个中心词和一个周围词），负样本是（一个中心词和一个随机采样的负样本）</p>
+<blockquote>
+<p>负采样: <strong>语料库词太多</strong>了,每次迭代更新权重时,都需要计算字典中所有词的预测误差。 负采样<strong>只需对采样出的几个负样本(一般小于10)计算预测误差</strong>。优化目标退化成一个近似二分类问题。https://zhuanlan.zhihu.com/p/52517050</p>
+</blockquote></li>
+</ul></li>
+<li><p>还有<strong>1种</strong>优化的技术是：重采样。</p>
+<ul>
+<li>重采样的基本思想是：把高频词根据频次进行删除，把低频次尽量的保留下，这样就可以加速训练，并且能够得到更好的词向量。</li>
+</ul></li>
+<li><p><strong>模型复杂度上,每次计算所需要的参数</strong>：</p>
+<ul>
+<li><p>几个结论 <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718161416778_20240315115928ThcmO0.png" alt="image-20210718161416778" style="zoom:50%;" /></p>
+<ul>
+<li><p><strong>cbow比skip快10倍</strong></p>
+<blockquote>
+<p>主要是反向传播比较花费时间，cbow<strong>一共预测V(vocab size)次</strong>就够了，复杂度大概是O(V)。skip-gram是O(KV)</p>
+</blockquote></li>
+<li><p>cbow和skip都比前馈和循环快</p></li>
+<li><p>负采样比层次softmax更快（14、15是临界）</p></li>
+</ul></li>
+</ul></li>
+<li><p><strong>模型效果上</strong>：</p>
+<ul>
+<li>skip gram的训练时间更长，但是尤其对于一些出现频率不高的词，在CBOW中的学习效果就不如skipgram。反正mikolov自己说的skip准确率比CBOW高</li>
+</ul></li>
+<li><p><strong>目标函数</strong>: 希望所有时间<strong>窗口内的样本</strong>的<strong>条件概率之和最大</strong>。（基于极大似然估计） <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718123102349_20240315115929Wp4xnR.png" alt="image-20210718123102349" style="zoom:50%;" /></p>
+<blockquote>
+<p>c是窗口大小， 利用梯度下降法则使负的目标函数最小</p>
+</blockquote>
+<ul>
+<li><p><strong>条件概率</strong>的定义: <strong>多分类用softmax函数</strong>, 同时用词之间<strong>内积距离</strong>表示语义的接近程度,所以定义为: <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718143534916_202403151159309qR99I.png" alt="image-20210718143534916" style="zoom:25%;" /></p>
+<blockquote>
+<p>uw是所有词的周围词的词向量</p>
+</blockquote></li>
+</ul></li>
+<li><p>输入： （doc id，words），得到word Embedding</p></li>
+<li><p>输入：（user id，itemids），得到item Embedding</p></li>
+</ul>
+<h4 id="有2-种训练模式-skip-gram">有2 种训练模式 — <strong>Skip-gram</strong></h4>
+<p>用当前词来预测上下文。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-ca81e19caa378cee6d4ba6d867f4fc7c_1440w-0044321_20240315115931uF7sYO.jpg" alt="img" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718144502995_202403151159330kta7h.png" alt="image-20210718144502995" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718144602093_20240315115935F1x7LX.png" alt="image-20210718144602093" style="zoom:50%;" /></p>
+<blockquote>
+<p>可以看成是 单个x-&gt;单个y 模型的并联，<strong>cost function</strong> 是单个 cost function 的累加（取log之后）</p>
+</blockquote>
+<h4 id="有2-种训练模式-cbow">有2 种训练模式 — <strong>CBOW</strong></h4>
+<p>通过上下文来预测当前值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/v2-d1ca2547dfb91bf6a26c60782a26aa02_1440w_202403151159362WmSKc.jpg" alt="img" style="zoom: 15%;" /></p>
+<blockquote>
+<p>更 Skip-gram 的模型并联不同，这里是输入变成了多个单词，所以要对输入处理下（一般是<strong>求和然后平均</strong>），输出的 <strong>==cost== function</strong> 不变</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718144200004_20240315115939TDdZMN.png" alt="image-20210718144200004" style="zoom:50%;" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718144413277_20240315115941WlhFe6.png" alt="image-20210718144413277" style="zoom:25%;" /></p>
+<h4 id="对比两种训练方式">对比两种训练方式</h4>
+<ul>
+<li><p><strong>模型复杂度上,每次计算所需要的参数</strong>：</p>
+<ul>
+<li><p>skip-gram</p>
+<ul>
+<li><p>普通skip-gram<strong>参数个数</strong>： <span class="math inline"><em>Q</em> = <em>C</em>(<em>D</em> + <em>D</em> * <em>V</em>)</span></p>
+<blockquote>
+<p>对于每个中心词：中心词向量D，W’的参数：D<em>V，V是词编码维度，周围词个数C 对于每个中心词需要计算的参数的个数为：周围词个数C </em> （中心词向量维度D + 词向量维度D *词编码维度V）</p>
+</blockquote></li>
+<li><p>基于层次softmax 的skip-gram<strong>参数个数</strong>： <span class="math inline"><em>Q</em> = <em>C</em>(<em>D</em> + <em>D</em> * <em>l</em><em>o</em><em>g</em><sub>2</sub><em>V</em>)</span></p>
+<blockquote>
+<p>log2V表示基于层次softmax，可以只计算log2V次sigmoid。</p>
+</blockquote></li>
+<li><p>基于负采样 的skip-gram<strong>参数个数</strong>： <span class="math inline"><em>Q</em> = <em>C</em>(<em>D</em> + <em>D</em> * (<em>K</em> + 1))</span></p>
+<blockquote>
+<p>（1个正样本+K个负样本）*D维词向量</p>
+</blockquote></li>
+</ul></li>
+<li><p>CBOW训练更快，理论上要快10倍</p>
+<ul>
+<li>普通： <span class="math inline"><em>Q</em> = <em>C</em> * <em>D</em> + <em>D</em> * <em>V</em></span></li>
+<li>层次softmax：<span class="math inline"><em>Q</em> = <em>C</em> * <em>D</em> + <em>D</em> * <em>l</em><em>o</em><em>g</em><sub>2</sub><em>V</em></span></li>
+<li>负采样：<span class="math inline"><em>Q</em> = <em>C</em> * <em>D</em> + <em>D</em> * (<em>K</em> + 1)</span></li>
+</ul></li>
+<li><p>几个结论 <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718161416778_20240315115928ThcmO0.png" alt="image-20210718161416778" style="zoom:50%;" /></p>
+<ul>
+<li>cbow和skip都比前馈和循环快</li>
+<li>cbow比skip快10倍</li>
+<li>负采样比层次softmax更快（14、15是临界）</li>
+</ul></li>
+</ul></li>
+<li><p><strong>模型效果上</strong>：</p>
+<ul>
+<li><p>skip gram的训练时间更长，但是尤其对于一些出现频率不高的词，在CBOW中的学习效果就不如skipgram。反正mikolov自己说的skip准确率比CBOW高</p>
+<blockquote>
+<ul>
+<li><p>总结来说就是CBOW模型中input是context（周围词）而output是中心词，训练过程中其实是在从output的loss学习周围词的信息也就是embedding，但是在中间层是average的，<strong>一共预测V(vocab size)次</strong>就够了，复杂度大概是O(V);。</p></li>
+<li><p>skipgram是用中心词预测周围词，预测的时候是一对word pair，等于对每一个中心词都有K个词作为output，对于一个词的预测有K次，所以能够<strong>更有效的从context中学习信息</strong>，但是**总共预测K*V次**。时间的复杂度为O(KV)</p></li>
+<li><p>🚩 但是在skip-gram当中，每个词都要收到周围的词的影响，每个词在作为中心词的时候，都要进行K次的预测、调整。因此， 当数据量较少，或者词为生僻词出现次数较少时， 这种多次的调整会使得词向量相对的更加准确。因为尽管cbow从另外一个角度来说，某个词也是会受到多次周围词的影响（多次将其包含在内的窗口移动），进行词向量的跳帧，但是他的<strong>调整是跟周围的词一起调整的，grad的值会平均分到该词上， 相当于该生僻词没有收到专门的训练，它只是沾了周围词的光而已</strong>。</p></li>
+<li><p>从更通俗的角度来说：</p>
+<p>在skip-gram里面，每个词在作为中心词的时候，实际上是 <strong>1个学生 VS K个老师</strong>，K个老师（周围词）都会对学生（中心词）进行“专业”的训练，这样学生（中心词）的“能力”（向量结果）相对就会扎实（准确）一些，但是这样肯定会使用更长的时间；</p>
+<p>cbow是 <strong>1个老师 VS K个学生</strong>，K个学生（周围词）都会从老师（中心词）那里学习知识，但是老师（中心词）是一视同仁的，教给大家的一样的知识。至于你学到了多少，还要看下一轮（假如还在窗口内），或者以后的某一轮，你还有机会加入老师的课堂当中（再次出现作为周围词），跟着大家一起学习，然后进步一点。因此相对skip-gram，你的业务能力肯定没有人家强，但是对于整个训练营（训练过程）来说，这样肯定效率高，速度更快。</p></li>
+</ul>
+</blockquote></li>
+</ul></li>
+</ul>
+<h4 id="存在的问题">存在的问题</h4>
+<p>在进行最优化的求解过程中：从隐藏层到输出的Softmax层的<strong>计算量很大</strong>，因为要计算所有词的Softmax概率，再去找概率最大的值。</p>
+<h4 id="优化加速方法-层次softmaxhierarchical-softmax">优化（加速）方法 — 层次softmax（hierarchical softmax）</h4>
+<p>本质是把 N 分类问题变成 log(N) 次二分类，所以复杂度也从O(n)变成了</p>
+<p>把softmax转化为 V个sigmoid</p>
+<p><strong>构建huffman树（带权重的路径最短二叉树），只需计算少于log2（V）次的sigmoid，大幅度减少计算</strong></p>
+<h4 id="优化加速方法-负采样negative-sampling">优化（加速）方法 — 负采样（negative sampling）</h4>
+<p>本质是预测总体类别的一个子集。将多分类问题转化为2分类问题。</p>
+<p>不同于原本每个训练样本更新所有的权重，负采样每次让一个训练样本仅仅更新一小部分的权重，这样就会<strong>降低梯度下降过程中的计算量</strong>。 当使用负采样时，我们<strong>将随机选择一小部分的negative words（比如选5个negative words）来更新对应的权重</strong>。我们也会对我们的“positive” word进行权重更新（在我们上面的例子中，这个单词指的是”quick“）。</p>
+<p>一个单词被选作negative sample的<strong>概率跟它出现的频次有关，出现频次越高的单词越容易被选作negative words。</strong>每个单词被选为“negative words”的概率计算公式与其出现的频次有关, 代码中的公式实现如下：</p>
+<figure>
+<img src="/img/in-post/20_07/equation-20210827140521676" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p>每个单词被赋予一个权重<span class="math inline"><em>f</em>(<em>w</em><sub><em>i</em></sub>)</span>，它代表着单词出现的频次。</p>
+<blockquote>
+<p>因为往往频次高的词不重要，所以要用3/4，使频率小的词概率大一点</p>
+</blockquote>
+<h4 id="优化方法3-高频词重采样">优化方法3 — 高频词重采样</h4>
+<p>文档中的词，出现频率高的信息小，出现频率小的 信息多，比如方法<strong>tfidf、BM25</strong>就是根据这个思想实现的，在词袋模型里有比较好的效果。</p>
+<p>原因：1. 希望更多地训练重要的词对（频率低） 2. 高频词很快就训练好了，低频次需训练很多轮次</p>
+<p>方法：训练集中的词w会以 <span class="math inline"><em>P</em>(<em>w</em><sub><em>i</em></sub>)</span>的概率被删除：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718153314845_20240315115942e86Ah0.png" alt="image-20210718153314845" style="zoom:25%;" /></p>
+<blockquote>
+<p>词频越大，P越大；如果词频f小于t（如10**-5），则不会被删除</p>
+</blockquote>
+<p>优点：加速训练，能够得到更好的词向量。</p>
+<h4 id="优缺点">优缺点</h4>
+<p>优点：</p>
+<ol type="1">
+<li>由于 Word2vec 会考虑上下文，跟之前的 Embedding 方法相比，效果要更好（但不如 18 年之后的方法）</li>
+<li>比之前的 Embedding方 法维度更少，所以速度更快</li>
+<li>通用性很强，可以用在各种 NLP 任务中</li>
+</ol>
+<p>缺点：</p>
+<ol type="1">
+<li>由于词和向量是一对一的关系，所以多义词的问题无法解决。</li>
+<li>Word2vec 是一种静态的方式，虽然通用性强，但是无法针对特定任务做动态优化</li>
+</ol>
+<h3 id="word2vec面试问题">Word2vec面试问题</h3>
+<h4 id="为什么不使用非线性激活函数">为什么不使用非线性激活函数？</h4>
+<p>输出层接softmax 函数，隐藏层一般线性激活函数。</p>
+<ol type="1">
+<li><p>最大好处是训练快，</p></li>
+<li><p>更重要的原因是输入词和预测词，在语料库中往往有<strong>共现关系</strong>（相邻共同出现）的，用线性激活函数主要保留这层共现关系（训练出来的词大量<strong>线性相关🚩</strong>）。</p></li>
+</ol>
+<h3 id="item2vec介绍">item2vec介绍</h3>
+<ul>
+<li>word2vec在推荐系统中的推广,微软于2016年提出。</li>
+<li><strong>用户embedding向量</strong>由历史行为中的<strong>物品embedding平均或聚类得到</strong>,计算用户向量与物品向量相似性直接在推荐系统<strong>召回层</strong>快速得到候选集和,或在排序层直接用于最终推荐列表排序。</li>
+<li>物品序列的产生: 由特点用户的浏览、购买等行为产生的历史行为记录序列。</li>
+<li>和word2vec唯一不同在于, 摒弃掉时间窗口概念, <strong>认为序列中任意两个物品都相关</strong>。所以<strong>目标函数</strong>为<u>两两物品对数概率之和: </u> <img src="https://cdn.jsdelivr.net/gh/AIGoBig/PicRepo@master/2024/03/image-20210718163933488_20240315115943fwlS7V.png" alt="image-20210718163933488" style="zoom: 25%;" /></li>
+<li><strong>广义的item2vec: 双塔模型, 物品侧+用户侧</strong>, 本质是接受物品和用户相关的特征向量, 经过多层神经网络结构生成多维的稠密向量,实则为embedding向量。只不过模型不是简单的w2v,而是更复杂灵活的模型,输入特征不止的one-hot,<strong>可以包含更多的特征向量。</strong></li>
+<li>局限性:只能利用<strong>序列化数据</strong>,处理网络化数据不容易。需要Graph Embedding</li>
+<li>数据：
+<ul>
+<li>输入： （doc id，words），得到word Embedding</li>
+<li>输入：（user id，itemids），得到item Embedding</li>
+<li>使用标题/内容的分词Embedding做推荐，属于内容相似性推荐</li>
+<li>使用行为列表作推荐，属于行为相关性推荐，效果比内容相似推荐好</li>
+<li>把word embedding 进行加和、平均，得到document embedding</li>
+<li>把item embedding 进行加和、平均，得到user embedding</li>
+</ul></li>
+</ul>
+<h3 id="评价指标">评价指标</h3>
+<h4 id="auc">AUC</h4>
+<h2 id="fm算法">FM算法</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/37963267">FM算法解析</a></p>
+<h3 id="应用场景"><strong>应用场景</strong>：</h3>
+<p>点击预估。</p>
+<p>准确的估计 ctr、cvr 对于提高流量的价值，增加广告收入有重要的指导作用。<strong>业界常用的方法</strong>有人工特征工程 + LR（Logistic Regression）、GBDT（Gradient Boosting Decision Tree） + LR[<a href="https://link.zhihu.com/?target=http%3A//blog.csdn.net/lilyth_lilyth/article/details/48032119">1]</a>[<a href="https://link.zhihu.com/?target=http%3A//www.cnblogs.com/Matrix_Yao/p/4773221.html">2]</a>[<a href="https://link.zhihu.com/?target=http%3A//blog.csdn.net/lilyth_lilyth/article/details/48032119">3]</a>、FM（Factorization Machine）[<a href="https://link.zhihu.com/?target=http%3A//www.cnblogs.com/Matrix_Yao/p/4773221.html">2]</a>[<a href="https://link.zhihu.com/?target=http%3A//www.algo.uni-konstanz.de/members/rendle/pdf/Rendle2010FM.pdf">7]</a>和FFM（Field-aware Factorization Machine）[<a href="https://link.zhihu.com/?target=http%3A//www.csie.ntu.edu.tw/~r01922136/slides/ffm.pdf">9]</a>模型。在这些模型中，<strong>FM和FFM近年来表现突出</strong>，分别在由Criteo和Avazu举办的CTR预测竞赛中夺得冠军[<a href="https://link.zhihu.com/?target=https%3A//www.kaggle.com/c/criteo-display-ad-challenge">4]</a>[<a href="https://link.zhihu.com/?target=https%3A//www.kaggle.com/c/avazu-ctr-prediction">5]</a>。</p>
+<p>在进行CTR预估时，除了单特征外，往往要对特征进行组合。<strong>对于特征组合来说</strong>，业界现在通用的做法主要有两大类<strong>：FM系列</strong>与<strong>Tree系列</strong>。</p>
+<h3 id="目的"><strong>目的</strong>：</h3>
+<p>旨在解决大规模<strong>稀疏数据</strong>下的特征组合问题的机器学习模型。</p>
+<h3 id="优势"><strong>优势</strong>：</h3>
+<ul>
+<li>高度稀疏数据场景；</li>
+<li>具有线性的计算复杂度。</li>
+</ul>
+<h2 id="deepfm">DeepFM</h2>
+<h3 id="新闻推荐系统项目-word2vec生成研报embedding怎么用的-什么原理">新闻推荐系统项目 word2vec生成研报Embedding，怎么用的 什么原理</h3>
+<h3 id="deepfm里的损失函数的改进看论文"><strong>deepfm里的损失函数的改进—看论文</strong></h3>
+<h3 id="dnn-与-deepfm-之间的区别">DNN 与 DeepFM 之间的区别</h3>
+<p>DNN 是 DeepFM 中的一个部分，DeepFM 多一次特征，多一个 FM 层的二次交叉特征</p>
+<h3 id="你在使用-deepfm-的时候是如何处理欠拟合和过拟合问题的">2.你在使用 deepFM 的时候是如何处理欠拟合和过拟合问题的</h3>
+<p>欠拟合:增加deep部分的层数，增加epoch的轮数，增加learningrate，减少正则 化力度</p>
+<p>过拟合:在deep层直接增加dropout的率，减少epoch轮数，增加更多的数据，增 加正则化力度，shuffle 数据</p>
