@@ -15,8 +15,6 @@
 <li><p>很多功能强大的<strong>非线性模型</strong>可以在线性模型的基础上通过引入层级结构或者非线性映射得到。</p></li>
 </ul></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># 测试代码：</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="im">import</span> os</a></code></pre></div>
 <h3 id="逻辑回归lr">==逻辑回归（LR）==</h3>
 <blockquote>
 <p>考察点：把LR从头到脚都给讲一遍。建模，现场数学推导，每种解法的原理，正则化，LR和maxent模型啥关系，LR为啥比线性回归好。有不少会背答案的人，问逻辑细节就糊涂了。原理都会? 那就问工程，并行化怎么做，有几种并行化方式，读过哪些开源的实现。还会，那就准备收了吧，顺便逼问LR模型发展历史。</p>
@@ -802,45 +800,45 @@
 </ul>
 <h4 id="lightgbm的调参步骤">LightGBM的调参步骤</h4>
 <p><strong>第一步：学习率和迭代次数</strong>我们先把学习率先定一个较高的值，这里取 <code>learning_rate = 0.1</code>，其次确定估计器<code>boosting/boost/boosting_type</code>的类型，不过默认都会选gbdt。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">&#39;boosting_type&#39;</span><span class="op">/</span><span class="st">&#39;boosting&#39;</span>: <span class="st">&#39;gbdt&#39;</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co">&#39;objective&#39;</span>: <span class="st">&#39;binary&#39;</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">&#39;metric&#39;</span>: <span class="st">&#39;auc&#39;</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"> </a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># 以下是选择的初始值</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">&#39;max_depth&#39;</span>: <span class="dv">5</span>     <span class="co"># 由于数据集不是很大，所以选择了一个适中的值，其实4-10都无所谓。</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">&#39;num_leaves&#39;</span>: <span class="dv">30</span>   <span class="co"># 由于lightGBM是leaves_wise生长，官方说法是要小于2^max_depth</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">&#39;subsample&#39;</span><span class="op">/</span><span class="st">&#39;bagging_fraction&#39;</span>:<span class="fl">0.8</span>           <span class="co"># 数据采样</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co">&#39;colsample_bytree&#39;</span><span class="op">/</span><span class="st">&#39;feature_fraction&#39;</span>: <span class="fl">0.8</span>   <span class="co"># 特征采样</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">&#39;boosting_type&#39;</span><span class="op">/</span><span class="st">&#39;boosting&#39;</span>: <span class="st">&#39;gbdt&#39;</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">&#39;objective&#39;</span>: <span class="st">&#39;binary&#39;</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">&#39;metric&#39;</span>: <span class="st">&#39;auc&#39;</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"> </a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># 以下是选择的初始值</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">&#39;max_depth&#39;</span>: <span class="dv">5</span>     <span class="co"># 由于数据集不是很大，所以选择了一个适中的值，其实4-10都无所谓。</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">&#39;num_leaves&#39;</span>: <span class="dv">30</span>   <span class="co"># 由于lightGBM是leaves_wise生长，官方说法是要小于2^max_depth</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">&#39;subsample&#39;</span><span class="op">/</span><span class="st">&#39;bagging_fraction&#39;</span>:<span class="fl">0.8</span>           <span class="co"># 数据采样</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">&#39;colsample_bytree&#39;</span><span class="op">/</span><span class="st">&#39;feature_fraction&#39;</span>: <span class="fl">0.8</span>   <span class="co"># 特征采样</span></a></code></pre></div>
 <p>迭代的次数，也可以说是残差树的数目，参数名为<code>n_estimators/num_iterations/num_round/num_boost_round</code>。我们可以先将该参数设成一个较大的数，然后在cv结果中查看最优的迭代次数<code>lgb.cv(params, data_train, num_boost_round=1000, nfold=5, stratified=False, shuffle=True, metrics='auc',early_stopping_rounds=50,seed=0)</code>。</p>
 <p>我们根据以上结果，就可以取<code>n_estimators=188</code>。</p>
 <p><strong>第二步：确定max_depth和num_leaves</strong>这是提高精确度的最重要的参数。这里我们引入<strong>sklearn里的GridSearchCV()函数</strong>进行搜索。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="im">from</span> sklearn.grid_search <span class="im">import</span> GridSearchCV</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">params_test1<span class="op">=</span>{<span class="st">&#39;max_depth&#39;</span>: <span class="bu">range</span>(<span class="dv">3</span>,<span class="dv">8</span>,<span class="dv">1</span>), <span class="st">&#39;num_leaves&#39;</span>:<span class="bu">range</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">5</span>)}</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">              </a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">gsearch1 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">6</span>, bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">                       param_grid <span class="op">=</span> params_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">gsearch1.fit(X_train,y_train)</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="im">from</span> sklearn.grid_search <span class="im">import</span> GridSearchCV</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">params_test1<span class="op">=</span>{<span class="st">&#39;max_depth&#39;</span>: <span class="bu">range</span>(<span class="dv">3</span>,<span class="dv">8</span>,<span class="dv">1</span>), <span class="st">&#39;num_leaves&#39;</span>:<span class="bu">range</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">5</span>)}</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">              </a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">gsearch1 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">6</span>, bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">                       param_grid <span class="op">=</span> params_test1, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">gsearch1.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">gsearch1.grid_scores_, gsearch1.best_params_, gsearch1.best_score_</a></code></pre></div>
 <p>根据结果，我们取max_depth=4, num_leaves=10</p>
 <p><strong>第三步：确定min_data_in_leaf和max_bin</strong></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">params_test2<span class="op">=</span>{<span class="st">&#39;max_bin&#39;</span>: <span class="bu">range</span>(<span class="dv">5</span>,<span class="dv">256</span>,<span class="dv">10</span>), <span class="st">&#39;min_data_in_leaf&#39;</span>:<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">102</span>,<span class="dv">10</span>)}</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">              </a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">gsearch2 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">                       param_grid <span class="op">=</span> params_test2, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">gsearch2.fit(X_train,y_train)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">gsearch2.grid_scores_, gsearch2.best_params_, gsearch2.best_score_</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1">params_test2<span class="op">=</span>{<span class="st">&#39;max_bin&#39;</span>: <span class="bu">range</span>(<span class="dv">5</span>,<span class="dv">256</span>,<span class="dv">10</span>), <span class="st">&#39;min_data_in_leaf&#39;</span>:<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">102</span>,<span class="dv">10</span>)}</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">              </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">gsearch2 <span class="op">=</span> GridSearchCV(estimator <span class="op">=</span> lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.1</span>, n_estimators<span class="op">=</span><span class="dv">188</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,bagging_fraction <span class="op">=</span> <span class="fl">0.8</span>,feature_fraction <span class="op">=</span> <span class="fl">0.8</span>), </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">                       param_grid <span class="op">=</span> params_test2, scoring<span class="op">=</span><span class="st">&#39;roc_auc&#39;</span>,cv<span class="op">=</span><span class="dv">5</span>,n_jobs<span class="op">=-</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">gsearch2.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">gsearch2.grid_scores_, gsearch2.best_params_, gsearch2.best_score_</a></code></pre></div>
 <p>这个结果就不显示了，根据结果，我们取min_data_in_leaf=51，max_bin in=15。</p>
 <p><strong>第四步：确定feature_fraction、bagging_fraction、bagging_freq</strong></p>
 <p><strong>第五步：确定lambda_l1和lambda_l2</strong></p>
 <p><strong>第六步：确定 min_split_gain</strong></p>
 <p><strong>第七步：降低学习率，增加迭代次数，验证模型</strong></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">model<span class="op">=</span>lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.01</span>, n_estimators<span class="op">=</span><span class="dv">1000</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,max_bin<span class="op">=</span><span class="dv">15</span>,min_data_in_leaf<span class="op">=</span><span class="dv">51</span>,bagging_fraction<span class="op">=</span><span class="fl">0.6</span>,bagging_freq<span class="op">=</span> <span class="dv">0</span>, feature_fraction<span class="op">=</span> <span class="fl">0.8</span>,</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">lambda_l1<span class="op">=</span><span class="fl">1e-05</span>,lambda_l2<span class="op">=</span><span class="fl">1e-05</span>,min_split_gain<span class="op">=</span><span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">model.fit(X_train,y_train)</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">y_pre<span class="op">=</span>model.predict(X_test)</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="bu">print</span>(<span class="st">&quot;acc:&quot;</span>,metrics.accuracy_score(y_test,y_pre))</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="bu">print</span>(<span class="st">&quot;auc:&quot;</span>,metrics.roc_auc_score(y_test,y_pre))</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">model<span class="op">=</span>lgb.LGBMClassifier(boosting_type<span class="op">=</span><span class="st">&#39;gbdt&#39;</span>,objective<span class="op">=</span><span class="st">&#39;binary&#39;</span>,metrics<span class="op">=</span><span class="st">&#39;auc&#39;</span>,learning_rate<span class="op">=</span><span class="fl">0.01</span>, n_estimators<span class="op">=</span><span class="dv">1000</span>, max_depth<span class="op">=</span><span class="dv">4</span>, num_leaves<span class="op">=</span><span class="dv">10</span>,max_bin<span class="op">=</span><span class="dv">15</span>,min_data_in_leaf<span class="op">=</span><span class="dv">51</span>,bagging_fraction<span class="op">=</span><span class="fl">0.6</span>,bagging_freq<span class="op">=</span> <span class="dv">0</span>, feature_fraction<span class="op">=</span> <span class="fl">0.8</span>,</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">lambda_l1<span class="op">=</span><span class="fl">1e-05</span>,lambda_l2<span class="op">=</span><span class="fl">1e-05</span>,min_split_gain<span class="op">=</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">model.fit(X_train,y_train)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">y_pre<span class="op">=</span>model.predict(X_test)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="bu">print</span>(<span class="st">&quot;acc:&quot;</span>,metrics.accuracy_score(y_test,y_pre))</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="bu">print</span>(<span class="st">&quot;auc:&quot;</span>,metrics.roc_auc_score(y_test,y_pre))</a></code></pre></div>
 <p>这样会发现， 调完参之后， 比使用默认参数的acc，auc都会有所提高。还有一种是LightGBM的cv函数调参， 这个比较省事，写好代码自动寻优，但是需要调参经验，如何设置一个好的参数范围， 这个不写了，篇幅太长，具体的看最后面那个链接吧。</p>
 <p><strong>sklearn里的GridSearchCV()函数</strong></p>
 <h4 id="xgboost其他问题极端梯度提升">XGBoost其他问题(极端梯度提升)</h4>
@@ -954,25 +952,25 @@
 <p>实际上大多数机器学习工具都无法直接支持类别特征，一般需要把类别特征，转化到多维的0/1特征，降低了空间和时间的效率。而类别特征的使用是在实践中很常用的。基于这个考虑，LightGBM优化了对类别特征的支持，可以直接输入类别特征，不需要额外的0/1展开。并在决策树算法上增加了类别特征的决策规则。在Expo数据集上的实验，相比0/1展开的方法，训练速度可以加速8倍，并且精度一致。据我们所知，LightGBM是第一个直接支持类别特征的GBDT工具。</p>
 <h3 id="catboost">CatBoost</h3>
 <p>极简示例:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="im">import</span> numpy <span class="im">as</span> np</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="im">import</span> catboost <span class="im">as</span> cb</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co"># 读数据</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">train_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">100</span>, <span class="dv">10</span>))</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">train_label <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">2</span>, size<span class="op">=</span>(<span class="dv">100</span>))</a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">test_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>,<span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">50</span>,<span class="dv">10</span>))</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="bu">print</span>(train_data,train_label,test_data)</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co"># 建立模型</span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">model <span class="op">=</span> cb.CatBoostClassifier(iterations<span class="op">=</span><span class="dv">2</span>, depth<span class="op">=</span><span class="dv">2</span>, learning_rate<span class="op">=</span><span class="fl">0.5</span>, loss_function<span class="op">=</span><span class="st">&#39;Logloss&#39;</span>,</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">                              logging_level<span class="op">=</span><span class="st">&#39;Verbose&#39;</span>)</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co"># 模型拟合</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14">model.fit(train_data, train_label, cat_features<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">5</span>])</a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co"># 预测</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16">preds_class <span class="op">=</span> model.predict(test_data)</a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">preds_probs <span class="op">=</span> model.predict_proba(test_data)</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="bu">print</span>(<span class="st">&#39;class = &#39;</span>,preds_class)</a>
-<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="bu">print</span>(<span class="st">&#39;proba = &#39;</span>,preds_probs)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="im">import</span> catboost <span class="im">as</span> cb</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># 读数据</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">train_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">100</span>, <span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">train_label <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="dv">2</span>, size<span class="op">=</span>(<span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">test_data <span class="op">=</span> np.random.randint(<span class="dv">0</span>,<span class="dv">100</span>, size<span class="op">=</span>(<span class="dv">50</span>,<span class="dv">10</span>))</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="bu">print</span>(train_data,train_label,test_data)</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="co"># 建立模型</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">model <span class="op">=</span> cb.CatBoostClassifier(iterations<span class="op">=</span><span class="dv">2</span>, depth<span class="op">=</span><span class="dv">2</span>, learning_rate<span class="op">=</span><span class="fl">0.5</span>, loss_function<span class="op">=</span><span class="st">&#39;Logloss&#39;</span>,</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">                              logging_level<span class="op">=</span><span class="st">&#39;Verbose&#39;</span>)</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co"># 模型拟合</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">model.fit(train_data, train_label, cat_features<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">5</span>])</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="co"># 预测</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">preds_class <span class="op">=</span> model.predict(test_data)</a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">preds_probs <span class="op">=</span> model.predict_proba(test_data)</a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="bu">print</span>(<span class="st">&#39;class = &#39;</span>,preds_class)</a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="bu">print</span>(<span class="st">&#39;proba = &#39;</span>,preds_probs)</a></code></pre></div>
 <h3 id="机器学习中的距离计算方法">机器学习中的距离计算方法</h3>
 <p>设空间中两个点为(x1,y1),(x2,y2):</p>
 <p>欧式距离:</p>
@@ -1005,23 +1003,23 @@
 <h3 id="如何用根据特征重要性筛选特征">如何用根据特征重要性筛选特征</h3>
 <p>利用模型的 feature_importances_方法。</p>
 <p>阈值的选择会进行遍历并选择最佳的阈值</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="im">from</span> numpy <span class="im">import</span> sort</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> SelectFromModel <span class="co"># Fit model using each importance as a threshold</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">thresholds <span class="op">=</span> sort(model_XGB.feature_importances_)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="cf">for</span> thresh <span class="kw">in</span> thresholds:</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">  <span class="co"># select features using threshold</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">  selection <span class="op">=</span> SelectFromModel(model_XGB, threshold<span class="op">=</span>thresh, prefit<span class="op">=</span><span class="va">True</span>)</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">  select_X_train <span class="op">=</span> selection.transform(X_train)</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">  <span class="co"># train model</span></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">  selection_model <span class="op">=</span> XGBClassifier()</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">  selection_model.fit(select_X_train, y_train)</a>
-<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="co"># eval model</span></a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">  select_X_test <span class="op">=</span> selection.transform(X_test)</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">  y_pred <span class="op">=</span> selection_model.predict(select_X_test)</a>
-<a class="sourceLine" id="cb7-14" data-line-number="14">  predictions <span class="op">=</span> [<span class="bu">round</span>(value) <span class="cf">for</span> value <span class="kw">in</span> y_pred]</a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">  accuracy <span class="op">=</span> accuracy_score(y_test, predictions)</a>
-<a class="sourceLine" id="cb7-16" data-line-number="16">  <span class="bu">print</span>(<span class="st">&quot;Thresh=</span><span class="sc">%.3f</span><span class="st">, n=</span><span class="sc">%d</span><span class="st">, Accuracy: </span><span class="sc">%.2f%%</span><span class="st">&quot;</span> <span class="op">%</span> (thresh, select_X_train.shape[<span class="dv">1</span>],</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">      accuracy<span class="op">*</span><span class="fl">100.0</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="im">from</span> numpy <span class="im">import</span> sort</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> SelectFromModel <span class="co"># Fit model using each importance as a threshold</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">thresholds <span class="op">=</span> sort(model_XGB.feature_importances_)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="cf">for</span> thresh <span class="kw">in</span> thresholds:</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">  <span class="co"># select features using threshold</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">  selection <span class="op">=</span> SelectFromModel(model_XGB, threshold<span class="op">=</span>thresh, prefit<span class="op">=</span><span class="va">True</span>)</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">  select_X_train <span class="op">=</span> selection.transform(X_train)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="co"># train model</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">  selection_model <span class="op">=</span> XGBClassifier()</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">  selection_model.fit(select_X_train, y_train)</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co"># eval model</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">  select_X_test <span class="op">=</span> selection.transform(X_test)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">  y_pred <span class="op">=</span> selection_model.predict(select_X_test)</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">  predictions <span class="op">=</span> [<span class="bu">round</span>(value) <span class="cf">for</span> value <span class="kw">in</span> y_pred]</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  accuracy <span class="op">=</span> accuracy_score(y_test, predictions)</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">  <span class="bu">print</span>(<span class="st">&quot;Thresh=</span><span class="sc">%.3f</span><span class="st">, n=</span><span class="sc">%d</span><span class="st">, Accuracy: </span><span class="sc">%.2f%%</span><span class="st">&quot;</span> <span class="op">%</span> (thresh, select_X_train.shape[<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">      accuracy<span class="op">*</span><span class="fl">100.0</span>))</a></code></pre></div>
 <h3 id="谈谈判别式模型和生成式模型">谈谈判别式模型和生成式模型？</h3>
 <p>判别方法：由数据直接学习决策函数 Y = f（X），或者由条件分布概率 P（Y|X）作为预测模型，即判别模型。</p>
 <p>生成方法：由数据学习联合概率密度分布函数 P（X,Y）,然后求出条件概率分布P(Y|X)作为预测的模型，即生成模型。</p>
