@@ -1,0 +1,97 @@
+<h1 id="todo">TODO:</h1>
+<p>word2vec</p>
+<p>GPT</p>
+<p>bert</p>
+<p>eimo</p>
+<h1 id="就业相关">就业相关</h1>
+<h2 id="岗位要求">岗位要求</h2>
+<figure>
+<img src="/img/in-post/20_07/image-20200817211236832.png" alt="image-20200817211236832" /><figcaption>image-20200817211236832</figcaption>
+</figure>
+<figure>
+<img src="/img/in-post/20_07/image-20200817211133136.png" alt="image-20200817211133136" /><figcaption>image-20200817211133136</figcaption>
+</figure>
+<figure>
+<img src="/img/in-post/20_07/image-20200817211617930.png" alt="image-20200817211617930" /><figcaption>image-20200817211617930</figcaption>
+</figure>
+<h2 id="就业方向">就业方向</h2>
+<p>对话系统</p>
+<p>舆情监控</p>
+<p><code>**推荐系统**</code></p>
+<p>搜索</p>
+<p>机器翻译</p>
+<h1 id="预训练模型介绍">预训练模型介绍</h1>
+<h2 id="发展历程">发展历程</h2>
+<p><img src="/img/in-post/20_07/image-20200817171443663.png" alt="image-20200817171443663" style="zoom:50%;" /></p>
+<p>NLP=NLU+NLG</p>
+<p><img src="/img/in-post/20_07/image-20200817222354651.png" alt="image-20200817222354651" style="zoom:50%;" /></p>
+<h2 id="技术演化路径">技术演化路径</h2>
+<h3 id="word2vec">Word2vec</h3>
+<figure>
+<img src="/img/in-post/20_07/image-20200817234716393.png" alt="image-20200817234716393" /><figcaption>image-20200817234716393</figcaption>
+</figure>
+<blockquote>
+<p>有上下文信息,</p>
+<p>CBOW: 用中间预测前后预测中间词</p>
+</blockquote>
+<figure>
+<img src="/img/in-post/20_07/image-20200818000802966.png" alt="image-20200818000802966" /><figcaption>image-20200818000802966</figcaption>
+</figure>
+<h3 id="预训练模型">预训练模型</h3>
+<figure>
+<img src="/img/in-post/20_07/image-20200818001101464.png" alt="image-20200818001101464" /><figcaption>image-20200818001101464</figcaption>
+</figure>
+<figure>
+<img src="/img/in-post/20_07/image-20200818001246858.png" alt="image-20200818001246858" /><figcaption>image-20200818001246858</figcaption>
+</figure>
+<blockquote>
+<p>bert 用的是encoder</p>
+<p>GPT用的decoder, 去掉了中间一层</p>
+<p>bert 用的 masked Language Modeling的结构(隐藏中间并预测这个辅助任务), 前向后相都考虑了</p>
+<p>gpt 只能从左到右</p>
+<p>ELMo concat了左到右和右到左</p>
+</blockquote>
+<h2 id="学习路径">学习路径</h2>
+<p><img src="/img/in-post/20_07/image-20200817222650621.png" alt="image-20200817222650621" style="zoom:50%;" /></p>
+<p><img src="/img/in-post/20_07/image-20200817222728605.png" alt="image-20200817222728605" style="zoom:50%;" /></p>
+<p><img src="/img/in-post/20_07/image-20200817222828941.png" alt="image-20200817222828941" style="zoom:50%;" /></p>
+<p><img src="/img/in-post/20_07/image-20200817222909371.png" alt="image-20200817222909371" style="zoom:50%;" /></p>
+<p>资料推荐</p>
+<figure>
+<img src="/img/in-post/20_07/image-20200817223331474.png" alt="image-20200817223331474" /><figcaption>image-20200817223331474</figcaption>
+</figure>
+<h1 id="总览">总览</h1>
+<p>前期知识</p>
+<figure>
+<img src="/img/in-post/20_07/image-20200814210848408.png" alt="image-20200814210848408" /><figcaption>image-20200814210848408</figcaption>
+</figure>
+<figure>
+<img src="/img/in-post/20_07/image-20200814211006951.png" alt="image-20200814211006951" /><figcaption>image-20200814211006951</figcaption>
+</figure>
+<h4 id="wmt数据集">WMT数据集</h4>
+<p>语言翻译</p>
+<p><img src="/img/in-post/20_07/image-20200814211210793.png" alt="image-20200814211210793" style="zoom:50%;" /></p>
+<h4 id="参考指标bleu">参考指标bleu</h4>
+<figure>
+<img src="/img/in-post/20_07/image-20200814211559646.png" alt="image-20200814211559646" /><figcaption>image-20200814211559646</figcaption>
+</figure>
+<p><img src="/img/in-post/20_07/image-20200814211749924.png" alt="image-20200814211749924" style="zoom:50%;" /></p>
+<h4 id="transform-big">transform big</h4>
+<h4 id="self-attention">self-attention</h4>
+<p>可以降低时间复杂度</p>
+<p>具有更强的可解释性, 显示了不同词语间的关联信息.</p>
+<figure>
+<img src="/img/in-post/20_07/image-20200814212529964.png" alt="image-20200814212529964" /><figcaption>image-20200814212529964</figcaption>
+</figure>
+<h2 id="transformer-历史意义">transformer 历史意义</h2>
+<figure>
+<img src="/img/in-post/20_07/image-20200814212846684.png" alt="image-20200814212846684" /><figcaption>image-20200814212846684</figcaption>
+</figure>
+<ol type="1">
+<li>提出self-attention, 拉开非序列化模型序幕</li>
+<li>为预训练模型到来打下基础</li>
+<li>bert等</li>
+</ol>
+<figure>
+<img src="/img/in-post/20_07/image-20200814213158860.png" alt="image-20200814213158860" /><figcaption>image-20200814213158860</figcaption>
+</figure>

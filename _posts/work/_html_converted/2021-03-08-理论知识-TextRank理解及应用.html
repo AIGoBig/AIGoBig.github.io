@@ -1,0 +1,126 @@
+<h1 id="原理">原理</h1>
+<h2 id="textrank总结">Textrank总结</h2>
+<h3 id="textrank特点">TextRank特点：</h3>
+<p>此种算法的一个重要特点是可以<strong>脱离语料库</strong>的背景，<strong>仅对单篇文档</strong>进行分析就可以提取该文档的关键词。基本思想来源于Google的PageRank算法。</p>
+<p>与PageRank不同的是，PageRank中是有向边，而TextRank中是无向边，或者说是双向边。</p>
+<h3 id="textrank-用于关键词提取的算法流程如下">TextRank 用于关键词提取的<strong>算法流程</strong>如下：</h3>
+<ol type="1">
+<li>把给定的文本 T 按照完整句子进行<strong>分割</strong>，即:T=[S1,S2,…,Sm]</li>
+<li>对于每个句子，进行分词和<strong>词性标注</strong>处理，并过滤掉停用词，<strong>只保留指定词性的单词</strong>，如名词、动词、形容词，其中 ti,j 是保留后的候选关键词。Si=[ti,1,ti,2,…,ti,n]</li>
+<li><strong>构建候选关键词图</strong> G = (V,E)，其中 V 为节点集，由（2）生成的候选关键词组成，然后采用共现关系（Co-Occurrence）构造任两点之间的边，两个节点之间存在边仅当它们对应的词汇在长度为K 的窗口中共现，K表示窗口大小，即最多共现 K 个单词。</li>
+<li>根据 TextRank 的公式，<strong>迭代传播各节点的权重</strong>，直至收敛。</li>
+<li>对节点权重进行<strong>倒序排序</strong>，从而得到最重要的 T 个单词，作为候选关键词。</li>
+<li>由（5）得到最重要的 T 个单词，在原始文本中进行<strong>标记</strong>，若形成相邻词组，则组合成多词关键词。</li>
+</ol>
+<h3 id="迭代计算公式">迭代计算公式：</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo/img/2020/v2-04b2c330a7f471e8b93f78963e6c1619_720w-20210501200224199.jpg" alt="img" style="zoom: 50%;" /></p>
+<p>可以看出，该公式仅仅比PageRank<strong>多了一个权重项Wji</strong>，用来表示<strong>两个节点之间的边连接有不同的重要程度</strong>。考虑到不同词对可能有不同的共现（co-occurrence），<strong>TextRank将共现作为无向图边的权值</strong>。</p>
+<h3 id="关键词提取应用">关键词提取应用</h3>
+<h4 id="textrank用于关键词提取">TextRank用于关键词提取</h4>
+<h4 id="textrank算法提取关键词短语">TextRank算法提取关键词短语</h4>
+<p>提取关键词短语的方法基于关键词提取，可以简单认为：如果提取出的<strong>若干关键词在文本中相邻</strong>，那么构成一个被提取的关键短语。</p>
+<h4 id="textrank生成摘要">TextRank生成摘要</h4>
+<p>　　将文本中的每个<strong>句子分别看做一个节点</strong>，如果两个句子有相似性，那么认为这两个句子对应的节点之间存在一条无向有权边。考察<strong>句子相似度</strong>的方法是下面这个公式：</p>
+<figure>
+<img src="https://cdn.jsdelivr.net/gh/sunqinghu/PicRepo/img/2020/v2-6f2cdbb2e228a23d26ba303c9e958017_720w.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>公式中，Si,Sj分别表示两个句子词的个数总数，Wk表示句子中的词，那么分子部分的意思是<strong>同时出现在两个句子中的同一个词的个数</strong>，分母是对句子中词的个数求对数之和。分母这样设计可以<strong>遏制较长的句子在相似度计算上的优势</strong>。</p>
+</blockquote>
+<p>我们可以根据以上相似度公式循环计算任意两个节点之间的相似度，<strong>根据阈值去掉两个节点之间相似度较低的边连接</strong>，构建出节点连接图，然后计算TextRank值，最后对所有TextRank值排序，<strong>选出TextRank值最高的几个节点对应的句子</strong>作为摘要。</p>
+<h2 id="理解pagerank">理解PageRank</h2>
+<p>PageRank (PR)是一种用于计算网页权重的算法。我们可以把<strong>所有的网页看做一个有向图</strong>。在这个图中，一个节点是一个网页。如果网页A有到网页B的链接，则可以表示为A到B的一条有向边。</p>
+<p>在我们构造完整个图之后，我们可以用下面的公式为网页分配权重。</p>
+<figure>
+<img src="/img/in-post/20_07/1*hheHfLOTjPW3uSsSxWKylQ.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p><br /><span class="math display">$$
+\sum_{所有进入链接j}\frac{j的权重}{j的出链数量}
+$$</span><br /></p>
+<p>我们可以看到网页的权重e<strong>取决于其入站页面的权重</strong>。我们需要运行这个迭代很多时间来获得最终的权重。初始化时，每个网页的重要性为1。</p>
+</blockquote>
+<h2 id="实现pagerank-实例">实现PageRank — 实例</h2>
+<p><img src="/img/in-post/20_07/1*DkZjlRNEjPSc8RNL7yWggA.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>use a <strong>matrix</strong> to represent the inbound and outbound links</p>
+<p><img src="/img/in-post/20_07/1*dbzhpH6gbbraRloOz-oHmw.png" alt="img" style="zoom:33%;" /></p>
+<p>According to the <code>1/|Out(Vi)|</code> from the function, we should <strong>normalize</strong> each column.</p>
+<p><img src="/img/in-post/20_07/1*ppIReXWpavbuvAHfi08EGw.png" alt="img" style="zoom: 33%;" /></p>
+<p>We use this matrix to <strong>multiply</strong> with the weight of all nodes.</p>
+<p><img src="/img/in-post/20_07/1*n-Zp7ZjPMuw_p99UO_qDzA.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>We can use Python to <strong>iterate</strong> many times.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">g <span class="op">=</span> [[<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">     [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">     [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>],</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">     [<span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="dv">0</span>]]</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">g <span class="op">=</span> np.array(g)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">pr <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>]) <span class="co"># initialization for a, b, e, f is 1</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">d <span class="op">=</span> <span class="fl">0.85</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="cf">for</span> <span class="bu">iter</span> <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">    pr <span class="op">=</span> <span class="fl">0.15</span> <span class="op">+</span> <span class="fl">0.85</span> <span class="op">*</span> np.dot(g, pr)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">    <span class="bu">print</span>(<span class="bu">iter</span>)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">    <span class="bu">print</span>(pr)</a></code></pre></div>
+<pre><code>0
+[0.15  0.15  1.425 0.575]
+1
+[0.15    0.15    0.34125 0.21375]
+2
+[0.15    0.15    0.34125 0.21375]
+3
+[0.15    0.15    0.34125 0.21375]
+4
+[0.15    0.15    0.34125 0.21375]
+5
+[0.15    0.15    0.34125 0.21375]
+6
+[0.15    0.15    0.34125 0.21375]
+7
+[0.15    0.15    0.34125 0.21375]
+8
+[0.15    0.15    0.34125 0.21375]
+9
+[0.15    0.15    0.34125 0.21375]
+10
+[0.15    0.15    0.34125 0.21375]</code></pre>
+<p>We also can change the code correspondingly.</p>
+<h2 id="通过textrank提取关键字">通过TextRank提取关键字</h2>
+<p>PageRank是网页排名，TextRank是<strong>文本排名</strong>。PageRank中的网页就是TextRank中的文本，所以基本思路是一样的。</p>
+<p><img src="/img/in-post/20_07/1*JeYlqJTA5MpKsaWwHkhKQw-20210501135202741.jpeg" alt="img" style="zoom:80%;" /></p>
+<p>我们将文档分成几个句子，并且只存储带有<strong>特定POS标签</strong>的单词。我们使用<code>spaCy</code>进行词性标注。</p>
+<p>我们把这一段分成三句话。</p>
+<p>因为句子中的大多数单词对确定重要性没有用处，我们<strong>只考虑带有名词、PROPN、动词词性标签的单词</strong>。这是可选的，你也可以使用所有的单词。</p>
+<p>Output</p>
+<pre><code>[[Wandering, Earth, described, China, budget, science, fiction, thriller, screens, AMC, theaters, North, America, weekend, shows, filmmaking, focused, spectacles, China, epics], [time, Wandering, Earth, feels, throwback, eras, filmmaking], [film, cast, setting, tone, science, fiction, fans, going, lot, screen, reminds, movies]]</code></pre>
+<p>每个单词都是PageRank中的一个节点。我们将窗口大小设为k。</p>
+<figure>
+<img src="/img/in-post/20_07/1*YdjbC0NcNnAkGf3sWPTAiA.png" alt="1*YdjbC0NcNnAkGf3sWPTAiA" /><figcaption>1*YdjbC0NcNnAkGf3sWPTAiA</figcaption>
+</figure>
+<p><span class="math inline">[<em>w</em>1, <em>w</em>2, <em>w</em><sub><em>k</em></sub>]、[<em>w</em>2, <em>w</em>3, <em>w</em><sub><em>k</em> + 1</sub>], [<em>w</em>3, <em>w</em>4, <em>w</em><sub><em>k</em> + 2</sub>]</span>为<code>windows</code>。我们认为<strong>窗口中的任何两字对都有无向边</strong>。</p>
+<p>我们以[time, Wandering, Earth, feels, throwback, eras, filmmaking]为例，将窗口大小设为k=4，所以我们得到了4个窗口，[time, Wandering, Earth, feels, throwback]， [Earth, feels, throwback, eras]， [feels, throwback, eras, filmmaking]。</p>
+<p>对于[time, Wandering, Earth, feels]，任何两个词对都有一个无向边。我们得到(time, Wandering), (time, Earth), (time, feels), (Wandering, Earth), (Wandering, feels), (Earth, feels)</p>
+<p>根据这个图，我们可以<strong>计算每个节点(单词)的权重</strong>。最重要的词可以用作关键词。🚩</p>
+<h2 id="关键词提取的实现">关键词提取的实现</h2>
+<p>在这里，我用Python实现了一个完整的示例，我们使用spaCy来获取单词的POS标记。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">text <span class="op">=</span> <span class="st">&#39;&#39;&#39;</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">The Wandering Earth, described as China’s first big-budget science fiction thriller, quietly made it onto screens at AMC theaters in North America this weekend, and it shows a new side of Chinese filmmaking — one focused toward futuristic spectacles rather than China’s traditionally grand, massive historical epics. At the same time, The Wandering Earth feels like a throwback to a few familiar eras of American filmmaking. While the film’s cast, setting, and tone are all Chinese, longtime science fiction fans are going to see a lot on the screen that reminds them of other movies, for better or worse.</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">&#39;&#39;&#39;</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">tr4w <span class="op">=</span> TextRank4Keyword()</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">tr4w.analyze(text, candidate_pos <span class="op">=</span> [<span class="st">&#39;NOUN&#39;</span>, <span class="st">&#39;PROPN&#39;</span>], window_size<span class="op">=</span><span class="dv">4</span>, lower<span class="op">=</span><span class="va">False</span>)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">tr4w.get_keywords(<span class="dv">10</span>)</a></code></pre></div>
+<p>Output</p>
+<pre><code>science - 1.717603106506989
+fiction - 1.6952610926181002
+filmmaking - 1.4388798751402918
+China - 1.4259793786986021
+Earth - 1.3088154732297723
+tone - 1.1145002295684114
+Chinese - 1.0996896235078055
+Wandering - 1.0071059904601571
+weekend - 1.002449354657688
+America - 0.9976329264870932
+budget - 0.9857269586649321
+North - 0.9711240881032547</code></pre>
+<h1 id="参考">参考</h1>
+<p><a href="https://towardsdatascience.com/textrank-for-keyword-extraction-by-python-c0bae21bcec0">Understand TextRank for Keyword Extraction by Python</a></p>

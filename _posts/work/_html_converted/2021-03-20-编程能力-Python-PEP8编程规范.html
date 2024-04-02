@@ -1,0 +1,270 @@
+<h1 id="introduction">Introduction</h1>
+<p>重点：</p>
+<ol type="1">
+<li>一致性</li>
+<li>可读性</li>
+</ol>
+<blockquote>
+<p>Guido的一条重要的见解是代码阅读比写更加频繁。这里提供的指导原则主要用于<strong>提升代码的可读性</strong>，使得在大量的Python代码中<strong>保持一致</strong>。就像<a href="http://legacy.python.org/dev/peps/pep-0020/">PEP 20</a>提到的，“Readability counts”。</p>
+</blockquote>
+<h1 id="code-lay-out-代码布局">Code lay-out 代码布局</h1>
+<h2 id="indentation-缩进">Indentation 缩进</h2>
+<p>每一级缩进使用4个空格。</p>
+<h2 id="tabs-or-spaces-制表符还是空格">Tabs or Spaces？ 制表符还是空格？</h2>
+<h2 id="maximum-line-length-行的最大长度">Maximum Line Length 行的最大长度</h2>
+<p><strong>所有行限制的最大字符数为79。</strong></p>
+<p>较长的代码行选择Python在<strong>小括号</strong>，中括号以及大括号中的隐式续行方式。通过小括号内表达式的换行方式将长串折成多行。这种方式应该优先使用，而不是使用反斜杠续行。</p>
+<pre><code>from os.path import (curdir, pardir, sep, pathsep, defpath, extsep, altsep,
+                                                devnull)</code></pre>
+<p>当然了，反斜杠有时依然很有用。比如较长的多个with状态语句，不能使用隐式续行，所以<strong>反斜杠</strong>是可以接受的：</p>
+<pre><code>with open(&#39;/path/to/some/file/you/want/to/read&#39;) as file_1, \
+     open(&#39;/path/to/some/file/being/written&#39;, &#39;w&#39;) as file_2:
+    file_2.write(file_1.read())</code></pre>
+<h2 id="should-a-line-break-before-or-after-a-binary-operator-在二元运算符之前应该换行吗">Should a line break before or after a binary operator? 在二元运算符之前应该换行吗？</h2>
+<p>遵循数学的传统能产出更多可读性高的代码：</p>
+<pre><code># 推荐：运算符和操作数很容易进行匹配
+income = (gross_wages
+          + taxable_interest
+          + (dividends - qualified_dividends)
+          - ira_deduction
+          - student_loan_interest)</code></pre>
+<h2 id="blank-lines-空行">Blank Lines 空行</h2>
+<p><strong>顶层函数和类的定义，前后用两个空行隔开。类里的方法定义用一个空行隔开。</strong></p>
+<p><strong>相关的功能组可以用额外的空行（谨慎使用）隔开</strong>。一堆相关的单行代码之间的空白行可以省略（例如，一组虚拟实现 dummy implementations）。</p>
+<h2 id="source-file-encoding-源文件编码">Source File Encoding 源文件编码</h2>
+<p>Python标准库中的所有标识符必须使用ASCII标识符，并在可行的情况下使用英语单词（在许多情况下，缩写和技术术语是非英语的）。此外，字符串文字和注释也必须是ASCII。</p>
+<h2 id="imports-导入">🚩Imports 导入</h2>
+<ol type="1">
+<li><p>导入通常在分开的行</p></li>
+<li><p>推荐使用绝对路径导入，如果导入系统没有正确的配置（比如包里的一个目录在sys.path里的路径后），使用绝对路径会更加可读并且性能更好（至少能提供更好的错误信息）:</p>
+<pre><code>import mypkg.sibling
+from mypkg import sibling
+from mypkg.sibling import example
+</code></pre></li>
+<li><p>显示的指定相对导入路径是使用绝对路径的一个可接受的替代方案，特别是在处理使用绝对路径导入不必要冗长的复杂包布局时：</p>
+<pre><code>from . import sibling
+from .sibling import example</code></pre></li>
+<li><p>标准库要避免使用复杂的包引入结构，而总是使用绝对路径。 不应该使用隐式相对路径导入，并且在Python 3中删除了它。</p>
+<blockquote>
+<p>当从一个包含类的模块中导入类时，常常这么写：</p>
+<pre><code>from myclass import MyClass
+from foo.bar.yourclass import YourClass</code></pre>
+<p>如果上述的写法导致名字的冲突，那么这么写：</p>
+<pre><code>import myclass
+import foo.bar.yourclass</code></pre>
+<p>然后使用“myclass.MyClass”和“foo.bar.yourclass.YourClass”。</p>
+</blockquote></li>
+<li><p>**避免通配符的导入（from import *）**，因为这样做会不知道命名空间中存在哪些名字，会使得读取接口和许多自动化工具之间产生混淆。对于通配符的导入，有一个防御性的做法，即将内部接口重新发布为公共API的一部分（例如，用可选加速器模块的定义覆盖纯Python实现的接口，以及重写那些事先不知道的定义）。 当以这种方式重新发布名称时，以下关于公共和内部接口的准则仍然适用。</p></li>
+</ol>
+<h2 id="module-level-dunder-names-模块级的呆名">Module level dunder names 模块级的“呆”名</h2>
+<h2 id="string-quotes-字符串引号">String Quotes 字符串引号</h2>
+<h1 id="whitespace-in-expressions-and-statements-表达式和语句中的空格">Whitespace in Expressions and Statements 表达式和语句中的空格</h1>
+<h2 id="pet-peeves-不能忍受的事情">Pet Peeves 不能忍受的事情</h2>
+<p>冒号在切片中就像二元运算符，在两边应该有相同数量的空格（把它当做优先级最低的操作符）<strong>。在扩展的切片操作中，所有的冒号必须有相同的间距</strong>。例外情况：当一个切片参数被省略时，空格就被省略了。 推荐：</p>
+<pre><code>ham[1:9], ham[1:9:3], ham[:9:3], ham[1::3], ham[1:9:]
+ham[lower:upper], ham[lower:upper:], ham[lower::step]
+ham[lower+offset : upper+offset]
+ham[: upper_fn(x) : step_fn(x)], ham[:: step_fn(x)]
+ham[lower + offset : upper + offset]</code></pre>
+<h2 id="other-recommendations-其他建议">Other Recommendations 其他建议</h2>
+<ul>
+<li>避免在尾部添加空格。因为尾部的空格通常都看不见，会产生混乱：比如，<strong>一个反斜杠后面跟一个空格的换行符，不算续行标记，运行也会报错！</strong>有些编辑器不会保留尾空格，并且很多项目（像CPython）在pre-commit的挂钩调用中会过滤掉尾空格。</li>
+<li>总是在<strong>二元运算符两边加一个空格</strong>：赋值（=），增量赋值（+=，-=），比较（==,&lt;,&gt;,!=,&lt;&gt;,&lt;=,&gt;=,in,not,in,is,is not），布尔（and, or, not）。</li>
+<li>如果使用具有不同优先级的运算符，请考虑在具有<strong>最低优先级的运算符周围添加空格</strong>。有时需要通过自己来判断；但是，不要使用一个以上的空格，并且在二元运算符的两边使用相同数量的空格。 推荐：</li>
+</ul>
+<pre><code>i = i + 1
+submitted += 1
+x = x*2 - 1
+hypot2 = x*x + y*y
+c = (a+b) * (a-b)</code></pre>
+<ul>
+<li>在制定<strong>关键字参数或者默认参数值的时候，不要在=附近加上空格。</strong> 推荐：</li>
+</ul>
+<pre><code>def complex(real, imag=0.0):
+    return magic(r=real, i=imag)
+</code></pre>
+<ul>
+<li>功能型注释应该使用冒号的一般性规则，并且在使用-&gt;的时候要在两边加空格。（参考下面的功能注释得到能够多信息） 推荐：</li>
+</ul>
+<pre><code>def munge(input: AnyStr): ...
+def munge() -&gt; AnyStr: ...</code></pre>
+<ul>
+<li>当给<strong>有类型备注的参数</strong>赋值的时候，在=两边添加空格（仅针对那种有类型备注和默认值的参数）。 推荐：</li>
+</ul>
+<pre><code>def munge(sep: AnyStr = None): ...
+def munge(input: AnyStr, sep: AnyStr = None, limit=1000): ...
+</code></pre>
+<ul>
+<li><strong>复合语句(同一行中的多个语句)通常是不允许的。</strong> 推荐：</li>
+</ul>
+<pre><code>if foo == &#39;blah&#39;:
+    do_blah_thing()
+do_one()
+do_two()
+do_three()</code></pre>
+<h1 id="comments-注释">Comments 注释</h1>
+<p>与代码相矛盾的注释比没有注释还糟，当代码更改时，<strong>优先更新对应的注释！</strong> 注释应该是完整的句子。如果一个注释是一个短语或句子，它的第一个单词应该大写，除非它是以小写字母开头的标识符(永远不要改变标识符的大小写！)。 如果注释很短，结尾的句号可以省略。块注释一般由完整句子的一个或多个段落组成，并且每句话结束有个句号。 在句尾结束的时候应该使用两个空格。 当用英文书写时，遵循Strunk and White （译注：《Strunk and White, The Elements of Style》）的书写风格。 在非英语国家的Python程序员，<strong>请使用英文写注释</strong>，除非你120%的确信你的代码不会被使用其他语言的人阅读。</p>
+<h2 id="block-comments-块注释">Block Comments 块注释</h2>
+<p>块注释通常适用于跟随它们的某些（或全部）代码，并缩进到与代码相同的级别。块注释的每一行开头使用一个#和一个空格（除非块注释内部缩进文本）。 块注释内部的段落<strong>通过只有一个#的空行分隔。</strong></p>
+<pre><code># Some platforms don&#39;t support lchmod().  Often the function exists
+# anyway, as a stub that always returns ENOSUP or perhaps EOPNOTSUPP.
+# (No, I don&#39;t know why that&#39;s a good design.)  ./configure will detect
+# this and reject it--so HAVE_LCHMOD still won&#39;t be defined on such
+# platforms.  This is Very Helpful.
+#
+# However, sometimes platforms without a working lchmod() *do* have
+# fchmodat().  (Examples: Linux kernel 3.2 with glibc 2.15,
+# OpenIndiana 3.x.)  And fchmodat() has a flag that theoretically makes
+# it behave like lchmod().  So in theory it would be a suitable
+# replacement for lchmod().  But when lchmod() doesn&#39;t work, fchmodat()&#39;s
+# flag doesn&#39;t work *either*.  Sadly ./configure isn&#39;t sophisticated
+# enough to detect this condition--it only determines whether or not
+# fchmodat() minimally works.</code></pre>
+<h2 id="inline-comments-行内注释">Inline Comments 行内注释</h2>
+<p>有节制地使用行内注释。 行内注释是与代码语句同行的注释。行内注释和代码至少要有两个空格分隔。注释由#和一个空格开始。 事实上，如果状态明显的话，行内注释是不必要的，反而会分散注意力。比如说下面这样就不需要：</p>
+<pre><code>x = x + 1                 # Increment x</code></pre>
+<p>但有时，这样做很有用：</p>
+<pre><code>x = x + 1                 # Compensate for border</code></pre>
+<h2 id="documentation-strings-文档字符串">Documentation Strings 文档字符串</h2>
+<p>编写好的文档说明（也叫“docstrings”）的约定在<a href="http://legacy.python.org/dev/peps/pep-0257/">PEP 257</a>中永恒不变。</p>
+<ul>
+<li>要为所有的公共模块，函数，类以及方法编写文档说明。非公共的方法没有必要，但是应该有一个描述方法具体作用的注释。这个注释应该在def那一行之后。</li>
+<li><a href="http://legacy.python.org/dev/peps/pep-0257/">PEP 257</a> 描述了写出好的文档说明相关的约定。特别需要注意的是，多行文档说明使用的结尾三引号应该自成一行，例如：</li>
+</ul>
+<pre><code>&quot;&quot;&quot;Return a foobang
+ 
+Optional plotz says to frobnicate the bizbaz first.
+&quot;&quot;&quot;</code></pre>
+<ul>
+<li>对于单行的文档说明，尾部的三引号应该和文档在同一行。</li>
+</ul>
+<pre><code>&quot;&quot;&quot;Get an environment variable, return None if it doesn&#39;t exist.&quot;&quot;&quot;　　
+</code></pre>
+<h1 id="naming-conventions-命名规范">Naming Conventions 命名规范</h1>
+<p>Python库的命名规范很乱，从来没能做到完全一致。但是目前有一些推荐的命名标准。新的模块和包（包括第三方框架）应该用这套标准，但当一个已有库采用了不同的风格，推荐保持内部一致性。</p>
+<h2 id="overriding-principle-最重要的原则">Overriding Principle 最重要的原则</h2>
+<p>那些暴露给用户的API接口的命名，应该遵循反映使用场景而不是实现的原则。</p>
+<h2 id="descriptive-naming-styles-描述命名风格">Descriptive: Naming Styles 描述：命名风格</h2>
+<p>有许多不同的命名风格。这里能够帮助大家识别正在使用什么样的命名风格，而不考虑他们为什么使用。 以下是常见的命名方式：</p>
+<ul>
+<li>b（单个小写字母）</li>
+<li>B（单个大写字母）</li>
+<li>lowercase 小写字母</li>
+<li>lower_case_with_underscores 使用下划线分隔的小写字母</li>
+<li>UPPERCASE 大写字母</li>
+<li>UPPER_CASE_WITH_UNDERSCORES 使用下划线分隔的大写字母</li>
+<li>CapitalizedWords（或者叫 CapWords，或者叫CamelCase 驼峰命名法 —— 这么命名是因为字母看上去有起伏的外观<a href="https://blog.csdn.net/ratsniper/article/details/78954852#fn:4">5</a>）。有时候也被称为StudlyCaps。 注意：当在首字母大写的风格中用到缩写时，所有缩写的字母用大写，因此，HTTPServerError 比 HttpServerError 好。</li>
+<li>mixedCase（不同于首字母大写，第一个单词的首字母小写）</li>
+<li>Capitalized_Words_With_Underscores（巨丑无比！）</li>
+</ul>
+<p>也有用唯一的短前缀把相关命名组织在一起的方法。这在Python中不常用，但还是提一下。比如，os.stat()函数中包含类似以st_mode，st_size，st_mtime这种传统命名方式命名的变量。（这么做是为了与 POSIX 系统的调用一致，以帮助程序员熟悉它。） X11库的所有公共函数都加了前缀X。在Python里面没必要这么做，因为属性和方法在调用的时候都会用类名做前缀，函数名用模块名做前缀。 另外，下面这种用前缀或结尾下划线的特殊格式是被认可的（通常和一些约定相结合）：</p>
+<ul>
+<li>_single_leading_underscore：（单下划线开头）弱“内部使用”指示器。比如 from M import * 是不会导入以下划线开始的对象的。</li>
+<li>single_trailing_underscore_：（单下划线结尾）这是避免和Python内部关键词冲突的一种约定，比如：Tkinter.Toplevel(master, class_=’ClassName’)</li>
+<li><code>__double_leading_underscore</code>：（双下划线开头）当这样命名一个类的属性时，调用它的时候名字会做矫正（在类FooBar中，<code>__boo</code>变成了<code>_FooBar__boo</code>；见下文）。</li>
+<li><code>__double_leading_and_trailing_underscore__</code>：（双下划线开头，双下划线结尾）“magic”对象或者存在于用户控制的命名空间内的属性，例如：<code>__init__</code>,<code>__import__</code>或者<code>__file__</code>。除了作为文档之外，永远不要命这样的名。</li>
+</ul>
+<h2 id="prescriptive-naming-conventions-约定俗成命名约定">Prescriptive: Naming Conventions 约定俗成：命名约定</h2>
+<h3 id="names-to-avoid-应避免的名字">Names to Avoid 应避免的名字</h3>
+<p>永远不要使用字母‘l’（小写的L），‘O’（大写的O），或者‘I’（大写的I）作为单字符变量名。 在有些字体里，这些字符无法和数字0和1区分，如果想用‘l’，用‘L’代替。</p>
+<h3 id="package-and-module-names-包名和模块名">Package and Module Names 包名和模块名</h3>
+<p>模块应该用简短全小写的名字，如果为了提升可读性，下划线也是可以用的。Python包名也应该使用简短全小写的名字，但不建议用下划线。 当使用C或者C++编写了一个依赖于提供高级（更面向对象）接口的Python模块的扩展模块，这个C/C++模块需要一个下划线前缀（例如：_socket）</p>
+<h3 id="class-names-类名">Class Names 类名</h3>
+<p>类名一般使用首字母大写的约定。 在接口被文档化并且主要被用于调用的情况下，可以使用函数的命名风格代替。 注意，对于内置的变量命名有一个单独的约定：大部分内置变量是单个单词（或者两个单词连接在一起），首字母大写的命名法只用于异常名或者内部的常量。</p>
+<h3 id="exception-names-异常名">Exception Names 异常名</h3>
+<p>因为异常一般都是类，所有类的命名方法在这里也适用。然而，你需要在异常名后面加上“Error”后缀（如果异常确实是一个错误）。</p>
+<h3 id="global-variable-names-全局变量名">Global Variable Names 全局变量名</h3>
+<p>（我们希望这一类变量只在模块内部使用。）约定和函数命名规则一样。 通过 from M import * 导入的模块应该使用<strong>all</strong>机制去防止内部的接口对外暴露，或者使用在全局变量前加下划线的方式（表明这些全局变量是模块内非公有）。</p>
+<h3 id="function-names-函数名">Function Names 函数名</h3>
+<p>函数名应该小写，如果想提高可读性可以用下划线分隔。 大小写混合仅在为了兼容原来主要以大小写混合风格的情况下使用（比如 threading.py），保持向后兼容性。</p>
+<h3 id="function-and-method-arguments-函数和方法参数">Function and method arguments 函数和方法参数</h3>
+<p>始终要将 self 作为实例方法的的第一个参数。 始终要将 cls 作为类静态方法的第一个参数。 如果函数的参数名和已有的关键词冲突，在最后加单一下划线比缩写或随意拼写更好。因此 class_ 比 clss 更好。（也许最好用同义词来避免这种冲突）</p>
+<h3 id="method-names-and-instance-variables-方法名和实例变量">Method Names and Instance Variables 方法名和实例变量</h3>
+<p>遵循这样的函数命名规则：使用下划线分隔小写单词以提高可读性。 在非共有方法和实例变量前使用单下划线。 通过双下划线前缀触发Python的命名转换规则来避免和子类的命名冲突。 Python通过类名对这些命名进行转换：如果类 Foo 有一个叫 <code>__a</code> 的成员变量， 它无法通过 <code>Foo.__a</code> 访问。（执着的用户可以通过 <code>Foo._Foo__a</code> 访问。）一般来说，前缀双下划线用来避免类中的属性命名与子类冲突的情况。 注意：关于<code>__names</code>的用法存在争论（见下文）。</p>
+<h3 id="constants-常量">Constants 常量</h3>
+<p>常量通常定义在模块级，通过下划线分隔的全大写字母命名。例如： MAX_OVERFLOW 和 TOTAL。</p>
+<h3 id="designing-for-inheritance-继承的设计">Designing for inheritance 继承的设计</h3>
+<p>始终要考虑到一个类的方法和实例变量（统称：属性）应该是共有还是非共有。如果存在疑问，那就选非共有；因为将一个非共有变量转为共有比反过来更容易。 公共属性是那些与类无关的客户使用的属性，并承诺避免向后不兼容的更改。非共有属性是那些不打算让第三方使用的属性；你不需要承诺非共有属性不会被修改或被删除。 我们不使用“私有（private）”这个说法，是因为在Python中目前还没有真正的私有属性（为了避免大量不必要的常规工作）。 另一种属性作为子类API的一部分（在其他语言中通常被称为“protected”）。有些类是专为继承设计的，用来扩展或者修改类的一部分行为。当设计这样的类时，要谨慎决定哪些属性时公开的，哪些是作为子类的API，哪些只能在基类中使用。 贯彻这样的思想，一下是一些让代码Pythonic的准则：</p>
+<ul>
+<li>公共属性不应该有前缀下划线。</li>
+<li>如果公共属性名和关键字冲突，在属性名之后增加一个下划线。这比缩写和随意拼写好很多。（然而，尽管有这样的规则，在作为参数或者变量时，‘cls’是表示‘类’最好的选择，特别是作为类方法的第一个参数。） 注意1：参考之前的类方法参数命名建议</li>
+</ul>
+<pre><code>Yes: _time ``=` `lst[index]``No: t ``=` `lst[index]</code></pre>
+<ul>
+<li>对于单一的共有属性数据，最好直接对外暴露它的变量名，而不是通过负责的 存取器（accessor）/突变（mutator） 方法。请记住，如果你发现一个简单的属性需要成长为一个功能行为，那么Python为这种将来会出现的扩展提供了一个简单的途径。在这种情况下，使用属性去隐藏属性数据访问背后的逻辑。 注意1：属性只在new-style类中起作用。 注意2：尽管功能方法对于类似缓存的负面影响比较小，但还是要尽量避免。 注意3：属性标记会让调用者认为开销（相当的）小，避免用属性做开销大的计算。</li>
+</ul>
+<p>推荐：</p>
+<pre><code>class` `Student(``object``):``  ``def` `__init__(``self``,name):``    ``self``.name ``=` `name</code></pre>
+<p>　　不推荐：</p>
+<pre><code>class` `Student(``object``):``  ``def` `__init__(``self``,name):``    ``self``.__name ``=` `name``    ` `  ``def` `get_name(``self``):``    ``return` `self``.__name``    ` `  ``def` `set_name(``self``,name):``    ``self``.__name ``=` `name</code></pre>
+<ul>
+<li>如果你的类打算用来继承的话，并且这个类里有不希望子类使用的属性，就要考虑使用双下划线前缀并且没有后缀下划线的命名方式。这会调用Python的命名转换算法，将类的名字加入到属性名里。这样做可以帮助避免在子类中不小心包含了相同的属性名而产生的冲突。 注意1：只有类名才会整合进属性名，如果子类的属性名和类名和父类都相同，那么你还是会有命名冲突的问题。 注意2：命名转换会在某些场景使用起来不太方便，例如调试，<code>__getattr__()</code>。然而命名转换的算法有很好的文档说明并且很好操作。 注意3：不是所有人都喜欢命名转换。尽量避免意外的名字冲突和潜在的高级调用。</li>
+</ul>
+<h2 id="public-and-internal-interfaces-公共和内部的接口">Public and internal interfaces 公共和内部的接口</h2>
+<p>任何向后兼容保证只适用于公共接口，因此，用户清晰地区分公共接口和内部接口非常重要。 文档化的接口被认为是公开的，除非文档明确声明它们是临时或内部接口，不受通常的向后兼容性保证。所有未记录的接口都应该是内部的。 为了更好地支持内省（introspection），模块应该使用<code>__all__</code>属性显式地在它们的公共API中声明名称。将<code>__all__</code>设置为空列表表示模块没有公共API。 即使通过<code>__all__</code>设置过，内部接口（包，模块，类，方法，属性或其他名字）依然需要单个下划线前缀。 如果一个命名空间（包，模块，类）被认为是内部的，那么包含它的接口也应该被认为是内部的。 导入的名称应该始终被视作是一个实现的细节。其他模块必须不能间接访问这样的名称，除非它是包含它的模块中有明确的文档说明的API，例如 os.path 或者是一个包里从子模块公开函数接口的 <code>__init__</code> 模块。</p>
+<h1 id="programming-recommendations-编程建议">Programming Recommendations 编程建议</h1>
+<h3 id="性能相关">1、性能相关</h3>
+<h4 id="none对象进行比较">　　1.1 None对象进行比较</h4>
+<p>这时候应该始终用 is 或者 is not，永远不要用等号运算符。</p>
+<p>推荐：</p>
+<pre><code>url ``=` `&#39;ramaxel&#39;``if` `url ``is` `None``:``  ``do something</code></pre>
+<p>不推荐：</p>
+<pre><code>url ``=` `&#39;ramaxel&#39;``if` `url ``=``=` `None``:``  ``do something</code></pre>
+<p>另外，如果你在写 if x 的时候，请注意你是否表达的意思是 if x is not None。举个例子，当测试一个默认值为None的变量或者参数是否被设置为其他值的时候。这个其他值应该是在上下文中能成为bool类型false的值。</p>
+<h4 id="不要用-去和true或者false比较">　　1.2 不要用 == 去和True或者False比较</h4>
+<pre><code>正确: ``if` `greeting:``糟糕: ``if` `greeting ``=``=` `True``:``更糟: ``if` `greeting ``is` `True``:</code></pre>
+<h4 id="使用-is-not-运算符而不是-not-is">　　1.3 使用 is not 运算符，而不是 not … is</h4>
+<p>虽然这两种表达式在功能上完全相同，但前者更易于阅读，所以优先考虑。 推荐：</p>
+<pre><code>if` `foo ``is` `not` `None``:</code></pre>
+<p>不推荐：</p>
+<pre><code>if` `not` `foo ``is` `None``:</code></pre>
+<h4 id="使用富比较">　　1.4 使用富比较</h4>
+<p>rich comparisons，一种复杂的对象间比较的新机制，允许返回值不为-1,0,1，实现排序操作的时候，最好实现全部的六个操作符（<code>__eq__</code>, <code>__ne__</code>, <code>__lt__</code>, <code>__gt__</code>, <code>__ge__</code>）而不是依靠其他的代码去实现特定的比较。 为了最大程度减少这一过程的开销， functools.total_ordering() 修饰符提供了用于生成缺少的比较方法的工具。 <a href="http://legacy.python.org/dev/peps/pep-0207/">PEP 207</a> 指出Python实现了反射机制。因此，解析器会将 y &gt; x 转变为 x &lt; y，将 y &gt;= x 转变为 x &lt;= y，也会转换x == y 和 x != y的参数。sort() 和 min()方法确保使用&lt;操作符，max()使用&gt;操作符。然而，最好还是实现全部六个操作符，以免在其他地方出现冲突。</p>
+<h4 id="函数定义">　　1.5 函数定义</h4>
+<p>始终使用def表达式，而不是通过赋值语句将lambda表达式绑定到一个变量上。 推荐：</p>
+<pre><code>def` `f(x): ``return` `2``*``x</code></pre>
+<p>不推荐：</p>
+<pre><code>f ``=` `lambda` `x: ``2``*``x</code></pre>
+<p>　　第一个形式意味着生成的函数对象的名称是“f”而不是泛型“&lt; lambda &gt;”。这在回溯和字符串显示的时候更有用。赋值语句的使用消除了lambda表达式优于显式def表达式的唯一优势（即lambda表达式可以内嵌到更大的表达式中）。</p>
+<h1 id="重点总结">重点总结</h1>
+<p>高质量代码的检测，主要通过以下3步：</p>
+<ol type="1">
+<li><p>用pycharm<code>problem</code>里的<code>PEP8</code>提示检查规范问题</p></li>
+<li><p>用<code>pytest</code>做局部测试</p></li>
+<li><p>可以用<code>mypy</code>检测类型问题</p>
+<blockquote>
+<p>mypy your_file.py</p>
+</blockquote></li>
+</ol>
+<h2 id="空格数量">空格数量</h2>
+<p>top-level函数和class定义 — 2行</p>
+<p>class里面的函数定义 — 1行</p>
+<h2 id="命名">命名</h2>
+<figure>
+<img src="/img/in-post/20_07/image-20210506210333618.png" alt="image-20210506210333618" /><figcaption>image-20210506210333618</figcaption>
+</figure>
+<blockquote>
+<p>一般都用:<code>字母</code>+<code>_</code></p>
+<p><code>Classes</code>和<code>Exception</code>用：<code>大写开头单词</code></p>
+<p><code>常量</code>用：<code>全大写</code>+<code>_</code></p>
+</blockquote>
+<h2 id="type-hint">type hint</h2>
+<p>有利于提升可读性和可维护性，通过type hint可以让类别检查器（如mypy）把<code>run-time error</code>转变为<code>build-time error</code>.</p>
+<figure>
+<img src="/img/in-post/20_07/image-20210506211523667.png" alt="image-20210506211523667" /><figcaption>image-20210506211523667</figcaption>
+</figure>
+<figure>
+<img src="/img/in-post/20_07/image-20210506211502553.png" alt="image-20210506211502553" /><figcaption>image-20210506211502553</figcaption>
+</figure>
+<h2 id="unit-test-单元测试">unit test 单元测试</h2>
+<h3 id="好处">好处</h3>
+<p>对于代码质量的提升非常有帮助</p>
+<ol type="1">
+<li>更早找到bug</li>
+<li>控制系统时间复杂度</li>
+<li>作为一个documentation的作用</li>
+</ol>
+<h3 id="pytest方法">pytest方法</h3>
+<p>通过<code>pytest</code></p>
+<h1 id="参考">参考</h1>
+<p><a href="https://www.cnblogs.com/hester/p/10475009.html">Python PEP8 编码规范中文版</a></p>

@@ -1,0 +1,72 @@
+<h1 id="reference">Reference</h1>
+<p><a href="https://blog.csdn.net/qinghuaci666/article/details/80863032">语义分割–全卷积网络FCN详解</a></p>
+<p>收获/点子:</p>
+<p><code>现用的是基于cnn的光谱图像分割, 可考虑用基于fcn的HSI 分类</code></p>
+<h1 id="使用原因">使用原因</h1>
+<p>普通分类网络(如CNN)会在<strong>全连接层将原来二维矩阵(图片)压缩为一维的向量, 丢失了空间信息</strong></p>
+<p>将全连接替换为全卷积层, 即构成<strong>全卷积神经网络</strong>, <strong>将图像基本分类扩展到像素级别分类</strong>.</p>
+<p>(Berkeley团队提出 Fully Convolutional Networks（FCN）方法用于图像语义分割，将图像级别的分类扩展到像素级别的分类（图1），获得 CVPR2015 的 best paper。)</p>
+<p><a href="https://link.zhihu.com/?target=https%3A//people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf">Fully Convolutional Networks for Semantic Segmentation</a></p>
+<figure>
+<img src="https://img-blog.csdn.net/20170811112941027?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveml6aTc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA%60/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /><figcaption>这里写图片描述</figcaption>
+</figure>
+<blockquote>
+<p>FCN实现了end-to-end</p>
+</blockquote>
+<p>文章<a href="https://zhuanlan.zhihu.com/p/22308032">《【总结】图像语义分割之FCN和CRF》</a> 认为，发展到现在，基于深度学习的图像语义分割“通用框架已经确定”：<strong>前端 FCN（包含基于此的改进 SegNet、DeconvNet、DeepLab）+ 后端 CRF/MRF （条件随机场/马尔科夫随机场）优化</strong></p>
+<figure>
+<img src="/img/in-post/20_03/SouthEast-20200414092343639.png" alt="这里写图片描述" /><figcaption>这里写图片描述</figcaption>
+</figure>
+<p>　　　　　　　　　　　　　　　　　　　　　　　图2. 图像语义分割通用框架（摘自这里）</p>
+<h1 id="基于cnn的分割方法和fcn比较"><code>基于CNN的分割方法和FCN比较</code></h1>
+<p><strong>传统的基于CNN的分割方法：为了对一个像素分类，使用该像素周围的一个图像块作为CNN的输入用于训练和预测。</strong>这种方法有几个<strong>缺点</strong>：</p>
+<p>一是<strong>存储开销很大</strong>。例如对每个像素使用的图像块的大小为15x15，然后不断滑动窗口，每次滑动的窗口给CNN进行判别分类，因此则所需的<strong>存储空间根据滑动窗口的次数和大小急剧上升</strong>。 二是<strong>计算效率低下</strong>。相邻的像素块基本上是重复的，针对每个像素块逐个计算卷积，这种计算也有很大程度上的重复。 三是<strong>像素块大小的限制了感知区域的大小</strong>。通常像素块的大小比整幅图像的大小小很多，只能提取一些局部的特征，从而导致分类的性能受到限制。 而全卷积网络<strong>(FCN)则是从抽象的特征中恢复出每个像素所属的类别。</strong>即从图像级别的分类进一步延伸到像素级别的分类。=</p>
+<h1 id="fcn原理及网络结构">FCN原理及网络结构</h1>
+<p><strong>一句话概括原理</strong></p>
+<p>FCN将传统卷积网络后面的全连接层换成了卷积层，这样<code>网络输出不再是类别而是 heatmap(每种特征一个热力图????)</code>；同时为了解决因为卷积和池化对图像尺寸的影响，提出使用<code>**上采样**</code>的方式恢复。 核心思想</p>
+<p>本文包含了当下CNN的三个思潮 ：</p>
+<ul>
+<li><strong>不含全连接层(fc)的全卷积(fully conv)网络。可适应任意尺寸输入。</strong></li>
+<li><code>增大数据尺寸的反卷积(deconv)层。</code>能够输出精细的结果。</li>
+<li><code>结合不同深度层结果的跳级(skip)结构。同时确保鲁棒性和精确性。</code></li>
+</ul>
+<h4 id="q-热力图是美中特征一个热力图吗-什么结构">Q: 热力图是美中特征一个热力图吗, 什么结构</h4>
+<h4 id="q-结合不同深度层结果的跳级skip结构同时确保鲁棒性和精确性怎么理解">Q: <code>结合不同深度层结果的跳级(skip)结构。同时确保鲁棒性和精确性。</code>怎么理解</h4>
+<p>网络结构</p>
+<p>网络结构示意图：</p>
+<figure>
+<img src="/img/in-post/20_03/70.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p><code>网络结构详图。输入可为任意尺寸图像彩色图像；输出与输入尺寸相同，深度为：20类目标+背景=21。</code></p>
+<figure>
+<img src="/img/in-post/20_03/20160508234037674.png" alt="这里写图片描述" /><figcaption>这里写图片描述</figcaption>
+</figure>
+<p>采用反卷积层<code>对最后一个卷积层的feature map进行上采样, 使它恢复到输入图像相同的尺寸，从而可以对每个像素都产生了一个预测, 同时保留了原始输入图像中的空间信息, 最后在上采样的特征图上进行逐像素分类。</code></p>
+<p>最后的输出是1000张heatmap经过upsampling变为原图大小的图片，为了对每个像素进行分类预测label成最后已经进行语义分割的图像，这里有一个小trick，就是<strong>最后通过逐个像素地求其在1000张图像该像素位置的最大数值描述（概率）作为该像素的分类。</strong>因此产生了一张已经分类好的图片，如下图右侧有狗狗和猫猫的图。 <img src="/img/in-post/20_03/20161022113114585.png" alt="这里写图片描述" /></p>
+<h2 id="上采样">上采样</h2>
+<p>简单来说就是pooling的逆过程，pooling采样后数据数量减少，upsample采样后数据数量增多。</p>
+<p>最后选用的<strong>是反卷积</strong>的方法（FCN作者称其为后卷积）使图像实现end to end</p>
+<h2 id="反卷积deconvolutional"><code>***\*反卷积(deconvolutional)\****</code></h2>
+<p>反卷积（Deconvolution），当然关于这个名字不同框架不同，Caffe和Kera里叫Deconvolution，而tensorflow里叫conv_transpose。CS231n这门课中说，叫conv_transpose更为合适。</p>
+<p>参数和CNN的参数一样是在训练FCN模型的过程中通过bp算法学习得到。</p>
+<p><code>反卷积和卷积类似，都是相乘相加的运算。只不过后者是多对一，前者是一对多。而反卷积的前向和后向传播，只用颠倒卷积的前后向传播即可。</code>所以无论优化还是后向传播算法都是没有问题。图解如下：</p>
+<figure>
+<img src="/img/in-post/20_03/70-20200414113501042.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h4 id="q-怎么理解">Q: 怎么理解</h4>
+<h2 id="跳跃结构">5 跳跃结构</h2>
+<p><strong>获取heatmap</strong></p>
+<p>经过前面操作，基本就能实现语义分割了，但是直接将全卷积后的结果进行反卷积，得到的结果往往比较粗糙</p>
+<figure>
+<img src="/img/in-post/20_03/70-20200414114457610.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>此时图像不再叫featureMap而是叫heatMap。</p>
+<p>跳跃结构实现精细分割</p>
+<p>现在我们有1/32尺寸的heatMap，1/16尺寸的featureMap和1/8尺寸的featureMap，1/32尺寸的heatMap进行upsampling操作之后，因为这样的操作还原的图片仅仅是conv5中的卷积核中的特征，限于精度问题不能够很好地还原图像当中的特征。因此在这里向前迭代，把conv4中的卷积核对上一次upsampling之后的图进行反卷积补充细节（相当于一个插值过程），最后把conv3中的卷积核对刚才upsampling之后的图像进行再次反卷积补充细节，最后就完成了整个图像的还原。</p>
+<p>具体来说，就是将不同池化层的结果进行上采样，然后结合这些结果来优化输出，分为FCN-32s,FCN-16s,FCN-8s三种，第一行对应FCN-32s，第二行对应FCN-16s，第三行对应FCN-8s。 具体结构如下:</p>
+<figure>
+<img src="/img/in-post/20_03/70-20200414114630835.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h2 id="训练过程"><code>6 训练过程</code></h2>
+<p>未完待续 – https://blog.csdn.net/qinghuaci666/article/details/80863032</p>
+<p>de are probably your best bets out of the 11 options considered. “Great code completion” is the primary</p>

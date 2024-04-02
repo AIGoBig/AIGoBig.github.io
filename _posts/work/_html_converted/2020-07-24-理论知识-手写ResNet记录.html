@@ -1,0 +1,108 @@
+<h1 id="resnet34-网络搭建">ResNet34 网络搭建</h1>
+<h2 id="结构图">结构图</h2>
+<figure>
+<img src="/img/in-post/20_07/image-20200724222816906.png" alt="image-20200724222816906" /><figcaption>image-20200724222816906</figcaption>
+</figure>
+<p><img src="/img/in-post/20_07/image-20200724222835240.png" alt="image-20200724222835240" style="zoom: 25%;" /></p>
+<h2 id="注意几点">注意几点</h2>
+<ol type="1">
+<li><p>Residual block和layer出现了多次，故将Residual block实现为一个子Module，layer实现为子函数</p></li>
+<li><p>结合使用了nn.Module、nn.functional，尽量使用nn.Sequential</p></li>
+<li><p>每个Residual block都有一个shortcut, 如果其和主干卷积网络的输入输出通道不一致或步长不为1时, 需要有专门单元将二者转成一致才可以相加</p></li>
+<li><p>本程序为ResNet实现，实际使用可直接调用torchvision.medels接口，其实现了大部分model</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="im">from</span> torchvision <span class="im">import</span> models</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">model <span class="op">=</span> models.resnet34()</a></code></pre></div></li>
+</ol>
+<h2 id="程序实现">程序实现</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="im">import</span> torch <span class="im">as</span> t</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="im">from</span> torch <span class="im">import</span> nn</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="im">from</span> torch.nn <span class="im">import</span> functional <span class="im">as</span> F</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># 本程序为ResNet实现，实际使用可直接调用torchvision接口，其实现了大部分model</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># 使用方式：</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># from torchvision import models</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># model = models.resnet34()</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">class</span> ResidualBlock(nn.Module):</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">    <span class="co">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co">    实现子module：ResidualBlock</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">    用子module来实现residual block，在_make_layer()中调用</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co">    &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, inchannel, outchannel, stride<span class="op">=</span><span class="dv">1</span>, shortcut<span class="op">=</span><span class="va">None</span>):</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">        <span class="co"># 继承时需要使用 super(FooChild,self) ,</span></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">        <span class="co"># 首先找到 FooChild 的父类（就是类 FooParent），然后把类 FooChild 的对象转换为类 FooParent 的对象</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">        <span class="bu">super</span>(ResidualBlock, <span class="va">self</span>).<span class="fu">__init__</span>()</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">        <span class="va">self</span>.left <span class="op">=</span> nn.Sequential(</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">            nn.Conv2d(inchannel, outchannel, <span class="dv">3</span>, stride, <span class="dv">1</span>, bias<span class="op">=</span><span class="va">False</span>),  <span class="co"># 只在第一个卷积层进行通道变换</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">            nn.BatchNorm2d(outchannel),</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">            nn.ReLU(inplace<span class="op">=</span><span class="va">True</span>),</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">            nn.Conv2d(outchannel, outchannel, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>, bias<span class="op">=</span><span class="va">False</span>),</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">            nn.BatchNorm2d(outchannel))</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">        <span class="va">self</span>.right <span class="op">=</span> shortcut</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">    <span class="kw">def</span> forward(<span class="va">self</span>, x):</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">        out <span class="op">=</span> <span class="va">self</span>.left(x)  <span class="co"># x 经过网络分支</span></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">        residual <span class="op">=</span> x <span class="cf">if</span> <span class="va">self</span>.right <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> <span class="va">self</span>.right(x)</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">        out <span class="op">+=</span> residual</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">        <span class="cf">return</span> F.relu(out)</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="kw">class</span> ResNet(nn.Module):</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">    <span class="co">&#39;&#39;&#39;</span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co">    实现主module：ResNet34</span></a>
+<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="co">    ResNet34 包含多个layer，每个layer又包含多个residual block</span></a>
+<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="co">    用_make_layer函数来实现layer，用子module来实现residual block</span></a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"><span class="co">    &#39;&#39;&#39;</span></a>
+<a class="sourceLine" id="cb2-39" data-line-number="39">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, num_classes<span class="op">=</span><span class="dv">1000</span>):  <span class="co"># 定义了分类数</span></a>
+<a class="sourceLine" id="cb2-40" data-line-number="40">        <span class="bu">super</span>(ResNet, <span class="va">self</span>).<span class="fu">__init__</span>()</a>
+<a class="sourceLine" id="cb2-41" data-line-number="41">        <span class="co">&quot;&quot;&quot; 前几层网络 &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42">        <span class="va">self</span>.pre <span class="op">=</span> nn.Sequential(</a>
+<a class="sourceLine" id="cb2-43" data-line-number="43">            nn.Conv2d(<span class="dv">3</span>, <span class="dv">64</span>, <span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">3</span>, bias<span class="op">=</span><span class="va">False</span>),</a>
+<a class="sourceLine" id="cb2-44" data-line-number="44">            nn.BatchNorm2d(<span class="dv">64</span>),</a>
+<a class="sourceLine" id="cb2-45" data-line-number="45">            nn.ReLU(inplace<span class="op">=</span><span class="va">True</span>),</a>
+<a class="sourceLine" id="cb2-46" data-line-number="46">            nn.MaxPool2d(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb2-47" data-line-number="47">        <span class="co">&quot;&quot;&quot; 重复的layer，分别有3、4、6、3个Residual block&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-48" data-line-number="48">        <span class="va">self</span>.layer1 <span class="op">=</span> <span class="va">self</span>._make_layer(<span class="dv">64</span>, <span class="dv">64</span>, <span class="dv">3</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-49" data-line-number="49">        <span class="va">self</span>.layer2 <span class="op">=</span> <span class="va">self</span>._make_layer(<span class="dv">64</span>, <span class="dv">128</span>, <span class="dv">4</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-50" data-line-number="50">        <span class="va">self</span>.layer3 <span class="op">=</span> <span class="va">self</span>._make_layer(<span class="dv">128</span>, <span class="dv">256</span>, <span class="dv">5</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-51" data-line-number="51">        <span class="va">self</span>.layer4 <span class="op">=</span> <span class="va">self</span>._make_layer(<span class="dv">256</span>, <span class="dv">512</span>, <span class="dv">3</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-52" data-line-number="52">        <span class="co">&quot;&quot;&quot; 分类用的全连接层 &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-53" data-line-number="53">        <span class="va">self</span>.fc <span class="op">=</span> nn.Linear(<span class="dv">512</span>, num_classes)</a>
+<a class="sourceLine" id="cb2-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb2-55" data-line-number="55">    <span class="kw">def</span> _make_layer(<span class="va">self</span>, inchannel, outchannel, block_num, stride<span class="op">=</span><span class="dv">1</span>):</a>
+<a class="sourceLine" id="cb2-56" data-line-number="56">        <span class="co">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-57" data-line-number="57"><span class="co">        构建 layer， 包含多个Residual block</span></a>
+<a class="sourceLine" id="cb2-58" data-line-number="58"><span class="co">        &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-59" data-line-number="59">        shortcut <span class="op">=</span> nn.Sequential(</a>
+<a class="sourceLine" id="cb2-60" data-line-number="60">            nn.Conv2d(inchannel, outchannel, <span class="dv">1</span>, stride, bias<span class="op">=</span><span class="va">False</span>),  <span class="co"># kernel size=1</span></a>
+<a class="sourceLine" id="cb2-61" data-line-number="61">            nn.BatchNorm2d(outchannel))</a>
+<a class="sourceLine" id="cb2-62" data-line-number="62"></a>
+<a class="sourceLine" id="cb2-63" data-line-number="63">        layers <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb2-64" data-line-number="64">        <span class="co"># 第一层个Residual Block，需要改变通道数, 使用1*1的卷积核来进行通道数改变</span></a>
+<a class="sourceLine" id="cb2-65" data-line-number="65">        layers.append(ResidualBlock(inchannel, outchannel, stride, shortcut))</a>
+<a class="sourceLine" id="cb2-66" data-line-number="66">        <span class="co"># 剩下的Residual Block</span></a>
+<a class="sourceLine" id="cb2-67" data-line-number="67">        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, block_num):</a>
+<a class="sourceLine" id="cb2-68" data-line-number="68">            layers.append(ResidualBlock(outchannel, outchannel))</a>
+<a class="sourceLine" id="cb2-69" data-line-number="69">        <span class="cf">return</span> nn.Sequential(<span class="op">*</span>layers)</a>
+<a class="sourceLine" id="cb2-70" data-line-number="70"></a>
+<a class="sourceLine" id="cb2-71" data-line-number="71">    <span class="kw">def</span> forward(<span class="va">self</span>, x):</a>
+<a class="sourceLine" id="cb2-72" data-line-number="72">        <span class="co">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-73" data-line-number="73"><span class="co">        网络结构构建</span></a>
+<a class="sourceLine" id="cb2-74" data-line-number="74"><span class="co">        &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-75" data-line-number="75">        x <span class="op">=</span> <span class="va">self</span>.pre(x)</a>
+<a class="sourceLine" id="cb2-76" data-line-number="76"></a>
+<a class="sourceLine" id="cb2-77" data-line-number="77">        x <span class="op">=</span> <span class="va">self</span>.layer1(x)</a>
+<a class="sourceLine" id="cb2-78" data-line-number="78">        x <span class="op">=</span> <span class="va">self</span>.layer2(x)</a>
+<a class="sourceLine" id="cb2-79" data-line-number="79">        x <span class="op">=</span> <span class="va">self</span>.layer3(x)</a>
+<a class="sourceLine" id="cb2-80" data-line-number="80">        x <span class="op">=</span> <span class="va">self</span>.layer4(x)</a>
+<a class="sourceLine" id="cb2-81" data-line-number="81"></a>
+<a class="sourceLine" id="cb2-82" data-line-number="82">        x <span class="op">=</span> F.avg_pool2d(x, <span class="dv">7</span>)</a>
+<a class="sourceLine" id="cb2-83" data-line-number="83">        x <span class="op">=</span> x.view(x.size(<span class="dv">0</span>), <span class="dv">-1</span>)</a>
+<a class="sourceLine" id="cb2-84" data-line-number="84">        <span class="cf">return</span> <span class="va">self</span>.fc(x)</a>
+<a class="sourceLine" id="cb2-85" data-line-number="85"></a>
+<a class="sourceLine" id="cb2-86" data-line-number="86"></a>
+<a class="sourceLine" id="cb2-87" data-line-number="87">model <span class="op">=</span> ResNet()</a>
+<a class="sourceLine" id="cb2-88" data-line-number="88"><span class="bu">input</span> <span class="op">=</span> t.randn(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">224</span>,<span class="dv">224</span>)</a>
+<a class="sourceLine" id="cb2-89" data-line-number="89"><span class="bu">print</span>(<span class="bu">input</span>)</a>
+<a class="sourceLine" id="cb2-90" data-line-number="90">o <span class="op">=</span> model(<span class="bu">input</span>)</a>
+<a class="sourceLine" id="cb2-91" data-line-number="91"><span class="bu">print</span>(o)</a></code></pre></div>
+<h1 id="resnet网络可视化">ResNet网络可视化</h1>

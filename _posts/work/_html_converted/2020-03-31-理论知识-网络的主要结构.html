@@ -1,0 +1,109 @@
+<h1 id="optimizer">optimizer</h1>
+<h4 id="作用">作用</h4>
+<p>根据网络反向传播的梯度信息更新网络参数, 降低loss函数值</p>
+<h4 id="结构">结构</h4>
+<ol type="1">
+<li><p>优化器需要知道模型的<strong>参数空间</strong>, 因此需要训练前将网络参数放入优化器内</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1">optimizer_G <span class="op">=</span> Adam(model_G.parameters(), lr<span class="op">=</span>train_c.lr_G)  <span class="co"># lr 使用的是初始lr</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">optimizer_D <span class="op">=</span> Adam(model_D.parameters(), lr<span class="op">=</span>train_c.lr_D)    </a></code></pre></div></li>
+<li><p>需要知道反向传播的<strong>梯度信息</strong></p>
+<p>使用<code>optimizer.step()</code>函数, 对参数空间中的grad进行操作, <strong>放在mini-batch内</strong></p>
+<p>例如使用负梯度下降法</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="cf">for</span> p <span class="kw">in</span> group[<span class="st">&#39;params&#39;</span>]:</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">    <span class="cf">if</span> p.grad <span class="kw">is</span> <span class="va">None</span>:  </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">        <span class="cf">continue</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">    d_p <span class="op">=</span> p.grad.data</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">    p.data.add_(<span class="op">-</span>group[<span class="st">&#39;lr&#39;</span>], d_p)</a></code></pre></div>
+<p>注意:</p>
+<ol type="1">
+<li><p>使用前先清零 <code>optimizer.zero_grad()</code>, 防止使用的这个grad就得同上一个mini-batch有关</p></li>
+<li><p><code>跟在反向传播后面, 因为优化器更新参数需要基于反向梯度</code></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" data-line-number="1">loss.backward()  <span class="co"># 反向传播</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">optimizer.step()</a></code></pre></div></li>
+</ol>
+<p><code>scheduler.step（）</code>按照Pytorch的定义是用来更新优化器的学习率的，一般是<strong>按照epoch为单位</strong>进行更换，即多少个epoch后更换一次学习率，因而scheduler.step()<strong>放在epoch这个大循环下</strong>。</p></li>
+</ol>
+<h1 id="loss">Loss</h1>
+<h2 id="cross-entropy-error-function交叉熵损失函数">Cross Entropy Error Function（交叉熵损失函数）</h2>
+<p><code>t.nn.CrossEntropyLoss</code></p>
+<h3 id="表达式">1.表达式</h3>
+<h4 id="二分类">(1) 二分类</h4>
+<p>在二分的情况下，模型最后需要预测的结果只有两种情况，对于每个类别我们的预测得到的概率为 <img src="https://www.zhihu.com/equation?tex=p" alt="[公式]" /> 和 <img src="https://www.zhihu.com/equation?tex=1-p" alt="[公式]" /> 。此时表达式为：</p>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=L+%3D+%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bi%7D+L_i+%3D+%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bi%7D-%5By_i%5Ccdot+log%28p_i%29+%2B+%281-y_i%29%5Ccdot+log%281-p_i%29%5D+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p>其中： - <img src="https://www.zhihu.com/equation?tex=y_i" alt="[公式]" /> —— 表示样本i的label，正类为1，负类为0 - <img src="https://www.zhihu.com/equation?tex=p_i" alt="[公式]" /> —— 表示样本i预测为正的概率</p>
+<h4 id="多分类">(2) 多分类</h4>
+<p>多分类的情况实际上就是对二分类的扩展：</p>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=L+%3D+%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bi%7D+L_i+%3D+%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bi%7D+-%5Csum_%7Bc%3D1%7D%5EMy_%7Bic%7D%5Clog%28p_%7Bic%7D%29+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p>其中： - <img src="https://www.zhihu.com/equation?tex=M" alt="[公式]" /> ——类别的数量； - <img src="https://www.zhihu.com/equation?tex=y_%7Bic%7D" alt="[公式]" /> ——指示变量（0或1）,如果该类别和样本i的类别相同就是1，否则是0； - <img src="https://www.zhihu.com/equation?tex=p_%7Bic%7D" alt="[公式]" /> ——对于观测样本i属于类别 <img src="https://www.zhihu.com/equation?tex=c" alt="[公式]" /> 的预测概率。</p>
+<p><strong>例1:</strong></p>
+<figure>
+<img src="https://pic3.zhimg.com/80/v2-0c49d6159fc8a5676637668683d41762_720w.jpg" alt="v2-0c49d6159fc8a5676637668683d41762_720w" /><figcaption>v2-0c49d6159fc8a5676637668683d41762_720w</figcaption>
+</figure>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++++%5Ctext%7Bsample+1+loss%7D+%3D+-+%280%5Ctimes+log0.3+%2B+0%5Ctimes+log0.3+%2B+1%5Ctimes+log0.4%29+%3D+0.91+%5C%5C++++%5Ctext%7Bsample+2+loss%7D+%3D+-+%280%5Ctimes+log0.3+%2B+1%5Ctimes+log0.4+%2B+0%5Ctimes+log0.3%29+%3D+0.91+%5C%5C++++%5Ctext%7Bsample+3+loss%7D+%3D+-+%281%5Ctimes+log0.1+%2B+0%5Ctimes+log0.2+%2B+0%5Ctimes+log0.7%29+%3D+2.30+%5C%5C+%5Cend%7Baligned%7D+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=L%3D%5Cfrac%7B0.91%2B0.91%2B2.3%7D%7B3%7D%3D1.37+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p><strong>例2:</strong></p>
+<figure>
+<img src="https://pic3.zhimg.com/80/v2-6d31cf03185b408d5e93fa3e3c05096e_720w.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++++%5Ctext%7Bsample+1+loss%7D+%3D+-+%280%5Ctimes+log0.1+%2B+0%5Ctimes+log0.2+%2B+1%5Ctimes+log0.7%29+%3D+0.35+%5C%5C++++%5Ctext%7Bsample+2+loss%7D+%3D+-+%280%5Ctimes+log0.1+%2B+1%5Ctimes+log0.7+%2B+0%5Ctimes+log0.2%29+%3D+0.35+%5C%5C++++%5Ctext%7Bsample+3+loss%7D+%3D+-+%281%5Ctimes+log0.3+%2B+0%5Ctimes+log0.4+%2B+0%5Ctimes+log0.4%29+%3D+1.20+%5C%5C+%5Cend%7Baligned%7D+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=L%3D%5Cfrac%7B0.35%2B0.35%2B1.2%7D%7B3%7D%3D0.63+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p>可以发现，交叉熵损失函数可以捕捉到<strong>模型1</strong>和<strong>模型2</strong>预测效果的差异。</p>
+<h3 id="函数性质">2. 函数性质</h3>
+<figure>
+<img src="https://pic3.zhimg.com/80/v2-f049a57b5bb2fcaa7b70f5d182ab64a2_720w.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>可以看出，该函数是凸函数，求导时能够得到全局最优值。</p>
+<h3 id="学习过程">3. 学习过程</h3>
+<p>交叉熵损失函数经常用于分类问题中，特别是在神经网络做分类问题时，也经常使用交叉熵作为损失函数，此外，由于交叉熵涉及到计算每个类别的概率，所以交叉熵几乎每次都和<strong>sigmoid(或softmax)函数</strong>一起出现。</p>
+<p>我们用神经网络最后一层输出的情况，来看一眼整个模型预测、获得损失和学习的流程：</p>
+<ol type="1">
+<li>神经网络最后一层得到每个类别的得分<strong>scores</strong>；</li>
+<li>该得分经过<strong>sigmoid(或softmax)函数</strong>获得概率输出；</li>
+<li>模型预测的类别概率输出与真实类别的one hot形式进行交叉熵损失函数的计算。</li>
+</ol>
+<p>学习任务分为二分类和多分类情况，我们分别讨论这两种情况的学习过程。</p>
+<h4 id="二分类情况">3.1 二分类情况</h4>
+<figure>
+<img src="https://pic1.zhimg.com/80/v2-d44fea1bda9338eaabf8e96df099981c_720w.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>二分类交叉熵损失函数学习过程</p>
+</blockquote>
+<p>如上图所示，求导过程可分成三个子过程，即拆成三项偏导的乘积：</p>
+<figure>
+<img src="https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D++%5Cfrac%7B%5Cpartial+L_i%7D%7B%5Cpartial+w_i%7D+%26%3D+%5Cfrac%7B%5Cpartial+L_i%7D%7B%5Cpartial+p_i%7D%5Ccdot+%5Cfrac%7B%5Cpartial+p_i%7D%7B%5Cpartial+s_i%7D%5Ccdot+%5Cfrac%7B%5Cpartial+s_i%7D%7B%5Cpartial+w_i%7D+%5C%5C++%26%3D+%5B-%5Cfrac%7By_i%7D%7Bp_i%7D%2B%5Cfrac%7B1-y_i%7D%7B1-p_i%7D%5D+%5Ccdot+%5Csigma%28s_i%29%5Ccdot+%5B1-%5Csigma%28s_i%29%5D%5Ccdot+x_i+%5C%5C++%26%3D+%5B-%5Cfrac%7By_i%7D%7B%5Csigma%28s_i%29%7D%2B%5Cfrac%7B1-y_i%7D%7B1-%5Csigma%28s_i%29%7D%5D+%5Ccdot+%5Csigma%28s_i%29%5Ccdot+%5B1-%5Csigma%28s_i%29%5D%5Ccdot+x_i+%5C%5C++%26%3D+%5B-%5Cfrac%7By_i%7D%7B%5Csigma%28s_i%29%7D%5Ccdot+%5Csigma%28s_i%29%5Ccdot+%281-%5Csigma%28s_i%29%29%2B%5Cfrac%7B1-y_i%7D%7B1-%5Csigma%28s_i%29%7D%5Ccdot+%5Csigma%28s_i%29%5Ccdot+%281-%5Csigma%28s_i%29%29%5D%5Ccdot+x_i+%5C%5C++%26%3D+%5B-y_i%2By_i%5Ccdot+%5Csigma%28s_i%29%2B%5Csigma%28s_i%29-y_i%5Ccdot+%5Csigma%28s_i%29%5D%5Ccdot+x_i+%5C%5C++%26%3D+%5B%5Csigma%28s_i%29-y_i%5D%5Ccdot+x_i+%5C%5C+%5Cend%7Baligned%7D+%5C%5C" alt="[公式]" /><figcaption>[公式]</figcaption>
+</figure>
+<p>可以看到，我们得到了一个非常漂亮的结果，所以，使用交叉熵损失函数，不仅可以很好的衡量模型的效果，又可以很容易的的进行求导计算。</p>
+<h3 id="缺点">缺点</h3>
+<p>sigmoid(softmax)+cross-entropy loss 擅长于学习类间的信息，因为它采用了类间竞争机制，它只关心对于正确标签预测概率的准确性，忽略了其他非正确标签的差异，导致学习到的特征比较散。基于这个问题的优化有很多，比如对softmax进行改进，如L-Softmax、SM-Softmax、AM-Softmax等。</p>
+<h1 id="cnn知识点">CNN知识点</h1>
+<h4 id="val模式">Val模式</h4>
+<p><code>model.eval()</code>,<code>model.train()</code></p>
+<p>eval（）时，框架会自动把BN和DropOut固定住，不会取平均，而是用训练好的值，不然的话，一旦test的batch_size过小，很容易就会被BN层导致生成图片颜色失真极大</p>
+<p>model.train() 和 model.eval() 一般在模型训练和评价的时候会加上这两句，主要是针对由于model 在训练时和评价时 Batch Normalization 和 Dropout 方法模式不同；<strong>因此，在使用PyTorch进行训练和测试时一定注意要把实例化的model指定train/eval；</strong></p>
+<h4 id="通道channel和特征图feature-map">通道(channel)和特征图(feature map)</h4>
+<p>从卷积网络的构成部分来看:</p>
+<ul>
+<li><p>池化过程中, 不会对通道间的交互有任何影响</p></li>
+<li><p>卷积则可以进行<strong>通道之间的交互</strong>, 之后在下一层生成新的通道, 比如Incept-Net中大量1*1的卷积便只进行通道间的交互而不关心通道内的交互.</p></li>
+</ul>
+<p>通道和特征图都可看做是之前输入上某个<strong>特征分布</strong>的数据, 两者本质上是相同的</p>
+<p>物理意义:<strong>通道中某一处数值的强弱就是对当前特征强弱的反应</strong>。</p>
+<h4 id="batch-size-epoch-和-iteration">Batch size, Epoch 和 iteration</h4>
+<p>1）iteration：表示1次迭代，每次迭代更新1次网络结构的参数，1个iteration等于使用batchsize个样本训练一次； （2）batch_size：批大小，即1次迭代所使用的样本量。在深度学习中，一般采用SGD训练，即每次训练在训练集中取batchsize个样本训练； （3）epoch：1个epoch等于使用训练集中的全部样本训练一次。</p>
+<p>Reference</p>
+<p><a href="https://zhuanlan.zhihu.com/p/35709485">损失函数 - 交叉熵损失函数</a> $$</p>
+<p>$$</p>

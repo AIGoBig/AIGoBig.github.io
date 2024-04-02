@@ -1,0 +1,27 @@
+<p>本文将首先概述Text embedding技术，介绍该技术的一些应用场景，最后使用ElasticSearch完成一个简单的基于Text embedding的文本相似性搜索demo。</p>
+<p>Elasticsearch就作为<strong>全文搜索引擎</strong>提供快速而强大的全文搜索功能。</p>
+<h3 id="为什么用文本嵌入">为什么用文本嵌入</h3>
+<p>相似性搜索的一个简单方法是根据<strong>文档与查询共享的单词数</strong>对文档进行排名。但是没有考虑的语法和语义内容。</p>
+<p>因此要用文本嵌入</p>
+<h3 id="sentence-embeddings-句子嵌入">Sentence embeddings 句子嵌入</h3>
+<p>虽然训练过程可能非常耗费资源，但调用模型的重量要轻得多。<strong>训练好的Sentence embeddings足够快</strong>，可以用作实时应用程序的一部分。</p>
+<p>一些常见的句子嵌入技术包括<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1705.02364">InferSent</a>，<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1803.11175">Universal Sentence Encoder</a>，<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1802.05365">ELMo</a>和<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1810.04805">BERT</a>。改进单词和句子嵌入是一个活跃的研究领域，并且可能会引入更多强大的模型。</p>
+<h3 id="与传统搜索方法的比较">与传统搜索方法的比较</h3>
+<p>在传统的信息检索中，我们基于大多使用TF-IDF等基于单词个数的搜索方法，我们只是计算单词出现而不考虑句子结构。而基于text embedding等技术的搜索，将<strong>会考虑句子意思</strong>。</p>
+<blockquote>
+<p>比如“上午吃饭吗”和“我eat早餐了”这两个句子没有一个单词一样，但是其语义是完全接近的，使用text embedding将能够很好的搜索出来。</p>
+</blockquote>
+<p>文本嵌入在某些重要方面与传统的矢量表示不同：</p>
+<ul>
+<li>Text embedding的<strong>向量通常纬度比较低</strong>，100~1000。而传统的words vectors纬度可以到5000+。Text embedding技术将文本编码为低维空间向量，同义词和短语在新的向量空间中表示形式会十分相似。</li>
+<li>在确定向量表示时，Text embedding可以考虑单词的顺序。例如，短语“明天”可以被映射为与“天明”非常不同的向量。</li>
+<li>Text embedding通常<strong>适用于短文本。</strong></li>
+</ul>
+<h3 id="elasticsearch支持词向量搜索能够在哪些场景下进行应用">Elasticsearch支持词向量搜索能够在哪些场景下进行应用？</h3>
+<p>Elasticsearch支持词向量搜索能够在很多场景下进行应用，这里进行列举一些简单的应用，有些并不是当前场景下的最佳选择。</p>
+<ol type="1">
+<li>QA：用户输入一段描述，给出最佳匹配的答案。传统基于关键字搜索问答的局限性之一在于用户必须了解一些特殊的名词，假如关键字没有匹配上则没有返回结果。而在使用词向量之后，<strong>直接输入类似的描述性语言可以获得最佳匹配的答案。</strong></li>
+<li>文章搜索：有时候只记得一篇文章在表达什么意思，而忘记了文章标题和关键字。这时候只需要输入自己记得的大致意思和记得句子，即<strong>可根据描述中隐藏的语义信息搜索到最佳匹配的文章。</strong></li>
+<li>图片搜索：这里的图片搜索有两种含义，一种是讲图片中的特征值进行提取生成向量，<strong>实现以图搜图模式的搜索</strong>。另一种是<strong>基于图片tag的方式</strong>，将tag进行向量化，这样可以搜索到语义相近的tag的图片，而不必完全相等。这两种方式在ES的词向量搜索中都可以支持。</li>
+<li>社交网络：社交网络中的人都是一个单词，而其关注和粉丝都是和其相关的单词，因此可以每一个人的关注和粉丝形成一段“文本”去训练模型。想计算两个人是否相似或者两个的距离，只需要计算两个人的向量即可。</li>
+</ol>

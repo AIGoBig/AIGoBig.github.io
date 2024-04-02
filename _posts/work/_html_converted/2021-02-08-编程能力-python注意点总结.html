@@ -1,0 +1,618 @@
+<h1 id="python-zip-函数">Python zip() 函数</h1>
+<p><a href="https://www.runoob.com/python/python-built-in-functions.html">Python 内置函数</a></p>
+<h2 id="描述">描述</h2>
+<p><strong>zip()</strong> 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表。</p>
+<p>如果各个迭代器的元素个数不一致，则返回列表长度与最短的对象相同，<strong>利用 * 号操作符，可以将元组解压为列表</strong>。</p>
+<blockquote>
+<p><em>zip 方法在 Python 2 和 Python 3 中的不同：<strong>在 Python 3.x 中为了减少内存，zip() 返回的是一个对象。如需展示列表，需手动 list() 转换。</strong></em></p>
+</blockquote>
+<h2 id="语法">语法</h2>
+<p>zip 语法：</p>
+<pre><code>zip([iterable, ...])</code></pre>
+<p>参数说明：</p>
+<ul>
+<li>iterabl – 一个或多个迭代器;</li>
+</ul>
+<h2 id="返回值">返回值</h2>
+<p>返回元组列表。</p>
+<h2 id="实例">实例</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1">以下实例展示了 <span class="bu">zip</span> 的使用方法：</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="op">&gt;&gt;&gt;</span>a <span class="op">=</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="op">&gt;&gt;&gt;</span> b <span class="op">=</span> [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="op">&gt;&gt;&gt;</span> c <span class="op">=</span> [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>]</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="op">&gt;&gt;&gt;</span> zipped <span class="op">=</span> <span class="bu">zip</span>(a,b)     <span class="co"># 打包为元组的列表</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">[(<span class="dv">1</span>, <span class="dv">4</span>), (<span class="dv">2</span>, <span class="dv">5</span>), (<span class="dv">3</span>, <span class="dv">6</span>)]</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="op">&gt;&gt;&gt;</span> <span class="bu">zip</span>(a,c)              <span class="co"># 元素个数与最短的列表一致</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">[(<span class="dv">1</span>, <span class="dv">4</span>), (<span class="dv">2</span>, <span class="dv">5</span>), (<span class="dv">3</span>, <span class="dv">6</span>)]</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="op">&gt;&gt;&gt;</span> <span class="bu">zip</span>(<span class="op">*</span>zipped)          <span class="co"># 与 zip 相反，*zipped 可理解为解压，返回二维矩阵式</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">[(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), (<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>)]</a></code></pre></div>
+<blockquote>
+<p><code>zip</code>打包为元组的列表</p>
+<p><code>unzip</code>与 zip 相反，*zipped 可理解为解压，返回二维矩阵式</p>
+<p><code>zip(* matrix[1:])</code>相当于矩阵转置</p>
+</blockquote>
+<h1 id="sort">Sort()</h1>
+<h2 id="根据自定义规则排序">根据自定义规则排序</h2>
+<p><code>strs.sort(key = functools.cmp_to_key(sort_rule))</code></p>
+<pre><code>def sort_rule(x, y):
+  a, b = x + y, y + x
+  if a &gt; b: return 1
+  elif a &lt; b: return -1
+  else: return 0
+
+strs.sort(key = functools.cmp_to_key(sort_rule)) </code></pre>
+<h1 id="数字字符串比较大小">数字字符串比较大小</h1>
+<h2 id="注意位数要写对">注意位数要写对</h2>
+<p><code>'00'&lt;=num[i-1:i+1]&lt;='09'</code> ✅</p>
+<p><code>'0'&lt;=num[i-1:i+1]&lt;='9'</code> ❌</p>
+<h1 id="字典">字典</h1>
+<h2 id="为什么python-3.6以后字典有序并且效率更高">为什么Python 3.6以后字典有序并且效率更高？</h2>
+<p><a href="https://www.cnblogs.com/xieqiankun/p/python_dict.html">为什么Python 3.6以后字典有序并且效率更高？</a></p>
+<h2 id="排序-sortedres_dict.items">排序-sorted(res_dict.items())</h2>
+<h4 id="先用items属性将字典变为可迭代对象再进行排序key-默认安装key值排序">先用items属性将字典变为可迭代对象，再进行排序。key 默认安装key值排序。</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="cf">for</span> (index,num) <span class="kw">in</span> <span class="bu">sorted</span>(res_dict.items(), key<span class="op">=</span><span class="kw">lambda</span> x:x[<span class="dv">0</span>], reverse<span class="op">=</span><span class="va">False</span> ):</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">    <span class="bu">print</span>(index,num)</a></code></pre></div>
+<h1 id="ascii码">ASCII码</h1>
+<h2 id="ordchr">ord()、chr()</h2>
+<p>ord(‘a’) == 65</p>
+<p>chr(65) == ‘a’</p>
+<h2 id="例1大小写字母转换">例1、大小写字母转换：</h2>
+<p>str=input（‘输入大写字母：’）</p>
+<p>chr(ord(str)+32)) #先将字符通过ord函数转换成ASCII码，然后+32从大写变成小写（小变大-32），再通过chr函数转换成字符</p>
+<h2 id="例2字符型数字和int型数字转换">例2、字符型数字和int型数字转换：</h2>
+<p>print( chr(ord(‘1’)+3))#现将字符1转换成ASCII码，再+3后装换回字符</p>
+<p>输出结果：4</p>
+<h2 id="注意数字不能合起来用ascii比较">注意数字不能合起来用ascii比较</h2>
+<p>如：</p>
+<pre><code>&gt;&gt;&gt; &#39;0&#39; &lt;= &#39;1A&#39; &lt;= &#39;99&#39;
+True</code></pre>
+<h1 id="seaborn.pairplot">seaborn.pairplot<a href="https://seaborn.pydata.org/generated/seaborn.pairplot.html#seaborn-pairplot">¶</a></h1>
+<p><a href="https://zhuanlan.zhihu.com/p/98729226">Python可视化 | Seaborn5分钟入门(七)——pairplot</a></p>
+<ul>
+<li><p>pairplot主要展现的是<strong>变量两两之间的关系</strong>（线性或非线性，有无较为明显的相关关系），照例来总览一下pairplot的API。</p></li>
+<li><p><code>seaborn.pairplot</code>(<em>data</em>, <em>hue=None</em>, <em>hue_order=None</em>, <em>palette=None</em>, <em>vars=None</em>, <em>x_vars=None</em>, <em>y_vars=None</em>, <em>kind=‘scatter’</em>, <em>diag_kind=‘auto’</em>, <em>markers=None</em>, <em>height=2.5</em>, <em>aspect=1</em>, <em>corner=False</em>, <em>dropna=True</em>, <em>plot_kws=None</em>, <em>diag_kws=None</em>, <em>grid_kws=None</em>, <em>size=None</em>)</p>
+<p>Plot pairwise relationships in a dataset.</p>
+<ul>
+<li><p>kind：用于控制非对角线上的图的类型，可选“scatter”与“reg”</p>
+<p>diag_kind：控制对角线上的图的类型，可选“hist”与“kde”</p></li>
+<li><p><code>hue</code> ：针对某一字段进行分类</p></li>
+<li><p><code>palette</code>：控制色调</p></li>
+<li><p><code>markers</code>：控制散点的样式</p></li>
+<li></li>
+</ul></li>
+</ul>
+<h1 id="n折交叉验证">n折交叉验证</h1>
+<p>n 折交叉验证, 按照比例选择索引</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># n 折交叉验证</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co"># &gt;&gt;&gt; X = np.array([[1, 2], [3, 4], [1, 2], [3, 4]])</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="op">&gt;&gt;&gt;</span> X <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">2</span>], [<span class="dv">3</span>, <span class="dv">3</span>], [<span class="dv">4</span>, <span class="dv">4</span>], [<span class="dv">4</span>, <span class="dv">4</span>]])</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="op">&gt;&gt;&gt;</span> y <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>,<span class="dv">5</span>])</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="op">&gt;&gt;&gt;</span> kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="op">&gt;&gt;&gt;</span> kf.get_n_splits(X)</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="bu">print</span>(kf)</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> train_index, test_index <span class="kw">in</span> kf.split(X):</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">...     <span class="bu">print</span>(<span class="st">&quot;TRAIN:&quot;</span>, train_index, <span class="st">&quot;TEST:&quot;</span>, test_index)</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">...     X_train, X_test <span class="op">=</span> X[train_index], X[test_index]</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">...     y_train, y_test <span class="op">=</span> y[train_index], y[test_index]</a></code></pre></div>
+<p>out</p>
+<pre><code>KFold(n_splits=5, random_state=None, shuffle=False)
+TRAIN: [1 2 3 4] TEST: [0]
+TRAIN: [0 2 3 4] TEST: [1]
+TRAIN: [0 1 3 4] TEST: [2]
+TRAIN: [0 1 2 4] TEST: [3]
+TRAIN: [0 1 2 3] TEST: [4]</code></pre>
+<h1 id="np转一维函数-ravelflattensqueeze">np转一维函数 — ravel()、flatten()、squeeze()</h1>
+<p>numpy中的ravel()、flatten()、squeeze()都有将多维数组转换为一维数组的功能，区别： ravel()：如果没有必要，不会产生源数据的副本 flatten()：返回源数据的副本 squeeze()：只能对维数为1的维度降维</p>
+<h1 id="numpy-数组属性查看">numpy 数组属性查看</h1>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="bu">print</span>(<span class="st">&quot;数据类型&quot;</span>,<span class="bu">type</span>(a1))           <span class="co">#打印数组数据类型  </span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="bu">print</span>(<span class="st">&quot;数组元素数据类型：&quot;</span>,a1.dtype) <span class="co">#打印数组元素数据类型  </span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="bu">print</span>(<span class="st">&quot;数组元素总数：&quot;</span>,a1.size)      <span class="co">#打印数组尺寸，即数组元素总数  </span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="bu">print</span>(<span class="st">&quot;数组形状：&quot;</span>,a1.shape)         <span class="co">#打印数组形状  </span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="bu">print</span>(<span class="st">&quot;数组的维度数目&quot;</span>,a1.ndim)      <span class="co">#打印数组的维度数目</span></a></code></pre></div>
+<h1 id="pandas数据处理三板斧-mapapplyapplymap">pandas数据处理三板斧 — map、apply、applymap</h1>
+<p>在日常的数据处理中，经常会对一个<code>DataFrame</code>进行<strong>逐行、逐列和逐元素的操作</strong>，对应这些操作，Pandas中的<code>map</code>、<code>apply</code>和<code>applymap</code>可以解决绝大部分这样的数据处理需求。</p>
+<h1 id="保存模型">保存模型</h1>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># 保存模型</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="im">import</span> pickle</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">s <span class="op">=</span> pickle.dumps(clf)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">clf2 <span class="op">=</span> pickle.loads(s)</a></code></pre></div>
+<h1 id="保存最佳模型早停加lr衰减-deepshare_nlp_ch4bert">保存最佳模型(早停加lr衰减) — deepshare_nlp_ch4(bert)</h1>
+<p><code>save_model = './bert.bin'</code></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" data-line-number="1">    <span class="co">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">    如果: 模型在验证集效果比最佳的好,则保存模型</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">            否则, early_stop+=1,</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">            如果early_stop`3:停止训练</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">    &quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">    <span class="kw">def</span> train(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">        logging.info(<span class="st">&#39;Start training...&#39;</span>)</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">        <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, epochs <span class="op">+</span> <span class="dv">1</span>):</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">            train_f1 <span class="op">=</span> <span class="va">self</span>._train(epoch)</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11">            dev_f1 <span class="op">=</span> <span class="va">self</span>._eval(epoch)</a>
+<a class="sourceLine" id="cb10-12" data-line-number="12">        </a>
+<a class="sourceLine" id="cb10-13" data-line-number="13">            <span class="cf">if</span> <span class="va">self</span>.best_dev_f1 <span class="op">&lt;=</span> dev_f1:</a>
+<a class="sourceLine" id="cb10-14" data-line-number="14">                logging.info(</a>
+<a class="sourceLine" id="cb10-15" data-line-number="15">                    <span class="st">&quot;Exceed history dev = </span><span class="sc">%.2f</span><span class="st">, current dev = </span><span class="sc">%.2f</span><span class="st">&quot;</span> <span class="op">%</span> (<span class="va">self</span>.best_dev_f1, dev_f1))</a>
+<a class="sourceLine" id="cb10-16" data-line-number="16">                torch.save(<span class="va">self</span>.model.state_dict(), save_model)</a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb10-18" data-line-number="18">                <span class="va">self</span>.best_train_f1 <span class="op">=</span> train_f1</a>
+<a class="sourceLine" id="cb10-19" data-line-number="19">                <span class="va">self</span>.best_dev_f1 <span class="op">=</span> dev_f1</a>
+<a class="sourceLine" id="cb10-20" data-line-number="20">                <span class="va">self</span>.early_stop <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb10-21" data-line-number="21">            <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb10-22" data-line-number="22">                <span class="va">self</span>.early_stop <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb10-23" data-line-number="23">                <span class="cf">if</span> <span class="va">self</span>.early_stop ` early_stops:</a>
+<a class="sourceLine" id="cb10-24" data-line-number="24">                    logging.info(</a>
+<a class="sourceLine" id="cb10-25" data-line-number="25">                        <span class="st">&quot;Eearly stop in epoch </span><span class="sc">%d</span><span class="st">, best train: </span><span class="sc">%.2f</span><span class="st">, dev: </span><span class="sc">%.2f</span><span class="st">&quot;</span> <span class="op">%</span> (</a>
+<a class="sourceLine" id="cb10-26" data-line-number="26">                            epoch <span class="op">-</span> early_stops, <span class="va">self</span>.best_train_f1, <span class="va">self</span>.best_dev_f1))</a>
+<a class="sourceLine" id="cb10-27" data-line-number="27">                    <span class="va">self</span>.last_epoch <span class="op">=</span> epoch</a>
+<a class="sourceLine" id="cb10-28" data-line-number="28">                    <span class="cf">break</span></a>
+<a class="sourceLine" id="cb10-29" data-line-number="29">     <span class="co">&quot;&quot;&quot;测试函数, 加载保存的模型并使用验证函数&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb10-30" data-line-number="30">    <span class="kw">def</span> test(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb10-31" data-line-number="31">        <span class="va">self</span>.model.load_state_dict(torch.load(save_model))</a>
+<a class="sourceLine" id="cb10-32" data-line-number="32">        <span class="va">self</span>._eval(<span class="va">self</span>.last_epoch <span class="op">+</span> <span class="dv">1</span>, test<span class="op">=</span><span class="va">True</span>)</a></code></pre></div>
+<h1 id="日志式输出">日志式输出</h1>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="im">import</span> logging</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">logging.basicConfig(level<span class="op">=</span>logging.INFO, <span class="bu">format</span><span class="op">=</span><span class="st">&#39;</span><span class="sc">%(asctime)-15s</span><span class="st"> </span><span class="sc">%(levelname)s</span><span class="st">: </span><span class="sc">%(message)s</span><span class="st">&#39;</span>)</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">logging.info(<span class="st">&quot;Use cuda: </span><span class="sc">%s</span><span class="st">, gpu id: </span><span class="sc">%d</span><span class="st">.&quot;</span>, use_cuda, gpu)</a></code></pre></div>
+<h1 id="数组索引不到右边界">数组索引不到右边界</h1>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb12-1" data-line-number="1">a <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="bu">len</span>(a[:<span class="op">-</span><span class="dv">1</span>]) <span class="co"># 6</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="bu">len</span>(a[:<span class="bu">len</span>(a)]) <span class="co">#7</span></a></code></pre></div>
+<h1 id="字符串">字符串</h1>
+<h2 id="判断包含数字大小写的方法">判断包含数字大小写的方法</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb13-1" data-line-number="1">        <span class="cf">for</span> e <span class="kw">in</span> data:</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">            <span class="cf">if</span> e.isdigit():</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">                a <span class="op">=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">            <span class="cf">elif</span> e.islower():</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">                b <span class="op">=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">            <span class="cf">elif</span> e.isupper():</a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">                c <span class="op">=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">            <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb13-9" data-line-number="9">                d <span class="op">=</span> <span class="dv">1</span></a></code></pre></div>
+<h2 id="判断字符串里子串数量方法">判断字符串里子串数量方法</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb14-1" data-line-number="1">data.count(data[j:j<span class="op">+</span><span class="dv">3</span>])</a></code></pre></div>
+<h1 id="collections---容器数据类型"><a href="https://docs.python.org/zh-cn/3/library/collections.html#module-collections"><code>collections</code></a> - 容器数据类型</h1>
+<table>
+<thead>
+<tr class="header">
+<th><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.namedtuple"><code>namedtuple()</code></a></th>
+<th>创建命名元组子类的工厂函数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.deque"><code>deque</code></a></td>
+<td>类似列表(list)的容器，实现了在两端快速添加(append)和弹出(pop)</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.ChainMap"><code>ChainMap</code></a></td>
+<td>类似字典(dict)的容器类，将多个映射集合到一个视图里面</td>
+</tr>
+<tr class="odd">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.Counter"><code>Counter</code></a></td>
+<td>字典的子类，提供了可哈希对象的计数功能</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.OrderedDict"><code>OrderedDict</code></a></td>
+<td>字典的子类，保存了他们被添加的顺序</td>
+</tr>
+<tr class="odd">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.defaultdict"><code>defaultdict</code></a></td>
+<td>字典的子类，提供了一个工厂函数，为字典查询提供一个默认值</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.UserDict"><code>UserDict</code></a></td>
+<td>封装了字典对象，简化了字典子类化</td>
+</tr>
+<tr class="odd">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.UserList"><code>UserList</code></a></td>
+<td>封装了列表对象，简化了列表子类化</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.UserString"><code>UserString</code></a></td>
+<td>封装了列表对象，简化了字符串子类化</td>
+</tr>
+</tbody>
+</table>
+<h2 id="counter">Counter()</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb15-1" data-line-number="1">c <span class="op">=</span> Counter()                           <span class="co"># a new, empty counter</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">c <span class="op">=</span> Counter(<span class="st">&#39;gallahad&#39;</span>)                 <span class="co"># a new counter from an iterable</span></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">c <span class="op">=</span> Counter({<span class="st">&#39;red&#39;</span>: <span class="dv">4</span>, <span class="st">&#39;blue&#39;</span>: <span class="dv">2</span>})      <span class="co"># a new counter from a mapping</span></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">c <span class="op">=</span> Counter(cats<span class="op">=</span><span class="dv">4</span>, dogs<span class="op">=</span><span class="dv">8</span>)             <span class="co"># a new counter from keyword args</span></a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> a <span class="kw">in</span> c.items():</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">...     <span class="bu">print</span>(a)</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">...</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">(<span class="st">&#39;red&#39;</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">(<span class="st">&#39;blue&#39;</span>, <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb16-6" data-line-number="6">(<span class="st">&#39;green&#39;</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="op">&gt;&gt;&gt;</span> <span class="cf">for</span> a <span class="kw">in</span> c.elements():</a>
+<a class="sourceLine" id="cb16-9" data-line-number="9">...     <span class="bu">print</span>(a)</a>
+<a class="sourceLine" id="cb16-10" data-line-number="10">...</a>
+<a class="sourceLine" id="cb16-11" data-line-number="11">red</a>
+<a class="sourceLine" id="cb16-12" data-line-number="12">red</a>
+<a class="sourceLine" id="cb16-13" data-line-number="13">blue</a>
+<a class="sourceLine" id="cb16-14" data-line-number="14">blue</a>
+<a class="sourceLine" id="cb16-15" data-line-number="15">blue</a>
+<a class="sourceLine" id="cb16-16" data-line-number="16">green</a></code></pre></div>
+<ul>
+<li><p><code>elements</code>()</p>
+<p>返回一个迭代器，其中每个元素将重复出现计数值所指定次。 元素会按首次出现的顺序返回。 如果一个元素的计数值小于一，<a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.Counter.elements"><code>elements()</code></a> 将会忽略它。&gt;&gt;&gt;<code>&gt;&gt;&gt; c = Counter(a=4, b=2, c=0, d=-2) &gt;&gt;&gt; sorted(c.elements()) ['a', 'a', 'a', 'a', 'b', 'b']</code></p></li>
+<li><p><code>most_common</code>([<em>n</em>])</p>
+<p>返回一个列表，其中包含 <em>n</em> 个最常见的元素及出现次数，按常见程度由高到低排序。 如果 <em>n</em> 被省略或为 <code>None</code>，<a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.Counter.most_common"><code>most_common()</code></a> 将返回计数器中的 <em>所有</em> 元素。 计数值相等的元素按首次出现的顺序排序：&gt;&gt;&gt;<code>&gt;&gt;&gt; Counter('abracadabra').most_common(3) [('a', 5), ('b', 2), ('r', 2)]</code></p></li>
+<li><p><code>subtract</code>([<em>iterable-or-mapping</em>])</p>
+<p>从 <em>迭代对象</em> 或 <em>映射对象</em> 减去元素。像 <a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#dict.update"><code>dict.update()</code></a> 但是是减去，而不是替换。输入和输出都可以是0或者负数。&gt;&gt;&gt;<code>&gt;&gt;&gt; c = Counter(a=4, b=2, c=0, d=-2) &gt;&gt;&gt; d = Counter(a=1, b=2, c=3, d=4) &gt;&gt;&gt; c.subtract(d) &gt;&gt;&gt; c Counter({'a': 3, 'b': 0, 'c': -3, 'd': -6})</code><em>3.2 新版功能.</em></p></li>
+</ul>
+<p>通常字典方法都可用于 <a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.Counter"><code>Counter</code></a> 对象，除了有两个方法工作方式与字典并不相同。</p>
+<ul>
+<li><p><code>fromkeys</code>(<em>iterable</em>)</p>
+<p>这个类方法没有在 <a href="https://docs.python.org/zh-cn/3/library/collections.html#collections.Counter"><code>Counter</code></a> 中实现。</p></li>
+<li><p><code>update</code>([<em>iterable-or-mapping</em>])</p>
+<p>从 <em>迭代对象</em> 计数元素或者 从另一个 <em>映射对象</em> (或计数器) 添加。 像 <a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#dict.update"><code>dict.update()</code></a> 但是是加上，而不是替换。另外，<em>迭代对象</em> 应该是序列元素，而不是一个 <code>(key, value)</code> 对。</p></li>
+</ul>
+<h2 id="deque">deque()</h2>
+<ul>
+<li><p><code>append</code>(<em>x</em>)</p>
+<p>添加 <em>x</em> 到右端。</p></li>
+<li><p><code>appendleft</code>(<em>x</em>)</p>
+<p>添加 <em>x</em> 到左端。</p></li>
+<li><p><code>clear</code>()</p>
+<p>移除所有元素，使其长度为0.</p></li>
+<li><p><code>copy</code>()</p>
+<p>创建一份浅拷贝。<em>3.5 新版功能.</em></p></li>
+<li><p><code>count</code>(<em>x</em>)</p>
+<p>计算 deque 中元素等于 <em>x</em> 的个数。<em>3.2 新版功能.</em></p></li>
+<li><p><code>extend</code>(<em>iterable</em>)</p>
+<p>扩展deque的右侧，通过添加iterable参数中的元素。</p></li>
+<li><p><code>extendleft</code>(<em>iterable</em>)</p>
+<p>扩展deque的左侧，通过添加iterable参数中的元素。注意，左添加时，在结果中iterable参数中的顺序将被反过来添加。</p></li>
+<li><p><code>index</code>(<em>x</em>[, <em>start</em>[, <em>stop</em>]])</p>
+<p>返回 <em>x</em> 在 deque 中的位置（在索引 <em>start</em> 之后，索引 <em>stop</em> 之前）。 返回第一个匹配项，如果未找到则引发 <a href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError"><code>ValueError</code></a>。<em>3.5 新版功能.</em></p></li>
+<li><p><code>insert</code>(<em>i</em>, <em>x</em>)</p>
+<p>在位置 <em>i</em> 插入 <em>x</em> 。如果插入会导致一个限长 deque 超出长度 <em>maxlen</em> 的话，就引发一个 <a href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError"><code>IndexError</code></a>。<em>3.5 新版功能.</em></p></li>
+<li><p><code>pop</code>()</p>
+<p>移去并且返回一个元素，deque 最右侧的那一个。 如果没有元素的话，就引发一个 <a href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError"><code>IndexError</code></a>。</p></li>
+<li><p><code>popleft</code>()</p>
+<p>移去并且返回一个元素，deque 最左侧的那一个。 如果没有元素的话，就引发 <a href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError"><code>IndexError</code></a>。</p></li>
+<li><p><code>remove</code>(<em>value</em>)</p>
+<p>移除找到的第一个 <em>value</em>。 如果没有的话就引发 <a href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError"><code>ValueError</code></a>。</p></li>
+<li><p><code>reverse</code>()</p>
+<p>将deque逆序排列。返回 <code>None</code> 。<em>3.2 新版功能.</em></p></li>
+<li><p><code>rotate</code>(<em>n=1</em>)</p>
+<p>向右循环移动 <em>n</em> 步。 如果 <em>n</em> 是负数，就向左循环。如果deque不是空的，向右循环移动一步就等价于 <code>d.appendleft(d.pop())</code> ， 向左循环一步就等价于 <code>d.append(d.popleft())</code> 。</p></li>
+</ul>
+<p>Deque对象同样提供了一个只读属性:</p>
+<ul>
+<li><p><code>maxlen</code></p>
+<p>Deque的最大尺寸，如果没有限定的话就是 <code>None</code> 。</p></li>
+</ul>
+<h1 id="python线程">python线程</h1>
+<h2 id="问题1-终止tkinter中的python线程">问题1-终止tkinter中的python线程</h2>
+<p>终止线程的方法我采取的方案是<strong>利用全局实时变化的变量标志位进行判断终止。</strong></p>
+<h2 id="问题2-跨文件无法进行传参">问题2-跨文件无法进行传参</h2>
+<p>在比较复杂的工程中会存在Python跨文件全局变量的使用</p>
+<p>python跟C不一样，c是在一个文件定义后在另一个文件声明下是extern变量就好。<strong>python则是通过global声明，但作用域依旧是单个文件。</strong></p>
+<p>有一种方式是在A定义，在B import。这种方式，如果仅存在B import A ，那没问题。但是如果A又存在import B则会报错，原因是出现循环调用。解决办法也有几种，这里不展开。这种方式，有一个问题，就是无法实时传递变量，B import后，A中发生了变化，B是不知道的。</p>
+<p>于是乎，不如<strong>单独拿一个py文件来单独存放这些全局变量，其他文件都可以单向import</strong>。</p>
+<p>单独搞一个global_var.py如下：</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co"># -*- coding: utf-8 -*-</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="kw">def</span> _init():  <span class="co"># 初始化</span></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">    <span class="kw">global</span> _global_dict</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">    _global_dict <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb17-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="kw">def</span> set_value(key, value):</a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">    <span class="co">#定义一个全局变量</span></a>
+<a class="sourceLine" id="cb17-9" data-line-number="9">    _global_dict[key] <span class="op">=</span> value</a>
+<a class="sourceLine" id="cb17-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb17-11" data-line-number="11"><span class="kw">def</span> get_value(key):</a>
+<a class="sourceLine" id="cb17-12" data-line-number="12">    <span class="co">#获得一个全局变量，不存在则提示读取对应变量失败</span></a>
+<a class="sourceLine" id="cb17-13" data-line-number="13">    <span class="cf">try</span>:</a>
+<a class="sourceLine" id="cb17-14" data-line-number="14">        <span class="cf">return</span> _global_dict[key]</a>
+<a class="sourceLine" id="cb17-15" data-line-number="15">    <span class="cf">except</span>:</a>
+<a class="sourceLine" id="cb17-16" data-line-number="16">        <span class="bu">print</span>(<span class="st">&#39;读取&#39;</span><span class="op">+</span>key<span class="op">+</span><span class="st">&#39;失败</span><span class="ch">\r\n</span><span class="st">&#39;</span>)</a></code></pre></div>
+<p>其他文件需要用到的，则import global_var.py。然后在主文件初始化一下，global_var._init()</p>
+<p>接着便可以随便使用了，比如先定义(定义字典的时候顺便写入初始值)：</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">def</span> task2_train():    </a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">  global_var.set_value(<span class="st">&#39;flag_run_task&#39;</span>, <span class="dv">1</span>)    </a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">  train_2.train()</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="kw">def</span> task2_test():    </a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">  global_var.set_value(<span class="st">&#39;flag_run_task&#39;</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">  test_2.test()</a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="kw">def</span> task3_train(): </a>
+<a class="sourceLine" id="cb18-8" data-line-number="8">  global_var.set_value(<span class="st">&#39;flag_run_task&#39;</span>, <span class="dv">3</span>)    </a>
+<a class="sourceLine" id="cb18-9" data-line-number="9">  main_3.run()</a></code></pre></div>
+<p>使用的时候，直接get下字典对应键值，在循环中做如下实现：</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="cf">while</span> <span class="va">True</span>:     </a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="cf">if</span> global_var.get_value(<span class="st">&#39;flag_run_task&#39;</span>) <span class="op">!=</span> <span class="dv">1</span>:       </a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">    sys.exit()</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">  <span class="co">## do something</span></a></code></pre></div>
+<p>另外，如果是多线程，可能会出现一个线程写入这个变量，另一个线程又在读取，从可靠性的角度考虑，多线程时读写最好加个锁同步一下</p>
+<h2 id="主循环">主循环</h2>
+<p>定义了一个函数一直不出图，最后发现是循环的问题，最后要加上：</p>
+<pre><code>root.mainloop()</code></pre>
+<h1 id="tkinter-控件">tkinter 控件</h1>
+<figure>
+<img src="/img/in-post/20_07/20161219162235772.png" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h2 id="滚动文本框scrolledtext">滚动文本框ScrolledText</h2>
+<p>grid是布局方法，也就是说我们每次设置一个控件都需要将其grid，否则将不显示</p>
+<p>滚动文本框ScrolledText，其可以设置字体，颜色等参数</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb21-1" data-line-number="1">text<span class="op">=</span>ScrolledText(root,font<span class="op">=</span>(<span class="st">&#39;微软雅黑&#39;</span>,<span class="dv">10</span>),fg<span class="op">=</span><span class="st">&#39;blue&#39;</span>)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">text.grid()</a></code></pre></div>
+<h2 id="label">label</h2>
+<p>可变的文本，文本我们采取的也是放在label里的方式</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb22-1" data-line-number="1">var<span class="op">=</span>StringVar()<span class="co">#设置变量</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">label<span class="op">=</span>Label(root,font<span class="op">=</span>(<span class="st">&#39;微软雅黑&#39;</span>,<span class="dv">10</span>),fg<span class="op">=</span><span class="st">&#39;red&#39;</span>,textvariable<span class="op">=</span>var)</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">label.grid()</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">var.<span class="bu">set</span>(<span class="st">&#39;sth&#39;</span>)</a></code></pre></div>
+<p>如果在程序执行中，需要对文本进行更改时，可以再次使用var.set</p>
+<h1 id="tkinter多线程">tkinter+多线程</h1>
+<blockquote>
+<p>TKinter自身刷新GUI是单线程的，用户在调用mainloop方法后，主线程会一直不停循环刷新GUI，但是如果用户给某个widget绑定了一个很耗时的方法A时，这个方法A也是在主线程里调用，于是这个耗时的方法A会阻塞住刷新GUI的主线程，表现就是整个GUI卡住了，只有等这个耗时的方法结束后，GUI才会对用户操作响应</p>
+</blockquote>
+<p>最简单的解决上述问题的办法就是利用多线程，把<strong>两个耗时方法丢到两个子线程里运行</strong>，就可以<strong>避开主线程被阻塞的问题</strong></p>
+<h2 id="threading多线程模块">threading多线程模块</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb23-1" data-line-number="1">threading.Thread(target<span class="op">=</span>函数名args<span class="op">=</span>(调用参数，注意最后要有一个‘,’))`</a></code></pre></div>
+<p><code>threading</code>可以实例化一个多线程对象，使用<code>th.setDaemon(True)</code>守护线程，通过<code>start</code>就可以开启。</p>
+<p><strong>说一下th.setDaemon(True)守护线程：</strong></p>
+<p>python中得thread的一些机制和C/C++不同：在C/C++中，主线程结束后，其子线程会默认被主线程kill掉。<strong>而在python中，主线程结束后，会默认等待子线程结束后，主线程才退出。</strong></p>
+<p>那么尴尬的问题就出现了，有一种情况，比如说在linux系统中存在脱离于终端的线程，即父进程在创建子进程之后先于子进程退出，会造成这个子进程变为“孤儿进程”</p>
+<p>如果你忘记杀死子线程，那么好了，你杀主线程的时候其就会挂起等待直至子线程结束，所以为了避免这样的情况，python有<strong>两个函数管理线程</strong>：<code>join</code>和<code>setDaemon</code></p>
+<p><code>join</code>：如在一个线程B中调用threada.join()，则threada结束后，线程B才会接着threada.join()往后运行。 <code>setDaemon</code>：主线程A启动了子线程B，调用b.setDaemaon(True)，<strong>则主线程结束时，会把子线程B也杀死</strong>，与C/C++中得默认效果是一样的。</p>
+<p><strong>一般情况下，在start前面加一下setDaemon(True)</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">def</span> fun():</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">5</span><span class="op">+</span><span class="dv">1</span>):</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">        th<span class="op">=</span>threading.Thread(target<span class="op">=</span>count,args<span class="op">=</span>(i,))</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">        th.setDaemon(<span class="va">True</span>)<span class="co">#守护线程</span></a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">        th.start()</a></code></pre></div>
+<h2 id="原始按钮函数">原始按钮函数</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="va">self</span>.button_1 <span class="op">=</span> Button(root, text<span class="op">=</span><span class="st">&quot;run A&quot;</span>, width<span class="op">=</span><span class="dv">10</span>, command<span class="op">=</span><span class="va">self</span>.A)</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="va">self</span>.button_1.pack(side<span class="op">=</span><span class="st">&quot;top&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">def</span> A(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">    <span class="bu">print</span>(<span class="st">&quot;start to run proc A&quot;</span>)</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">    time.sleep(<span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">    <span class="bu">print</span>(<span class="st">&quot;proc A finished&quot;</span>)</a></code></pre></div>
+<h2 id="加入多线程防止gui主线程被阻塞">加入多线程防止GUI主线程被阻塞</h2>
+<p>利用多线程，可以把两个耗时方法丢到两个子线程里运行，就可以避开主线程被阻塞的问题</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb27-1" data-line-number="1">    <span class="kw">def</span> __A(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">        <span class="bu">print</span>(<span class="st">&quot;start to run proc A&quot;</span>)</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">        time.sleep(<span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">        <span class="bu">print</span>(<span class="st">&quot;proc A finished&quot;</span>)</a>
+<a class="sourceLine" id="cb27-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">    <span class="co"># 子线程构建</span></a>
+<a class="sourceLine" id="cb27-7" data-line-number="7">    <span class="kw">def</span> A(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb27-8" data-line-number="8">        T <span class="op">=</span> threading.Thread(target<span class="op">=</span><span class="va">self</span>.__A)</a>
+<a class="sourceLine" id="cb27-9" data-line-number="9">        T.start()</a></code></pre></div>
+<h2 id="对输出进行重定向">对输出进行重定向</h2>
+<p>当有需要在text上显示的输出时，需要将<strong>标准输出stdout重定向到了一个自定义的类里，这个类的write方法可以更改Text的内容</strong></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb28-1" data-line-number="1">sys.stdout <span class="op">=</span> re_Text(<span class="va">self</span>.text)</a></code></pre></div>
+<h2 id="在界面中显示子线程输出">在界面中显示子线程输出</h2>
+<p>经过重定向后，我们需要定义一个如下函数展示输出：</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb29-1" data-line-number="1">    <span class="kw">def</span> show(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">        i <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">        <span class="cf">while</span> i <span class="op">&lt;</span> <span class="dv">3</span>:</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">            <span class="bu">print</span> fmtTime(time.time())</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">            time.sleep(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">            i <span class="op">+=</span> <span class="dv">1</span></a></code></pre></div>
+<p><strong>需要注意的是，我们尽量不应该把上面代码里的show方法丢到子线程里去跑。</strong>主要原因如下：</p>
+<p>（1）上述代码里，利用子线程去更新Text是不安全的，因为<strong>可能存在不同线程同时修改Text的情况</strong>，这样可能导致打印出来的内容直接混乱掉。</p>
+<p>（2）上述代码可能会直接报错，这个应该和TCL版本有关，在Google，Stackoverflow上基本都是不推荐子线程里更新GUI。</p>
+<p>目前，比较好的解决GUI阻塞，而且不在子线程里更新GUI的办法，还是<strong>利用python自带的队列Queue</strong>，以及Tkinter下面的after方法。首先说下Queue这个class，Queue是python自带的一个队列class，其应用遵循着先入先出的原则。利用Queue.put方法将元素推进Queue里，再利用Queue.get方法将元素取出，最先推进去的元素会被最先取出。看下面的例子</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="im">import</span> Queue</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="im">import</span> time</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">queue <span class="op">=</span> Queue.Queue()</a>
+<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">4</span>):</a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">    time.sleep(<span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb30-7" data-line-number="7">    element <span class="op">=</span> <span class="st">&quot;element </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">%</span>i</a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">    <span class="bu">print</span> <span class="st">&quot;put </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">%</span>element</a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">    queue.put(element)</a>
+<a class="sourceLine" id="cb30-10" data-line-number="10"> </a>
+<a class="sourceLine" id="cb30-11" data-line-number="11"><span class="cf">while</span> <span class="kw">not</span> queue.empty():</a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">    time.sleep(<span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb30-13" data-line-number="13">    <span class="bu">print</span> <span class="st">&quot;get </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">%</span>queue.get()</a></code></pre></div>
+<h2 id="示例1">示例1：</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="co"># coding=utf-8</span></a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="im">from</span> Tkinter <span class="im">import</span> <span class="op">*</span></a>
+<a class="sourceLine" id="cb31-3" data-line-number="3"><span class="im">from</span> ttk <span class="im">import</span> <span class="op">*</span></a>
+<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="im">import</span> threading</a>
+<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="im">import</span> time</a>
+<a class="sourceLine" id="cb31-6" data-line-number="6"><span class="im">import</span> sys</a>
+<a class="sourceLine" id="cb31-7" data-line-number="7"><span class="im">import</span> Queue</a>
+<a class="sourceLine" id="cb31-8" data-line-number="8"> </a>
+<a class="sourceLine" id="cb31-9" data-line-number="9"><span class="kw">def</span> fmtTime(timeStamp):</a>
+<a class="sourceLine" id="cb31-10" data-line-number="10">    timeArray <span class="op">=</span> time.localtime(timeStamp)</a>
+<a class="sourceLine" id="cb31-11" data-line-number="11">    dateTime <span class="op">=</span> time.strftime(<span class="st">&quot;%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M:%S&quot;</span>, timeArray)</a>
+<a class="sourceLine" id="cb31-12" data-line-number="12">    <span class="cf">return</span> dateTime</a>
+<a class="sourceLine" id="cb31-13" data-line-number="13"> </a>
+<a class="sourceLine" id="cb31-14" data-line-number="14"><span class="co">#自定义re_Text,用于将stdout映射到Queue</span></a>
+<a class="sourceLine" id="cb31-15" data-line-number="15"><span class="kw">class</span> re_Text():</a>
+<a class="sourceLine" id="cb31-16" data-line-number="16"> </a>
+<a class="sourceLine" id="cb31-17" data-line-number="17">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, queue):</a>
+<a class="sourceLine" id="cb31-18" data-line-number="18"> </a>
+<a class="sourceLine" id="cb31-19" data-line-number="19">        <span class="va">self</span>.queue <span class="op">=</span> queue</a>
+<a class="sourceLine" id="cb31-20" data-line-number="20"> </a>
+<a class="sourceLine" id="cb31-21" data-line-number="21">    <span class="kw">def</span> write(<span class="va">self</span>, content):</a>
+<a class="sourceLine" id="cb31-22" data-line-number="22"> </a>
+<a class="sourceLine" id="cb31-23" data-line-number="23">        <span class="va">self</span>.queue.put(content)</a>
+<a class="sourceLine" id="cb31-24" data-line-number="24"> </a>
+<a class="sourceLine" id="cb31-25" data-line-number="25"><span class="kw">class</span> GUI():</a>
+<a class="sourceLine" id="cb31-26" data-line-number="26"> </a>
+<a class="sourceLine" id="cb31-27" data-line-number="27">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, root):</a>
+<a class="sourceLine" id="cb31-28" data-line-number="28"> </a>
+<a class="sourceLine" id="cb31-29" data-line-number="29">        <span class="co">#new 一个Quue用于保存输出内容</span></a>
+<a class="sourceLine" id="cb31-30" data-line-number="30">        <span class="va">self</span>.msg_queue <span class="op">=</span> Queue.Queue()</a>
+<a class="sourceLine" id="cb31-31" data-line-number="31">        <span class="va">self</span>.initGUI(root)</a>
+<a class="sourceLine" id="cb31-32" data-line-number="32"> </a>
+<a class="sourceLine" id="cb31-33" data-line-number="33">    <span class="co">#在show_msg方法里，从Queue取出元素，输出到Text</span></a>
+<a class="sourceLine" id="cb31-34" data-line-number="34">    <span class="kw">def</span> show_msg(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb31-35" data-line-number="35"> </a>
+<a class="sourceLine" id="cb31-36" data-line-number="36">        <span class="cf">while</span> <span class="kw">not</span> <span class="va">self</span>.msg_queue.empty():</a>
+<a class="sourceLine" id="cb31-37" data-line-number="37">            content <span class="op">=</span> <span class="va">self</span>.msg_queue.get()</a>
+<a class="sourceLine" id="cb31-38" data-line-number="38">            <span class="va">self</span>.text.insert(INSERT, content)</a>
+<a class="sourceLine" id="cb31-39" data-line-number="39">            <span class="va">self</span>.text.see(END)</a>
+<a class="sourceLine" id="cb31-40" data-line-number="40"> </a>
+<a class="sourceLine" id="cb31-41" data-line-number="41">        <span class="co">#after方法再次调用show_msg</span></a>
+<a class="sourceLine" id="cb31-42" data-line-number="42">        <span class="va">self</span>.root.after(<span class="dv">100</span>, <span class="va">self</span>.show_msg)</a>
+<a class="sourceLine" id="cb31-43" data-line-number="43"> </a>
+<a class="sourceLine" id="cb31-44" data-line-number="44">    <span class="kw">def</span> initGUI(<span class="va">self</span>, root):</a>
+<a class="sourceLine" id="cb31-45" data-line-number="45"> </a>
+<a class="sourceLine" id="cb31-46" data-line-number="46">        <span class="va">self</span>.root <span class="op">=</span> root</a>
+<a class="sourceLine" id="cb31-47" data-line-number="47">        <span class="va">self</span>.root.title(<span class="st">&quot;test&quot;</span>)</a>
+<a class="sourceLine" id="cb31-48" data-line-number="48">        <span class="va">self</span>.root.geometry(<span class="st">&quot;400x200+700+500&quot;</span>)</a>
+<a class="sourceLine" id="cb31-49" data-line-number="49">        <span class="va">self</span>.root.resizable <span class="op">=</span> <span class="va">False</span></a>
+<a class="sourceLine" id="cb31-50" data-line-number="50"> </a>
+<a class="sourceLine" id="cb31-51" data-line-number="51">        <span class="va">self</span>.button <span class="op">=</span> Button(<span class="va">self</span>.root, text<span class="op">=</span><span class="st">&quot;click&quot;</span>, width<span class="op">=</span><span class="dv">10</span>, command<span class="op">=</span><span class="va">self</span>.show)</a>
+<a class="sourceLine" id="cb31-52" data-line-number="52">        <span class="va">self</span>.button.pack(side<span class="op">=</span><span class="st">&quot;top&quot;</span>)</a>
+<a class="sourceLine" id="cb31-53" data-line-number="53"> </a>
+<a class="sourceLine" id="cb31-54" data-line-number="54">        <span class="va">self</span>.scrollBar <span class="op">=</span> Scrollbar(<span class="va">self</span>.root)</a>
+<a class="sourceLine" id="cb31-55" data-line-number="55">        <span class="va">self</span>.scrollBar.pack(side<span class="op">=</span><span class="st">&quot;right&quot;</span>, fill<span class="op">=</span><span class="st">&quot;y&quot;</span>)</a>
+<a class="sourceLine" id="cb31-56" data-line-number="56"> </a>
+<a class="sourceLine" id="cb31-57" data-line-number="57">        <span class="va">self</span>.text <span class="op">=</span> Text(<span class="va">self</span>.root, height<span class="op">=</span><span class="dv">10</span>, width<span class="op">=</span><span class="dv">45</span>, yscrollcommand<span class="op">=</span><span class="va">self</span>.scrollBar.<span class="bu">set</span>)</a>
+<a class="sourceLine" id="cb31-58" data-line-number="58">        <span class="va">self</span>.text.pack(side<span class="op">=</span><span class="st">&quot;top&quot;</span>, fill<span class="op">=</span>BOTH, padx<span class="op">=</span><span class="dv">10</span>, pady<span class="op">=</span><span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb31-59" data-line-number="59">        <span class="va">self</span>.scrollBar.config(command<span class="op">=</span><span class="va">self</span>.text.yview)</a>
+<a class="sourceLine" id="cb31-60" data-line-number="60"> </a>
+<a class="sourceLine" id="cb31-61" data-line-number="61">        <span class="co">#启动after方法</span></a>
+<a class="sourceLine" id="cb31-62" data-line-number="62">        <span class="va">self</span>.root.after(<span class="dv">100</span>, <span class="va">self</span>.show_msg)</a>
+<a class="sourceLine" id="cb31-63" data-line-number="63"> </a>
+<a class="sourceLine" id="cb31-64" data-line-number="64">        <span class="co">#将stdout映射到re_Text</span></a>
+<a class="sourceLine" id="cb31-65" data-line-number="65">        sys.stdout <span class="op">=</span> re_Text(<span class="va">self</span>.msg_queue)</a>
+<a class="sourceLine" id="cb31-66" data-line-number="66"> </a>
+<a class="sourceLine" id="cb31-67" data-line-number="67">        root.mainloop()</a>
+<a class="sourceLine" id="cb31-68" data-line-number="68"> </a>
+<a class="sourceLine" id="cb31-69" data-line-number="69">    <span class="kw">def</span> __show(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb31-70" data-line-number="70"> </a>
+<a class="sourceLine" id="cb31-71" data-line-number="71">        i <span class="op">=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb31-72" data-line-number="72">        <span class="cf">while</span> i <span class="op">&lt;</span> <span class="dv">3</span>:</a>
+<a class="sourceLine" id="cb31-73" data-line-number="73">            <span class="bu">print</span> fmtTime(time.time())</a>
+<a class="sourceLine" id="cb31-74" data-line-number="74">            time.sleep(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb31-75" data-line-number="75">            i <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb31-76" data-line-number="76"> </a>
+<a class="sourceLine" id="cb31-77" data-line-number="77">    <span class="kw">def</span> show(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb31-78" data-line-number="78">        T <span class="op">=</span> threading.Thread(target<span class="op">=</span><span class="va">self</span>.__show, args<span class="op">=</span>())</a>
+<a class="sourceLine" id="cb31-79" data-line-number="79">        T.start()</a>
+<a class="sourceLine" id="cb31-80" data-line-number="80"> </a>
+<a class="sourceLine" id="cb31-81" data-line-number="81"><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</a>
+<a class="sourceLine" id="cb31-82" data-line-number="82"> </a>
+<a class="sourceLine" id="cb31-83" data-line-number="83">    root <span class="op">=</span> Tk()</a>
+<a class="sourceLine" id="cb31-84" data-line-number="84">    myGUI <span class="op">=</span> GUI(root)</a></code></pre></div>
+<h2 id="示例2">示例2：</h2>
+<p>打印线程</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="co"># coding:utf-8</span></a>
+<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="im">from</span> tkinter <span class="im">import</span> <span class="op">*</span></a>
+<a class="sourceLine" id="cb32-3" data-line-number="3"><span class="co"># from tkinter.ScrolledText import ScrolledText  # 文本滚动条</span></a>
+<a class="sourceLine" id="cb32-4" data-line-number="4"><span class="im">import</span> threading</a>
+<a class="sourceLine" id="cb32-5" data-line-number="5"><span class="im">import</span> time</a>
+<a class="sourceLine" id="cb32-6" data-line-number="6"><span class="im">from</span> PIL <span class="im">import</span> ImageTk, Image</a>
+<a class="sourceLine" id="cb32-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb32-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb32-9" data-line-number="9"><span class="kw">def</span> count(i):</a>
+<a class="sourceLine" id="cb32-10" data-line-number="10">    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span> <span class="op">+</span> <span class="dv">1</span>):</a>
+<a class="sourceLine" id="cb32-11" data-line-number="11">        text.insert(END, <span class="st">&#39;第&#39;</span> <span class="op">+</span> <span class="bu">str</span>(i) <span class="op">+</span> <span class="st">&#39;线程count:  &#39;</span> <span class="op">+</span> <span class="bu">str</span>(k) <span class="op">+</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</a>
+<a class="sourceLine" id="cb32-12" data-line-number="12">        time.sleep(<span class="fl">0.001</span>)</a>
+<a class="sourceLine" id="cb32-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb32-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb32-15" data-line-number="15"><span class="kw">def</span> fun():</a>
+<a class="sourceLine" id="cb32-16" data-line-number="16">    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">5</span> <span class="op">+</span> <span class="dv">1</span>):</a>
+<a class="sourceLine" id="cb32-17" data-line-number="17">        th <span class="op">=</span> threading.Thread(target<span class="op">=</span>count, args<span class="op">=</span>(i,))</a>
+<a class="sourceLine" id="cb32-18" data-line-number="18">        th.setDaemon(<span class="va">True</span>)  <span class="co"># 守护线程</span></a>
+<a class="sourceLine" id="cb32-19" data-line-number="19">        th.start()</a>
+<a class="sourceLine" id="cb32-20" data-line-number="20">    var.<span class="bu">set</span>(<span class="st">&#39;MDZZ&#39;</span>)</a>
+<a class="sourceLine" id="cb32-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb32-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb32-23" data-line-number="23">root <span class="op">=</span> Tk()</a>
+<a class="sourceLine" id="cb32-24" data-line-number="24">throot.geometry(<span class="st">&#39;+600+100&#39;</span>)  <span class="co"># 窗口呈现位置</span></a>
+<a class="sourceLine" id="cb32-25" data-line-number="25">text <span class="op">=</span> Text(root, font<span class="op">=</span>(<span class="st">&#39;微软雅黑&#39;</span>, <span class="dv">10</span>), fg<span class="op">=</span><span class="st">&#39;blue&#39;</span>)</a>
+<a class="sourceLine" id="cb32-26" data-line-number="26">text.grid()</a>
+<a class="sourceLine" id="cb32-27" data-line-number="27">button <span class="op">=</span> Button(root, text<span class="op">=</span><span class="st">&#39;sth&#39;</span>, font<span class="op">=</span>(<span class="st">&#39;微软雅黑&#39;</span>, <span class="dv">10</span>), command<span class="op">=</span>fun)</a>
+<a class="sourceLine" id="cb32-28" data-line-number="28">button.grid()</a>
+<a class="sourceLine" id="cb32-29" data-line-number="29">var <span class="op">=</span> StringVar()  <span class="co"># 设置变量</span></a>
+<a class="sourceLine" id="cb32-30" data-line-number="30">label <span class="op">=</span> Label(root, font<span class="op">=</span>(<span class="st">&#39;微软雅黑&#39;</span>, <span class="dv">10</span>), fg<span class="op">=</span><span class="st">&#39;red&#39;</span>, textvariable<span class="op">=</span>var)</a>
+<a class="sourceLine" id="cb32-31" data-line-number="31">label.grid()</a>
+<a class="sourceLine" id="cb32-32" data-line-number="32">var.<span class="bu">set</span>(<span class="st">&#39;sth&#39;</span>)</a>
+<a class="sourceLine" id="cb32-33" data-line-number="33">root.mainloop()</a></code></pre></div>
+<h2 id="示例3">示例3：</h2>
+<p>按钮调用方法函数：</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb33-1" data-line-number="1">tk.Button(root,text<span class="op">=</span><span class="st">&quot;开始下载&quot;</span>,width<span class="op">=</span><span class="dv">3</span><span class="op">*</span>L,command<span class="op">=</span><span class="kw">lambda</span> :thread_fun(down_by_stock)).grid(row<span class="op">=</span><span class="dv">2</span><span class="op">+</span>start_row,column<span class="op">=</span><span class="dv">0</span>,columnspan<span class="op">=</span><span class="dv">2</span>,padx<span class="op">=</span><span class="dv">2</span><span class="op">*</span>L,pady<span class="op">=</span>L)</a></code></pre></div>
+<p>开启线程函数：</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="kw">def</span> thread_fun(fun):</a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">    thread<span class="op">=</span>threading.Thread(target<span class="op">=</span>fun)</a>
+<a class="sourceLine" id="cb34-3" data-line-number="3">    thread.setDaemon(<span class="va">True</span>)</a>
+<a class="sourceLine" id="cb34-4" data-line-number="4">    thread.start()</a></code></pre></div>
+<p><a href="https://blog.csdn.net/u013700771/article/details/103321783">【Python】TKinter在多线程时刷新GUI的一些碎碎念</a></p>
+<p>https://blog.csdn.net/sm9sun/article/details/53743116</p>
+<h1 id="关于深拷贝浅拷贝共享内存">关于深拷贝浅拷贝，共享内存</h1>
+<p>注意python单变量是不共享内存的，可以连等复制，数组类型就不可</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb35-1" data-line-number="1">In [<span class="dv">1</span>]: a <span class="op">=</span> b <span class="op">=</span> c <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb35-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb35-3" data-line-number="3">In [<span class="dv">2</span>]: a.append(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb35-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb35-5" data-line-number="5">In [<span class="dv">3</span>]: a</a>
+<a class="sourceLine" id="cb35-6" data-line-number="6">Out[<span class="dv">3</span>]: [<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb35-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb35-8" data-line-number="8">In [<span class="dv">4</span>]: b</a>
+<a class="sourceLine" id="cb35-9" data-line-number="9">Out[<span class="dv">4</span>]: [<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb35-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb35-11" data-line-number="11">In [<span class="dv">5</span>]: a <span class="op">=</span> b <span class="op">=</span> c <span class="op">=</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb35-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb35-13" data-line-number="13">In [<span class="dv">6</span>]: a</a>
+<a class="sourceLine" id="cb35-14" data-line-number="14">Out[<span class="dv">6</span>]: <span class="dv">1</span></a>
+<a class="sourceLine" id="cb35-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb35-16" data-line-number="16">In [<span class="dv">7</span>]: a <span class="op">=</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb35-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb35-18" data-line-number="18">In [<span class="dv">8</span>]: b</a>
+<a class="sourceLine" id="cb35-19" data-line-number="19">Out[<span class="dv">8</span>]: <span class="dv">1</span></a>
+<a class="sourceLine" id="cb35-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb35-21" data-line-number="21">In [<span class="dv">9</span>]: a</a>
+<a class="sourceLine" id="cb35-22" data-line-number="22">Out[<span class="dv">9</span>]: <span class="dv">2</span></a></code></pre></div>
+<p>所以最保险的写法就是分开写</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb36-1" data-line-number="1">len_tf, len_rake, len_tf_find, len_rake_find <span class="op">=</span> [], [], [], []</a></code></pre></div>
+<h1 id="filter函数">filter函数</h1>
+<p>Python 语言提供 <code>filter()</code> 函数，语法如下：</p>
+<pre><code>filter(function, sequence) </code></pre>
+<p><code>filter()</code> 函数的功能：对 sequence 中的 item <strong>依次</strong>执行 function(item)，将结果为 True 的 item 组成一个 List/String/Tuple（取决于 sequence 的类型）并返回。有了这个函数，上面的代码可以简化为：</p>
+<pre><code>divide_by_three = lambda x : True if x % 3 
+0 else False selected_numbers = filter(divide_by_three, range(1, 11)) </code></pre>
+<p>将 lambda 表达式放在语句中，代码简化到只需要一句话就够了：</p>
+<pre><code>selected_numbers = filter(lambda x: x % 3 == 0, range(1, 11))</code></pre>
+<h1 id="dataframe.apply函数">DataFrame.apply函数</h1>
+<p><a href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.apply.html#pandas.DataFrame.apply">apply函数</a>是<code>pandas</code>里面所有函数中自由度最高的函数。该函数如下：</p>
+<pre><code>DataFrame.apply(func, axis=0, broadcast=False, raw=False, reduce=None, args=(), **kwds)</code></pre>
+<blockquote>
+<p>该函数最有用的是第一个参数，这个参数是函数，相当于<code>C/C++</code>的函数指针。</p>
+<p>这个函数需要自己实现，函数的传入参数根据<code>axis</code>来定，比如<code>axis = 1</code>，就会把一行数据作为<code>Series</code>的数据结构传入给自己实现的函数中，我们在函数中实现对<code>Series</code>不同属性之间的计算，返回一个结果，则<code>apply</code>函数会自动遍历每一行<code>DataFrame</code>的数据，最后将所有结果组合成一个<code>Series</code>数据结构并返回。</p>
+</blockquote>
+<p><code>DataFrame.apply()</code> 函数则会遍历每一个元素，对元素运行指定的 function。比如下面的示例：</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
+<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb41-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb41-4" data-line-number="4">matrix <span class="op">=</span> [</a>
+<a class="sourceLine" id="cb41-5" data-line-number="5">    [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>],</a>
+<a class="sourceLine" id="cb41-6" data-line-number="6">    [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>],</a>
+<a class="sourceLine" id="cb41-7" data-line-number="7">    [<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>]</a>
+<a class="sourceLine" id="cb41-8" data-line-number="8">]</a>
+<a class="sourceLine" id="cb41-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb41-10" data-line-number="10">df <span class="op">=</span> pd.DataFrame(matrix, columns<span class="op">=</span><span class="bu">list</span>(<span class="st">&#39;xyz&#39;</span>), index<span class="op">=</span><span class="bu">list</span>(<span class="st">&#39;abc&#39;</span>))</a>
+<a class="sourceLine" id="cb41-11" data-line-number="11">df.<span class="bu">apply</span>(np.square)</a></code></pre></div>
+<p>如果只想 <code>apply()</code> 作用于指定的行和列，可以用行或者列的 <code>name</code> 属性进行限定。比如下面的示例将 x 列进行平方运算：</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb42-1" data-line-number="1">df.<span class="bu">apply</span>(<span class="kw">lambda</span> x : np.square(x) <span class="cf">if</span> x.name<span class="op">==</span><span class="st">&#39;x&#39;</span> <span class="cf">else</span> x)</a></code></pre></div>
+<pre class="swift"><code>    x  y  z
+a   1  2  3
+b  16  5  6
+c  49  8  9</code></pre>
+<p>下面的示例对 x 和 y 列进行平方运算：</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb44-1" data-line-number="1">df.<span class="bu">apply</span>(<span class="kw">lambda</span> x : np.square(x) <span class="cf">if</span> x.name <span class="kw">in</span> [<span class="st">&#39;x&#39;</span>, <span class="st">&#39;y&#39;</span>] <span class="cf">else</span> x)</a></code></pre></div>
+<pre class="swift"><code>    x   y  z
+a   1   4  3
+b  16  25  6
+c  49  64  9</code></pre>
+<p>下面的示例对第一行 （a 标签所在行）进行平方运算：</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb46-1" data-line-number="1">df.<span class="bu">apply</span>(<span class="kw">lambda</span> x : np.square(x) <span class="cf">if</span> x.name <span class="op">==</span> <span class="st">&#39;a&#39;</span> <span class="cf">else</span> x, axis<span class="op">=</span><span class="dv">1</span>)</a></code></pre></div>
+<p>默认情况下 <code>axis=0</code> 表示按列，<code>axis=1</code> 表示按行。</p>

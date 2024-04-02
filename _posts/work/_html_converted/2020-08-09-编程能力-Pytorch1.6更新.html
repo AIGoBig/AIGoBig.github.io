@@ -1,0 +1,47 @@
+<h1 id="拟支持混合精度训练">拟支持混合精度训练</h1>
+<p>参考:https://zhuanlan.zhihu.com/p/150725231</p>
+<h2 id="工作方式">工作方式</h2>
+<p>只需要学习几个新的 API 基本类型: <code>torch.cuda.amp.GradScalar</code> 和 <code>torch.cuda.amp.autocast</code>。 启用混合精度训练就像在你的训练脚本中插入正确的位置一样简单！</p>
+<p>为了演示，下面是使用混合精度训练的网络训练循环的一段代码。 # NEW标记定位了增加了新代码的地方。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="va">self</span>.train()</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">X <span class="op">=</span> torch.tensor(X, dtype<span class="op">=</span>torch.float32)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">y <span class="op">=</span> torch.tensor(y, dtype<span class="op">=</span>torch.float32)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">optimizer <span class="op">=</span> torch.optim.Adam(<span class="va">self</span>.parameters(), lr<span class="op">=</span><span class="va">self</span>.max_lr)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">scheduler <span class="op">=</span> torch.optim.lr_scheduler.OneCycleLR(</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    optimizer, <span class="va">self</span>.max_lr,</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    cycle_momentum<span class="op">=</span><span class="va">False</span>,</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    epochs<span class="op">=</span><span class="va">self</span>.n_epochs,</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">    steps_per_epoch<span class="op">=</span><span class="bu">int</span>(np.ceil(<span class="bu">len</span>(X) <span class="op">/</span> <span class="va">self</span>.batch_size)),</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">batches <span class="op">=</span> torch.utils.data.DataLoader(</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">    torch.utils.data.TensorDataset(X, y),</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">    batch_size<span class="op">=</span><span class="va">self</span>.batch_size, shuffle<span class="op">=</span><span class="va">True</span></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">)</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="co"># NEW</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">scaler <span class="op">=</span> torch.cuda.amp.GradScaler()</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.n_epochs):</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="cf">for</span> i, (X_batch, y_batch) <span class="kw">in</span> <span class="bu">enumerate</span>(batches):</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">        X_batch <span class="op">=</span> X_batch.cuda()</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">        y_batch <span class="op">=</span> y_batch.cuda()</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">        optimizer.zero_grad()</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">        <span class="co"># NEW</span></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">        <span class="cf">with</span> torch.cuda.amp.autocast():</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">            y_pred <span class="op">=</span> model(X_batch).squeeze()</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">            loss <span class="op">=</span> <span class="va">self</span>.loss_fn(y_pred, y_batch)</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">        <span class="co"># NEW</span></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">        scaler.scale(loss).backward()</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33">        lv <span class="op">=</span> loss.detach().cpu().numpy()</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">            <span class="bu">print</span>(<span class="ss">f&quot;Epoch </span><span class="sc">{</span>epoch <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>n_epochs<span class="sc">}</span><span class="ss">; Batch </span><span class="sc">{i}</span><span class="ss">; Loss </span><span class="sc">{lv}</span><span class="ss">&quot;</span>)</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36"></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">        <span class="co"># NEW</span></a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">        scaler.step(optimizer)</a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">        scaler.update()</a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">        </a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">        scheduler.step()</a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">            </a></code></pre></div>

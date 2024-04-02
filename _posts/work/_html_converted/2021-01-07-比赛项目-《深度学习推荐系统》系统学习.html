@@ -1,0 +1,931 @@
+<h1 id="整体架构">整体架构</h1>
+<p><br /><span class="math display">$$
+F=\frac{a}{1}
+$$</span><br /></p>
+<p>只有建立起深度学习推荐系统的知识体系，从<strong>系统的层面</strong>考虑问题，我们才能够实现整体效果上的优化。与你一同从“0”开始，搭建一个<strong>“工业级”</strong>的“深度学习”推荐系统。</p>
+<p>在所有业界巨头的推荐引擎都由深度学习驱动的今天，作为一名推荐系统从业者，我们不应该止步于，或者说满足于继续使用协同过滤、矩阵分解这类传统方法，而应该<strong>加深对深度学习模型的理解，加强对大数据平台的熟悉程度，培养结合业务和模型的技术直觉，提高我们整体的技术格局</strong>，这些都是我们取得成功的关键。</p>
+<ul>
+<li><strong>基础架构篇</strong>：从 0 出发，建立深度学习推荐系统的知识体系
+<ul>
+<li>会使用到 Spark、Flink、TensorFlow 这些业界目前最流行的机器学习和大数据框架，麻雀虽小，但五脏俱全。</li>
+</ul></li>
+<li><strong>特征工程篇</strong>：又快又好，用心准备推荐系统的“食材”
+<ul>
+<li>在特征工程篇中，我会和你一起讨论推荐系统会用到的<strong>特征</strong>，以及主要的<strong>特征处理方式</strong>，并且把它们都实践在 <strong>Spark</strong> 上。除此之外，我还会讲解深度学习中非常流行的 <strong>Embedding、Graph Embedding</strong> 技术。</li>
+</ul></li>
+<li><strong>线上服务篇</strong>：实践出真知，掌握搭建工业级推荐系统的核心技能
+<ul>
+<li>初步掌握 Jetty Server、Spark、Redis，这些工程领域的核心技能。</li>
+</ul></li>
+<li><strong>推荐模型篇</strong>：深度学习推荐系统上的明珠
+<ul>
+<li>学习深度学习推荐模型的原理和实现方法，主要包括 Embedding+MLP 、Wide&amp;Deep、PNN 等深度学习模型的架构和 TensorFlow 实现，以及注意力机制、序列模型、增强学习等相关领域的前沿进展。</li>
+</ul></li>
+<li><strong>效果评估篇</strong>：建立成体系的推荐系统评估机制
+<ul>
+<li>建立起包括线下评估、线上 AB 测试、评估反馈闭环等整套的评估体系，真正能够用业界的方法而不是实验室的指标来评价一个推荐系统。</li>
+</ul></li>
+<li><strong>前沿拓展篇</strong>：融会贯通，追踪业界前沿
+<ul>
+<li>讲解 YouTube、阿里巴巴、微软、Pinterest 等一线公司的深度学习应用</li>
+</ul></li>
+</ul>
+<p><img src="/img/in-post/20_07/066c5f56f4e0a5e8d4648e0cfb85e72e.jpg" alt="img" style="zoom: 33%;" /></p>
+<h2 id="基础架构">基础架构</h2>
+<h3 id="解决什么问题">解决什么问题？</h3>
+<p>推荐系统要解决的问题用一句话总结就是，<strong>在“信息过载”的情况下，用户如何高效获取感兴趣的信息。</strong></p>
+<p>推荐系统要处理的问题就可以被形式化地定义为：<strong>对于某个用户U（User），在特定场景C（Context）下，针对海量的“物品”信息构建一个函数 ，预测用户对特定候选物品I（Item）的喜好程度，再根据喜好程度对所有候选物品进行排序，生成推荐列表的问题。</strong></p>
+<p>抽象出推荐系统的逻辑框架：</p>
+<p><img src="/img/in-post/20_07/c75969c5fcc6e5e374a87d4b4b1d5d07.jpg" alt="img" style="zoom:25%;" /></p>
+<h3 id="深度学习到底给推荐系统带来了什么革命性的影响">深度学习到底给推荐系统带来了什么革命性的影响？</h3>
+<p>其实正是因为深度学习复杂的模型结构，让深度学习模型具备了理论上<strong>拟合任何函数</strong>的能力。</p>
+<p>让深度学习模型的神经网络<strong>模拟很多用户兴趣的变迁过程</strong>，甚至用户做出决定的思考过程。</p>
+<blockquote>
+<p>比如阿里巴巴的深度学习模型——<strong>深度兴趣进化网络</strong>（如图 3），它利用了三层序列模型的结构，模拟了用户在购买商品时兴趣进化的过程，如此强大的数据拟合能力和对用户行为的理解能力，是传统机器学习模型不具备的。</p>
+</blockquote>
+<figure>
+<img src="/img/in-post/20_07/b2606096aa4ff97461dd91b87d748db9.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p><img src="/img/in-post/20_07/0e269ebf95dcb772ed31f9c28cef2aa1.jpeg" alt="img" style="zoom:25%;" /></p>
+<h1 id="spark解决特征处理">spark解决特征处理</h1>
+<h2 id="特征处理方式">特征处理方式</h2>
+<h3 id="经典的特征处理方法有什么">经典的特征处理方法有什么？</h3>
+<p>如何利用 One-hot 编码处理类别型特征</p>
+<p>广义上来讲，所有的特征都可以分为两大类。</p>
+<ol type="1">
+<li>第一类是<strong>类别、ID 型特征</strong>（以下简称类别型特征）。拿电影推荐来说，电影的风格、ID、标签、导演演员等信息，用户看过的电影 ID、用户的性别、地理位置信息、当前的季节、时间（上午，下午，晚上）、天气等等，这些无法用数字表示的信息全都可以被看作是类别、ID 类特征。</li>
+<li>第二类是<strong>数值型特征</strong>，能用数字直接表示的特征就是数值型特征，典型的包括用户的年龄、收入、电影的播放时长、点击量、点击率等。</li>
+</ol>
+<p>编码方式：</p>
+<ol type="1">
+<li><p>数值型特征 - 直接把这个数值放到特征向量上相应的维度上就可以了</p></li>
+<li><p>类别特征、ID特征 - 利用onehot编码</p>
+<blockquote>
+<p>比如，<strong>在我们的 SparrowRecsys 中，用户 U 观看过电影 M，</strong></p>
+</blockquote></li>
+<li><p>Multi-hot 编码（多热编码）</p>
+<blockquote>
+<p>比如，对于历史行为序列类、标签特征等数据来说，用户往往会<strong>与多个物品产生交互行为</strong>， 或者<strong>一个物品被打上多个标签</strong>，这时最常用的特征向量生成方式就是把其转换成 Multi-hot 编码。在 SparrowRecsys 中，<strong>因为每个电影都是有多个 Genre（风格）类别的</strong>，所以我们就可以<strong>用 Multi-hot 编码完成标签到向量的转换</strong>。你可以自己尝试着用 Spark 实现该过程，也可以🚩参考 SparrowRecsys 项目中 <code>multiHotEncoderExample</code> 的实现，我就不多说啦。</p>
+</blockquote></li>
+</ol>
+<h3 id="sparrowrecsys-是如何利用-spark-完成这一过程的">SparrowRecsys 是如何利用 Spark 完成这一过程的</h3>
+<p>这里，我们使用 Spark 的机器学习库 <code>MLlib</code> 来完成 One-hot 特征的处理。其中，<strong>最主要的步骤是</strong>，</p>
+<ol type="1">
+<li>我们先创建一个负责 One-hot 编码的转换器，<code>OneHotEncoderEstimator</code>，</li>
+<li>然后通过它的 <code>fit</code> 函数完成指定特征的预处理，</li>
+<li>并利用 <code>transform</code> 函数将原始特征转换成 One-hot 特征。</li>
+</ol>
+<p>实现思路大体上就是这样，具体的步骤可以参考下面给出的源码：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb1-1" data-line-number="1">def <span class="fu">oneHotEncoderExample</span>(samples:DataFrame): Unit ={</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">  <span class="co">//samples样本集中的每一条数据代表一部电影的信息，其中movieId为电影id</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  val samplesWithIdNumber = samples.<span class="fu">withColumn</span>(<span class="st">&quot;movieIdNumber&quot;</span>, <span class="fu">col</span>(<span class="st">&quot;movieId&quot;</span>).<span class="fu">cast</span>(sql.<span class="fu">types</span>.<span class="fu">IntegerType</span>))</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="co">//利用Spark的机器学习库Spark MLlib创建One-hot编码器</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  val oneHotEncoder = <span class="kw">new</span> <span class="fu">OneHotEncoderEstimator</span>()</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    .<span class="fu">setInputCols</span>(<span class="bu">Array</span>(<span class="st">&quot;movieIdNumber&quot;</span>))</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    .<span class="fu">setOutputCols</span>(<span class="bu">Array</span>(<span class="st">&quot;movieIdVector&quot;</span>))</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">    .<span class="fu">setDropLast</span>(<span class="kw">false</span>)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="co">//训练One-hot编码器，并完成从id特征到One-hot向量的转换</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  val oneHotEncoderSamples =      oneHotEncoder.<span class="fu">fit</span>(samplesWithIdNumber).<span class="fu">transform</span>(samplesWithIdNumber)</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="co">//打印最终样本的数据结构</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  oneHotEncoderSamples.<span class="fu">printSchema</span>()</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  <span class="co">//打印10条样本查看结果</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  oneHotEncoderSamples.<span class="fu">show</span>(<span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">_（参考 com.<span class="fu">wzhe</span>.<span class="fu">sparrowrecsys</span>.<span class="fu">offline</span>.<span class="fu">spark</span>.<span class="fu">featureeng</span>.<span class="fu">FeatureEngineering__</span>中的oneHotEncoderExample函数）_</a></code></pre></div>
+<h2 id="数值型特征的处理---归一化和分桶">数值型特征的处理 - 归一化和分桶</h2>
+<h3 id="数值型特征本身不就是数字为什么还要处理呢">数值型特征本身不就是数字，为什么还要处理呢？</h3>
+<p>一是<strong>特征的尺度</strong>，二是<strong>特征的分布</strong>。</p>
+<ol type="1">
+<li>特征的尺度问题不难理解，由于特征的尺度差距太大，如果我们把特征的原始数值直接输入推荐模型，就会导致这<strong>特征对于模型的影响程度有显著的区别</strong>。</li>
+</ol>
+<blockquote>
+<p>比如在电影推荐中有两个特征，一个是电影的评价次数 fr，一个是电影的平均评分 fs。评价次数其实是一个数值无上限的特征，在 SparrowRecsys 所用 MovieLens 数据集上，fr 的范围一般在[0,10000]之间。对于电影的平均评分来说，因为我们采用了 5 分为满分的评分，所以特征 fs 的取值范围在[0,5]之间。</p>
+<p>由于 fr 和 fs 两个特征的尺度差距太大，如果我们把特征的原始数值直接输入推荐模型，就会导致这<strong>两个特征对于模型的影响程度有显著的区别</strong>。如果模型中未做特殊处理的话，fr 这个特征由于波动范围高出 fs 几个量级，可能会完全掩盖 fs 作用，这当然是我们不愿意看到的。为此我们希望把两个特征的尺度拉平到一个区域内，通常是[0,1]范围，这就是所谓<strong>归一化。</strong></p>
+</blockquote>
+<ol start="2" type="1">
+<li>归一化虽然能够解决特征取值范围不统一的问题，<strong>但无法改变特征值的分布</strong>。</li>
+</ol>
+<blockquote>
+<p>比如图 5 就显示了 Sparrow Recsys 中编号在前 1000 的电影平均评分分布。你可以很明显地看到，由于人们打分有“中庸偏上”的倾向，因此评分大量集中在 3.5 的附近，而且越<u>靠近 3.5 的密度越大。这对于模型学习来说也不是一个好的现象，因为特征的区分度并不高。</u></p>
+<p><img src="/img/in-post/20_07/5675f0777bd9275b5cdd8aa166cebd4e.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>图5 电影的平均评分分布</p>
+</blockquote>
+<h3 id="这该怎么解决呢">这该怎么解决呢？</h3>
+<p>我们经常会用分桶的方式来解决<strong>特征值分布极不均匀的问题</strong>。所谓“<strong>分桶</strong>（Bucketing）”，<u>就是将样本按照某特征的值从高到低排序，然后按照桶的数量找到分位数，将样本分到各自的桶中，再用桶 ID 作为特征值。</u></p>
+<p>在 Spark MLlib 中，分别提供了两个转换器 <code>MinMaxScaler</code> 和 <code>QuantileDiscretizer</code>，来进行归一化和分桶的特征处理。它们的使用方法和之前介绍的 OneHotEncoderEstimator 一样，都是：</p>
+<ol type="1">
+<li>先用 fit 函数进行数据预处理，</li>
+<li>再用 transform 函数完成特征转换。</li>
+</ol>
+<p>下面的代码就是 SparrowRecSys 利用这两个转换器完成特征归一化和分桶的过程。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb2-1" data-line-number="1">def <span class="fu">ratingFeatures</span>(samples:DataFrame): Unit ={</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  samples.<span class="fu">printSchema</span>()</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">  samples.<span class="fu">show</span>(<span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="co">//利用打分表ratings计算电影的平均分、被打分次数等数值型特征</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  val movieFeatures = samples.<span class="fu">groupBy</span>(<span class="fu">col</span>(<span class="st">&quot;movieId&quot;</span>))</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">    .<span class="fu">agg</span>(<span class="fu">count</span>(<span class="fu">lit</span>(<span class="dv">1</span>)).<span class="fu">as</span>(<span class="st">&quot;ratingCount&quot;</span>),</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">      <span class="fu">avg</span>(<span class="fu">col</span>(<span class="st">&quot;rating&quot;</span>)).<span class="fu">as</span>(<span class="st">&quot;avgRating&quot;</span>),</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">      <span class="fu">variance</span>(<span class="fu">col</span>(<span class="st">&quot;rating&quot;</span>)).<span class="fu">as</span>(<span class="st">&quot;ratingVar&quot;</span>))</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">      .<span class="fu">withColumn</span>(<span class="st">&quot;avgRatingVec&quot;</span>, <span class="fu">double2vec</span>(<span class="fu">col</span>(<span class="st">&quot;avgRating&quot;</span>)))</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">  movieFeatures.<span class="fu">show</span>(<span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">  <span class="co">//分桶处理，创建QuantileDiscretizer进行分桶，将打分次数这一特征分到100个桶中</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  val ratingCountDiscretizer = <span class="kw">new</span> <span class="fu">QuantileDiscretizer</span>()</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">    .<span class="fu">setInputCol</span>(<span class="st">&quot;ratingCount&quot;</span>)</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">    .<span class="fu">setOutputCol</span>(<span class="st">&quot;ratingCountBucket&quot;</span>)</a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">    .<span class="fu">setNumBuckets</span>(<span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">  <span class="co">//归一化处理，创建MinMaxScaler进行归一化，将平均得分进行归一化</span></a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">  val ratingScaler = <span class="kw">new</span> <span class="fu">MinMaxScaler</span>()</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">    .<span class="fu">setInputCol</span>(<span class="st">&quot;avgRatingVec&quot;</span>)</a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">    .<span class="fu">setOutputCol</span>(<span class="st">&quot;scaleAvgRating&quot;</span>)</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">  <span class="co">//创建一个pipeline，依次执行两个特征处理过程</span></a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">  val pipelineStage: <span class="bu">Array</span>[PipelineStage] = <span class="bu">Array</span>(ratingCountDiscretizer, ratingScaler)</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">  val featurePipeline = <span class="kw">new</span> <span class="fu">Pipeline</span>().<span class="fu">setStages</span>(pipelineStage)</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">  val movieProcessedFeatures = featurePipeline.<span class="fu">fit</span>(movieFeatures).<span class="fu">transform</span>(movieFeatures)</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">  <span class="co">//打印最终结果</span></a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">  movieProcessedFeatures.<span class="fu">show</span>(</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb2-39" data-line-number="39">_（参考 com.<span class="fu">wzhe</span>.<span class="fu">sparrowrecsys</span>.<span class="fu">offline</span>.<span class="fu">spark</span>.<span class="fu">featureeng</span>.<span class="fu">FeatureEngineering</span>中的ratingFeatures函数）_</a></code></pre></div>
+<h2 id="其他特征值处理方式-youtube-深度推荐模型中">其他特征值处理方式-YouTube 深度推荐模型中</h2>
+<p>在经典的 YouTube 深度推荐模型中，我们就可以看到一些很有意思的处理方法。比如，在处理观看时间间隔（time since last watch）和视频曝光量（#previous impressions）这两个特征的时，YouTube 模型对它们进行归一化后，又将它们各自处理成了三个特征（图 6 中红框内的部分），分别是<strong>原特征值 x，特征值的平方x^2，以及特征值的开方</strong>，这又是为什么呢？</p>
+<p><img src="/img/in-post/20_07/69f2abc980b8d8448867b58468729eae.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>其实，无论是平方还是开方操作，改变的还是这个特征值的分布，这些操作与分桶操作一样，都是希望通过改变特征的分布，<strong>让模型能够更好地学习到特征内包含的有价值信息</strong>。但由于我们没法通过人工的经验判断哪种特征处理方式更好，所以索性把它们都输入模型，让模型来做选择。</p>
+<p>这里其实自然而然地引出了我们进行特征处理的一个原则，就是<strong>特征处理并没有标准答案</strong>，不存在一种特征处理方式是一定好于另一种的。</p>
+<h2 id="总结">总结</h2>
+<p><img src="/img/in-post/20_07/b3b8c959df72ce676ae04bd8dd987e7b.jpeg" alt="img" style="zoom: 33%;" /></p>
+<h2 id="问题-">问题-</h2>
+<h3 id="查阅一下-spark-mllib-的编程手册找出-normalizerstandardscalerrobustscalerminmaxscaler-这个几个特征处理方法有什么不同">查阅一下 Spark MLlib 的编程手册，找出 Normalizer、StandardScaler、RobustScaler、MinMaxScaler 这个几个特征处理方法有什么不同。</h3>
+<p>Normalizer、StandardScaler、RobustScaler、MinMaxScaler 都是用让数据无量纲化 Normalizer: 正则化；（和Python的sklearn一样是按行处理，而不是按列[每一列是一个特征]处理，原因是：Normalization主要思想是对每个样本计算其p-范数，然后对该样本中每个元素除以该范数，这样处理的结果是使得每个处理后样本的p-范数(l1-norm,l2-norm)等于1。）针对每行样本向量：l1: 每个元素/样本中每个元素绝对值的和，l2: 每个元素/样本中每个元素的平方和开根号，lp: 每个元素/每个元素的p次方和的p次根，默认用l2范数。</p>
+<p>StandardScaler：数据标准化；(xi - u) / σ 【u:均值，σ：方差】当数据(x)按均值(μ)中心化后，再按标准差(σ)缩放，数据就会服从为均值为0，方差为1的正态分布（即标准正态分布）。</p>
+<p>RobustScaler: (xi - median) / IQR 【median是样本的中位数，IQR是样本的 四分位距：根据第1个四分位数和第3个四分位数之间的范围来缩放数据】</p>
+<p>MinMaxScaler：数据归一化，(xi - min(x)) / (max(x) - min(x)) ;当数据(x)按照最小值中心化后，再按极差（最大值 - 最小值）缩放，数据移动了最小值个单位，并且会被收敛到 [0,1]之间</p>
+<h1 id="embedding技术">Embedding技术</h1>
+<p>用 Embedding 方法进行<strong>相似物品推荐</strong>，几乎成了业界最流行的做法</p>
+<h2 id="基础">基础</h2>
+<h3 id="什么是embedding">什么是Embedding？</h3>
+<p>Embedding 就是用一个<strong>数值向量“表示”一个对象</strong>（Object）的方法</p>
+<p>Netflix 应用的<strong>电影 Embedding 向量方法</strong>，就是一个非常直接的推荐系统应用。从 Netflix 利用<strong>矩阵分解方法</strong>生成的电影和用户的 Embedding 向量示意图中，我们可以看出不同的电影和用户分布在一个二维的空间内，<u>由于 Embedding 向量保存了它们之间的相似性关系</u>，因此有了这个 Embedding 空间之后，我们再进行电影推荐就非常容易了。具体来说就是，我们<u>直接找出某个用户向量周围的电影向量，然后把这些电影推荐给这个用户就可以了</u>。这就是 Embedding 技术在推荐系统中最直接的应用。</p>
+<h3 id="embedding-技术对深度学习推荐系统的重要性">Embedding 技术对深度学习推荐系统的重要性？</h3>
+<p>首先，Embedding 是处理稀疏特征的利器。</p>
+<blockquote>
+<p>因为推荐场景中的类别、ID 型特征非常多，大量使用 <strong>One-hot</strong> 编码会<strong>导致样本特征向量极度稀疏</strong>，而<strong>深度学习的结构特点又不利于稀疏特征向量的处理</strong>，因此几乎所有深度学习推荐模型都会<strong>由 Embedding 层负责将稀疏高维特征向量转换成稠密低维特征向量</strong>。所以说各类 Embedding 技术是构建深度学习推荐模型的基础性操作。</p>
+</blockquote>
+<p>其次，Embedding 可以<strong>融合大量有价值信息，本身就是极其重要的特征向量</strong> 。</p>
+<blockquote>
+<p>相比由原始信息直接处理得来的特征向量，Embedding 的<strong>表达能力更强</strong>，特别是 Graph Embedding 技术被提出后，Embedding <strong>几乎可以引入任何信息进行编码</strong>，使其本身就包含大量有价值的信息，所以<strong>通过预训练得到的 Embedding 向量</strong>本身就是极其重要的特征向量。</p>
+</blockquote>
+<h3 id="什么是-word2vec">什么是 Word2vec？</h3>
+<p>经典的 Embedding 方法，Word2vec。</p>
+<p>想要训练 Word2vec 模型，我们需要准备由一组<strong>句子组成的语料库</strong>。假设其中一个长度为 T 的句子包含的词有 w1,w2……wt，并且我们假定每个词都跟其相邻词的关系最密切。</p>
+<p>根据模型假设的不同，Word2vec 模型分为两种形式，<strong>CBOW 模型（图 3 左）和 Skip-gram 模型</strong>（图 3 右）。</p>
+<p>其中，CBOW 模型假设句子中<strong>每个词的选取都由相邻的词决定</strong>，因此我们就看到 CBOW 模型的<strong>输入是 wt周边的词，预测的输出是 wt</strong>。</p>
+<p>Skip-gram 模型则正好相反，它假设句子中的<strong>每个词都决定了相邻词的选取</strong>，所以你可以看到 Skip-gram 模型的输入是 wt，预测的输出是 wt周边的词。</p>
+<p>按照一般的经验，<u>Skip-gram 模型的效果会更好一些</u>，所以我接下来也会以 Skip-gram 作为框架，来给你讲讲 Word2vec 的模型细节。</p>
+<p><img src="/img/in-post/20_07/f28a06f57e4aeb5f826df466cbe6288a.jpeg" alt="img" style="zoom:50%;" /></p>
+<h3 id="word2vec-的样本是怎么生成的">Word2vec 的样本是怎么生成的？</h3>
+<p>作为一个自然语言处理的模型，训练 Word2vec 的样本当然来自于<strong>语料库</strong>，比如我们想训练一个电商网站中<strong>关键词</strong>的 Embedding 模型，那么<strong>电商网站中所有物品的描述文字就是很好的语料库</strong>。</p>
+<p>我们从语料库中抽取一个句子，选取一个长度为 2c+1（目标词前后各选 c 个词）的<strong>滑动窗口</strong>，将滑动窗口由左至右滑动，每<strong>移动</strong>一次，窗口中的<u>词组就形成了一个训练样本</u>。根据 Skip-gram 模型的理念，中心词决定了它的相邻词，我们就可以根据这个训练样本定义出 Word2vec 模型的输入和输出，<strong>输入是样本的中心词，输出是所有的相邻词</strong>。</p>
+<p>为了方便你理解，我再举一个例子。这里我们选取了“Embedding 技术对深度学习推荐系统的重要性”作为句子样本。</p>
+<ol type="1">
+<li>首先，我们对它进行<strong>分词、去除停用词</strong>的过程，<strong>生成词序列</strong>，</li>
+<li>再选取大小为 3 的滑动窗口从头到尾依次<strong>滑动生成训练样本</strong>，</li>
+<li>然后我们把<strong>中心词当输入，边缘词做输出</strong>，就得到了训练 Word2vec 模型可用的训练样本。</li>
+</ol>
+<p><img src="/img/in-post/20_07/e84e1bd1f7c5950fb70ed63dda0yy21f.jpeg" alt="img" style="zoom:50%;" /></p>
+<h3 id="word2vec-模型的结构是什么样的">Word2vec 模型的结构是什么样的？</h3>
+<p>它的结构本质上就是一个三层的神经网络（如图 5）。</p>
+<p><img src="/img/in-post/20_07/9997c61588223af2e8c0b9b2b8e77139-20210527185126186.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>它的<strong>输入层和输出层的维度都是 V</strong>，这个 V 其实就是<strong>语料库词典的大小</strong>。假设语料库一共使用了 10000 个词，那么 V 就等于 10000。根据图 4 生成的训练样本，这里的<strong>输入向量</strong>自然就是<u>由输入词转换而来的 One-hot 编码向量</u>，<strong>输出向量</strong>则是<u>由多个输出词转换而来的 Multi-hot 编码向量</u>，显然，基于 Skip-gram 框架的 Word2vec 模型解决的是一个<strong>多分类问题。</strong></p>
+<blockquote>
+<p>🚩Multi-hot 编码向量： [0,0,1,1,0,1,0,0,0]这种吧</p>
+</blockquote>
+<p>隐层的维度是 N，N 的选择就需要一定的<strong>调参能力</strong>了，我们需要对模型的<strong>效果和模型的复杂度进行权衡</strong>，来决定最后 N 的取值，<font color="red"><strong>并且最终每个词的 Embedding 向量维度也由 N 来决定</strong>。</font><br /></p>
+<p>最后是激活函数的问题，这里我们需要注意的是，<strong>隐层神经元是没有激活函数的</strong>，或者说采用了输入即输出的恒等函数作为激活函数，而<strong>输出层神经元采用了 softmax 作为激活函数</strong>。</p>
+<p>你可能会问为什么要这样设置 Word2vec 的神经网络，以及我们为什么要这样选择激活函数呢？因为这个神经网络其实是为了表达从输入向量到输出向量的这样的一个条件概率关系，我们看下面的式子：</p>
+<p><img src="/img/in-post/20_07/image-20210527193602602.png" alt="image-20210527193602602" style="zoom:50%;" /></p>
+<p>这个由<strong>输入词 WI 预测输出词 WO 的条件概率</strong>，其实就是 Word2vec 神经网络要表达的东西。我们通过<u><strong>极大似然的方法</strong>去最大化这个条件概率，就能够让相似的词的内积距离更接近，这就是我们希望 Word2vec 神经网络学到的。</u></p>
+<blockquote>
+<p>归一化指数函数（softmax）中，样本向量x属于第j类的概率是：</p>
+<figure>
+<img src="/img/in-post/20_07/429a10437a03eca44e9f622211c76555.svg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>与上式相同。其在多种<strong>基于概率的多分类问题</strong>方法中都有着广泛应用。</p>
+<p>Softmax 就是 Soft 版本的 ArgMax，“softmax 的作用是把 一个序列，变成概率，即被选为 max 的概率。</p>
+<p><strong>交叉熵损失函数</strong>是搭配softmax使用的<strong>损失函数</strong>。</p>
+</blockquote>
+<h3 id="softmax-与-交叉熵的关系">softmax 与 交叉熵的关系：</h3>
+<blockquote>
+<p>softmax是激活函数，交叉熵是损失函数。一句话概括：</p>
+<p><strong>softmax</strong>把分类输出<strong>标准化成概率分布</strong></p>
+<p><strong>cross-entropy（</strong>交叉熵<strong>）</strong>刻画预测分类和真实结果之间的<strong>相似度</strong>。</p>
+</blockquote>
+<h3 id="如何节约word2vec的时间">如何节约word2vec的时间</h3>
+<p>参考论文：<a href="https://github.com/wzhe06/Reco-papers/blob/master/Embedding/%5BWord2Vec%5D%20Word2vec%20Parameter%20Learning%20Explained%20%28UMich%202016%29.pdf">Word2vec Parameter Learning Explained</a></p>
+<p>如果你是一个理论派，其实 Word2vec 还有很多值得挖掘的东西，比如，为了节约训练时间，Word2vec 经常会采用<strong>负采样</strong>（Negative Sampling）或者<strong>分层 softmax（Hierarchical Softmax）的训练方法</strong>。关于这一点，我推荐你去阅读《Word2vec Parameter Learning Explained》这篇文章，相信你会找到最详细和准确的解释。</p>
+<h3 id="怎样把词向量从-word2vec-模型中提取出来">怎样把词向量从 Word2vec 模型中提取出来？</h3>
+<p><font color="red">这个 Embedding 在哪呢？</font>其实，它就藏在<strong>输入层到隐层的权重矩阵 WVxN</strong> 中。</p>
+<p><img src="/img/in-post/20_07/0de188f4b564de8076cf13ba6ff87872.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>你可以看到，<strong>输入向量矩阵 WVxN 的每一个行向量对应的就是我们要找的“词向量”</strong>。比如我们要找词典里第 i 个词对应的 Embedding，因为输入向量是采用 One-hot 编码的，所以输入向量的第 i 维就应该是 1，那么输入向量矩阵 WVxN 中第 i 行的行向量自然就是该词的 Embedding 啦。输出向量矩阵 W′ 也遵循这个道理，确实是这样的，但一般来说，我们还是习惯于<strong>使用输入向量矩阵作为词向量矩阵</strong>。</p>
+<p>在实际的使用过程中，我们往往会把输入向量矩阵转换成<strong>词向量查找表（Lookup table，如图 7 所示）</strong>。</p>
+<blockquote>
+<p>例如，输入向量是 10000 个词组成的 One-hot 向量，隐层维度是 300 维，那么输入层到隐层的权重矩阵为 10000x300 维。</p>
+</blockquote>
+<p>在转换为词向量 Lookup table 后，<strong>每行的权重即成了对应词的 Embedding 向量</strong>。如果我们把这个<strong>查找表存储到线上的数据库中，就可以轻松地在推荐物品的过程中使用 Embedding 去计算相似性等重要的特征了。</strong></p>
+<p><img src="/img/in-post/20_07/1e6b464b25210c76a665fd4c34800c96.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>Word2vec 的研究中提出的<u>模型结构、目标函数、负采样方法、负采样中的目标函数</u>在后续的研究中被重复使用并被屡次优化。掌握 Word2vec 中的<strong>每一个细节</strong>成了研究 Embedding 的基础。从这个意义上讲，熟练掌握本节课的内容是非常重要的。</p>
+<h2 id="item2vecword2vec-方法的推广">Item2Vec：Word2vec 方法的推广</h2>
+<p>既然 Word2vec 可以对词“序列”中的词进行 Embedding，那么对于用户购买“序列”中的一个商品，用户观看“序列”中的一个电影，也应该存在相应的 Embedding 方法。</p>
+<p><img src="/img/in-post/20_07/d8e3cd26a9ded7e79776dd31cc8f4807.jpeg" alt="img" style="zoom:50%;" /></p>
+<p>于是，微软于 2015 年提出了 Item2Vec 方法，它是对 Word2vec 方法的推广，使 Embedding 方法适用于<strong>几乎所有的序列数据。</strong>Item2Vec 模型的技术细节几乎和 Word2vec 完全一致，只要能够<u>用序列数据的形式把我们要表达的对象表示出来，再把序列数据“喂”给 Word2vec 模型，我们就能够得到任意物品的 Embedding 了</u>。Item2vec 的提出对于推荐系统来说当然是至关重要的，因为它使得“万物皆 Embedding”成为了可能。对于<strong>推荐系统</strong>来说，Item2vec 可以利用物品的 Embedding <strong>直接求得它们的相似性</strong>，<strong>或者作为重要的特征输入推荐模型进行训练，</strong>这些都有助于提升推荐系统的效果</p>
+<h2 id="小结">小结</h2>
+<p>这节课，我们一起学习了深度学习推荐系统中非常重要的知识点，Embedding。Embedding 就是用一个数值向量“表示”一个对象的方法。通过 Embedding，我们又引出了 Word2vec，Word2vec 是生成对“词”的向量表达的模型。其中，Word2vec 的训练样本是通过滑动窗口一一截取词组生成的。在训练完成后，模型输入向量矩阵的行向量，就是我们要提取的词向量。最后，我们还学习了 Item2vec，它是 Word2vec 在任意序列数据上的推广。</p>
+<p><img src="/img/in-post/20_07/0f0f9ffefa0c610dd691b51c251b567b.jpeg" alt="img" style="zoom: 33%;" /></p>
+<h2 id="问题">问题</h2>
+<h3 id="在我们通过-word2vec-训练得到词向量或者通过-item2vec-得到物品向量之后我们应该用什么方法计算他们的相似性呢你知道几种计算相似性的方法">在我们通过 Word2vec 训练得到词向量，或者通过 Item2vec 得到物品向量之后，我们应该用什么方法计算他们的相似性呢？你知道几种计算相似性的方法？</h3>
+<p><a href="https://cloud.tencent.com/developer/article/1668762">计算向量间相似度的常用方法：</a></p>
+<h1 id="graph-embedding">Graph Embedding</h1>
+<h2 id="图结构数据">图结构数据</h2>
+<h3 id="互联网中有哪些图结构数据">互联网中有哪些图结构数据？</h3>
+<p><img src="https://static001.geekbang.org/resource/image/54/91/5423f8d0f5c1b2ba583f5a2b2d0aed91.jpeg" alt="img" style="zoom:33%;" /></p>
+<p>最典型的就是我们每天都在使用的<strong>社交网络</strong>（如图 1-a）。从社交网络中，我们可以发现意见领袖，可以发现社区，再根据这些“社交”特性进行社交化的推荐，如果我们可以对社交网络中的<strong>节点进行 Embedding 编码</strong>，社交化推荐的过程将会非常方便。</p>
+<p><strong>知识图谱</strong>也是近来非常火热的研究和应用方向。像图 1b 中描述的那样，知识图谱中包含了不同类型的<strong>知识主体</strong>（如人物、地点等），附着在知识主体上的<strong>属性</strong>（如人物描述，物品特点），以及<strong>主体和主体之间、主体和属性之间的关系</strong>。如果我们能够对知识图谱中的<strong>主体进行 Embedding 化，就可以发现主体之间的潜在关系，这对于基于内容和知识的推荐系统是非常有帮助的。</strong></p>
+<p>还有一类非常重要的图数据就是<strong>行为关系类图数据</strong>。这类数据几乎存在于所有互联网应用中，它事实上是由用户和物品组成的“二部图”（也称二分图，如图 1c）。用户和物品之间的相互行为生成了行为关系图。借助这样的关系图，我们自然能够<strong>利用 Embedding 技术发掘出物品和物品之间、用户和用户之间，以及用户和物品之间的关系</strong>，从而应用于推荐系统的进一步推荐。</p>
+<p>毫无疑问，图数据是具备巨大价值的，如果能将图中的<strong>节点 Embedding 化</strong>，对于推荐系统来说将是非常有价值的<strong>特征</strong>。那下面，我们就进入正题，一起来学习基于图数据的 Graph Embedding 方法。</p>
+<h2 id="基于随机游走的-graph-embedding-方法deep-walk---在业界影响力比较大应用也很广泛">基于随机游走的 Graph Embedding 方法：Deep Walk - 在业界影响力比较大，应用也很广泛</h2>
+<p>它的<strong>主要思想</strong>是在由物品组成的图结构上进行<strong>随机游走，产生大量物品序列</strong>，然后将这些物品序列作为训练样本输入 Word2vec 进行训练，最终得到物品的 Embedding。因此，DeepWalk 可以被看作连接序列 Embedding 和 Graph Embedding 的一种过渡方法。</p>
+<p><img src="/img/in-post/20_07/1f28172c62e1b5991644cf62453fd0ed.jpeg" alt="img" style="zoom:50%;" /></p>
+<h3 id="deepwalk-的详细算法流程是什么样的">DeepWalk 的详细算法流程是什么样的</h3>
+<p>学习 Deep Walk 方法<u>关键在于理解它的算法流程</u>：</p>
+<ol type="1">
+<li>首先，我们<u><strong>基于原始的用户行为序列</strong>来构建<strong>物品关系图</strong>，</u></li>
+<li><u>然后采用随机游走的方式<strong>随机选择起始点，重新产生物品序列</strong>，</u></li>
+<li><u>最后将这些随机游走生成的物品序列<strong>输入 Word2vec 模型</strong>，生成最终的物品 Embedding 向量。</u></li>
+</ol>
+<blockquote>
+<p>其中，随机游走采样的<strong>次数、长度</strong>等都属于超参数，需要我们根据具体应用进行调整。</p>
+</blockquote>
+<h3 id="deepwalk跳转概率是什么">DeepWalk跳转概率是什么</h3>
+<p>唯一需要形式化定义的就是随机游走的跳转概率，也就是<strong>到达节点 vi后，下一步遍历 vi 的邻接点 vj 的概率。</strong></p>
+<p>如果物品关系图是<strong>有向有权图</strong>，那么从节点 vi 跳转到节点 vj 的概率定义如下：即 DeepWalk 的跳转概率就是<strong>跳转边的权重占所有相关出边权重之和的比例</strong>。</p>
+<p>如果物品相关图是无向无权重图，那么跳转概率将是上面这个公式的一个特例，即权重 Mij将为常数 1，且 N+(vi) <strong>应是节点 vi所有“边”的集合，而不是所有“出边”的集合。</strong></p>
+<p><img src="/img/in-post/20_07/image-20210527214623726.png" alt="image-20210527214623726" style="zoom:50%;" /></p>
+<blockquote>
+<p>其中，N+(vi) 是节点 vi所有的出边集合，Mij是节点 vi到节点 vj边的权重，</p>
+</blockquote>
+<h2 id="在同质性和结构性间权衡的方法node2vec">在同质性和结构性间权衡的方法，Node2vec</h2>
+<p>Node2vec 通过<strong>调整随机游走跳转概率</strong>的方法，让 Graph Embedding 的结果在网络的<strong>同质性（Homophily）和结构性（Structural Equivalence）</strong>中进行权衡，可以进一步把不同的 Embedding 输入推荐模型，让推荐系统学习到不同的网络结构特点。</p>
+<p>我这里所说的网络的<strong>“同质性”</strong>指的是<strong>距离相近</strong>节点的 Embedding 应该尽量近似，（DFS）</p>
+<blockquote>
+<p>如图 3 所示，节点 u 与其相连的节点 s1、s2、s3、s4的 Embedding 表达应该是接近的，这就是网络“同质性”的体现。</p>
+<p>在电商网站中，同质性的物品很可能是<strong>同品类、同属性</strong>，或者经常被一同购买的物品。</p>
+</blockquote>
+<p>而“结构性”指的是<strong>结构上相似的节点</strong>的 Embedding 应该尽量接近，（BFS）</p>
+<blockquote>
+<p>比如图 3 中节点 u 和节点 s6都是各自局域网络的<strong>中心节点</strong>，它们在结构上相似，所以它们的 Embedding 表达也应该近似，这就是“结构性”的体现。</p>
+<p>在电商网站中，结构性相似的物品一般是各品类的<strong>爆款、最佳凑单商品等拥有类似趋势或者结构性属性的物品</strong>。</p>
+</blockquote>
+<p><img src="/img/in-post/20_07/e28b322617c318e1371dca4088ce5a82-20210527215525589.jpeg" alt="img" style="zoom: 33%;" /></p>
+<p>首先，为了使 Graph Embedding 的结果能够表达网络的<strong>“结构性”</strong>，在随机游走的过程中，我们需要让游走的过程更倾向于 BFS（Breadth First Search，宽度优先搜索），因为 <strong>BFS</strong> 会更多地在<u>当前节点的邻域中进行游走遍历，相当于对当前节点周边的网络结构进行一次“微观扫描”</u>。当前节点是“局部中心节点”，还是“边缘节点”，亦或是“连接性节点”，其生成的序列包含的节点数量和顺序必然是不同的，从而让最终的 Embedding 抓取到更多结构性信息。</p>
+<p>而为了表达<strong>“同质性”</strong>，随机游走要更倾向于 <strong>DFS</strong>（Depth First Search，深度优先搜索）才行，因为 DFS 更有可能通过多次跳转，<u>游走到远方的节点上。</u>但无论怎样，DFS 的游走更大概率会在一个大的集团内部进行，这就使得<u>一个集团或者社区内部节点的 Embedding 更为相似，</u>从而更多地表达网络的“同质性”。</p>
+<h3 id="那在-node2vec-算法中究竟是怎样控制-bfs-和-dfs-的倾向性的呢">那在 Node2vec 算法中，究竟是怎样控制 BFS 和 DFS 的倾向性的呢？</h3>
+<p>它主要是通过节点间的<strong>跳转概率</strong>来控制跳转的倾向性</p>
+<p><img src="/img/in-post/20_07/image-20210527221005299.png" alt="image-20210527221005299" style="zoom:50%;" /></p>
+<blockquote>
+<p>αpq(t,x) 里的 dtx是指节点 t 到节点 x 的距离，比如节点 x1其实是与节点 t 直接相连的，所以这个距离 dtx就是 1，节点 t 到节点 t 自己的距离 dtt就是 0，而 x2、x3这些不与 t 相连的节点，dtx就是 2。</p>
+<p>此外，αpq(t,x) 中的参数 p 和 q 共同控制着随机游走的倾向性。</p>
+<ol type="1">
+<li>参数 <strong>p 被称为返回参数</strong>（Return Parameter），<strong>p 越小</strong>，随机游<strong>走回节点 t 的可能性越大</strong>，Node2vec 就更注重表达网络的<strong>结构性</strong>。</li>
+<li>参数 <strong>q 被称为进出参数</strong>（In-out Parameter），<strong>q 越小</strong>，随机游<strong>走到远方节点的可能性越大</strong>，Node2vec 更注重表达网络的<strong>同质性。</strong>反之，当前节点更可能在附近节点游走。你可以自己尝试给 p 和 q 设置不同大小的值，算一算从 v 跳转到 t、x1、x2和 x3的跳转概率。这样一来，应该就不难理解我刚才所说的随机游走倾向性的问题啦。</li>
+</ol>
+</blockquote>
+<h3 id="为什么要在特征工程这一模块里介绍-embedding-呢">为什么要在特征工程这一模块里介绍 Embedding 呢？</h3>
+<p>已经学习了好几种主流的 Embedding 方法，包括序列数据的 Embedding 方法，Word2vec 和 Item2vec，以及图数据的 Embedding 方法，Deep Walk 和 Node2vec。</p>
+<p>由于 Embedding 的产出就是一个<strong>数值型特征向量</strong>，所以 Embedding 技术本身就可以视作<strong>特征处理方式的一种</strong>。只不过与简单的 One-hot 编码等方式不同，Embedding <strong>是一种更高阶的特征处理方法，它具备了把序列结构、网络结构、甚至其他特征融合到一个特征向量中的能力。</strong></p>
+<h3 id="embedding-是如何应用在推荐系统的特征工程中的">Embedding 是如何应用在推荐系统的特征工程中的？</h3>
+<p>应用方式大致有三种，分别是“直接应用”“预训练应用”和“End2End 应用”。</p>
+<p>其中，“<strong>直接应用</strong>”最简单，就是在我们得到 Embedding 向量之后，直接利用 Embedding 向量的相似性实现某些推荐系统的功能。典型的功能有，利用物品 Embedding 间的相似性实现<strong>相似物品推荐</strong>，利用物品 Embedding 和用户 Embedding 的相似性实现<strong>“猜你喜欢”等经典推荐功能</strong>，还可以利用物品 Embedding 实现<strong>推荐系统中的召回层</strong>等。当然，如果你还不熟悉这些应用细节，也完全不用担心，我们在之后的课程中都会讲到。</p>
+<p>“<strong>预训练应用</strong>”指的是在我们预先训练好物品和用户的 Embedding 之后，<u>不直接应用，而是<strong>把这些 Embedding 向量作为特征向量的一部分，</strong>跟其余的特征向量拼接起来，作为推荐模型的输入参与训练</u>。这样做能够更好地把其他特征引入进来，让推荐模型作出更为全面且准确的预测。</p>
+<p>第三种应用叫做“<strong>End2End 应用</strong>”。看上去这是个新的名词，它的全称叫做“End to End Training”，也就是端到端训练。不过，它其实并不神秘，就是指我们不预先训练 Embedding，<strong>而是把 Embedding 的训练与深度学习推荐模型结合起来</strong>，采用统一的、端到端的方式一起训练，直接得到包含 Embedding 层的推荐模型。<strong>这种方式非常流行，</strong>比如图 6 就<u>展示了三个包含 Embedding 层的经典模型，分别是微软的 Deep Crossing，UCL 提出的 FNN 和 Google 的 Wide&amp;Deep。</u>它们的实现细节我们也会在后续课程里面介绍，你这里只需要了解这个概念就可以了。</p>
+<p><img src="/img/in-post/20_07/e9538b0b5fcea14a0f4bbe2001919978.jpg" alt="img" style="zoom:59%;" /></p>
+<h2 id="问题-1">问题</h2>
+<h3 id="对比一下-embedding-预训练和-embedding-end2end-训练这两种应用方法说出它们之间的优缺点吗">对比一下 Embedding 预训练和 Embedding End2End 训练这两种应用方法，说出它们之间的优缺点吗？</h3>
+<p>Embedding预训练的优点：</p>
+<p>1.<strong>更快。</strong>因为对于End2End的方式，Embedding层的优化还受推荐算法的影响，这会增加计算量。</p>
+<p>2.End2End难收敛。推荐算法是以Embedding为前提的，在端到端的方式中，在训练初期由于Embedding层的结果没有意义，所以推荐模块的优化也可能不太有意义，可能无法有效收敛。</p>
+<p>Embedding端到端的优点：</p>
+<ol type="1">
+<li><strong>可能收敛到更好的结果</strong>。端到端因为将Embedding和推荐算法连接起来训练，那么<strong>Embedding层可以学习到最有利于推荐目标的Embedding结果。</strong></li>
+</ol>
+<h2 id="总结-1">总结</h2>
+<p>这节课我们一起学习了 Graph Embedding 的两种主要方法，分别是 <strong>Deep</strong> <strong>Walk</strong> 和 <strong>Node2vec</strong>，并且我们还总结了 Embedding 技术在深度学习推荐系统中的应用方法。</p>
+<p>学习 Deep Walk 方法<u>关键在于理解它的算法流程</u>：</p>
+<ol type="1">
+<li>首先，我们<u><strong>基于原始的用户行为序列</strong>来构建<strong>物品关系图</strong>，</u></li>
+<li><u>然后采用随机游走的方式<strong>随机选择起始点，重新产生物品序列</strong>，</u></li>
+<li><u>最后将这些随机游走生成的物品序列<strong>输入 Word2vec 模型</strong>，生成最终的物品 Embedding 向量。</u></li>
+</ol>
+<blockquote>
+<p>其中，随机游走采样的<strong>次数、长度</strong>等都属于超参数，需要我们根据具体应用进行调整。</p>
+</blockquote>
+<p>而 Node2vec 相比于 Deep Walk，<u>增加了随机游走过程中跳转<strong>概率的倾向性</strong></u>。如果倾向于<strong>宽度优先搜索</strong>，则 Embedding 结果更加体现“结构性”。如果倾向于<strong>深度优先搜索</strong>，则更加体现“同质性”。</p>
+<p>最后，我们介绍了 Embedding 技术在深度学习推荐系统中的<strong>三种应用方法</strong>，“直接应用”“预训练”和“End2End 训练”。</p>
+<p><img src="/img/in-post/20_07/d03ce492866f9fb85b4fbf5fa39346e6.jpeg" alt="img" style="zoom: 33%;" /></p>
+<h1 id="embedding实战-基于spark">Embedding实战-基于spark</h1>
+<p>如何使用Spark生成Item2vec和Graph Embedding？</p>
+<p>此节，会在 Spark 平台上，完成 Item2vec 和基于 Deep Walk 的 Graph Embedding 的训练。</p>
+<p>但是 Spark 作为一个原生的分布式计算平台，在处理大数据方面还是比 TensorFlow 等深度学习平台更具有优势，而且业界的很多公司仍然在使用 Spark 训练一些结构比较简单的机器学习模型</p>
+<h2 id="item2vec序列数据的处理">Item2vec：序列数据的处理</h2>
+<p>Item2vec 要处理的是类似文本句子、观影序列之类的序列数据。那在真正开始 Item2vec 的训练之前，我们还要先为它准备好训练用的序列数据。</p>
+<p>那在真正开始 Item2vec 的训练之前，我们还要先为它<strong>准备好训练用的序列数据</strong>。在 MovieLens 数据集中，有一张叫 rating（评分）的数据表，里面包含了用户对看过电影的评分和评分的时间。既然时间和评分历史都有了，我们要用的观影序列自然就可以通过处理 rating 表得到啦。</p>
+<p>在使用观影序列编码之前，我们还要再明确两个问题。</p>
+<h3 id="问题一是-movielens-这个-rating-表本质上只是一个评分的表不是真正的观影序列">问题一是 MovieLens 这个 rating 表本质上只是一个评分的表，不是真正的“观影序列”。</h3>
+<p>但对用户来说，当然只有看过这部电影才能够评价它，所以，我们几乎<strong>可以把评分序列当作是观影序列。</strong></p>
+<h3 id="问题二是我们是应该把所有电影都放到序列中还是只放那些打分比较高的呢">问题二是我们是应该把所有电影都放到序列中，还是只放那些打分比较高的呢？</h3>
+<p>这里，<strong>我是建议对评分做一个过滤，只放用户打分比较高的电影</strong>。为什么这么做呢？我们要思考一下 Item2vec 这个模型本质上是要学习什么。我们是<strong>希望 Item2vec 能够学习到物品之间的近似性。既然这样，我们当然是希望评分好的电影靠近一些，评分差的电影和评分好的电影不要在序列中结对出现。</strong></p>
+<h3 id="那到这里我们明确了样本处理的思路">那到这里我们明确了<strong>样本处理的思路</strong>，</h3>
+<p>就是对一个用户来说，我们先<strong>过滤掉他评分低的电影，再把他评论过的电影按照时间戳排序。</strong>这样，我们就得到了一个<strong>用户的观影序列</strong>，所有用户的观影序列就<strong>组成了 Item2vec 的训练样本集。</strong></p>
+<h3 id="怎么在-spark-上实现呢">怎么在 Spark 上实现呢？</h3>
+<p>其实很简单，我们只需要明白这 5 个关键步骤就可以实现了：</p>
+<ol type="1">
+<li><strong>读取</strong> ratings 原始数据到 Spark 平台；</li>
+<li>用 <code>where</code> 语句<strong>过滤评分低</strong>的评分记录；</li>
+<li>用 <code>groupBy userId</code> 操作<strong>聚合每个用户的评分记录</strong>，DataFrame 中每条记录是一个用户的评分序列；</li>
+<li>定义一个自定义操作 <code>sortUdf</code>，用它实现<strong>每个用户的评分记录按照时间戳进行排序</strong>；</li>
+<li>把每个用户的评分记录<strong>处理成一个字符串的形式</strong>，供后续训练过程使用。</li>
+</ol>
+<p>具体的实现过程，我还是建议你来参考我下面给出的代码，重要的地方我也都加上了注释，方便你来理解。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb3-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">def <span class="fu">processItemSequence</span>(sparkSession: SparkSession): RDD[Seq[<span class="bu">String</span>]] ={</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="co">//设定rating数据的路径并用spark载入数据</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">  val ratingsResourcesPath = <span class="kw">this</span>.<span class="fu">getClass</span>.<span class="fu">getResource</span>(<span class="st">&quot;/webroot/sampledata/ratings.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">  val ratingSamples = sparkSession.<span class="fu">read.format</span>(<span class="st">&quot;csv&quot;</span>).<span class="fu">option</span>(<span class="st">&quot;header&quot;</span>, <span class="st">&quot;true&quot;</span>).<span class="fu">load</span>(ratingsResourcesPath.<span class="fu">getPath</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">  <span class="co">//实现一个用户定义的操作函数(UDF)，用于之后的排序</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">  val sortUdf: UserDefinedFunction = <span class="fu">udf</span>((rows: Seq[Row]) =&gt; {</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">    rows.<span class="fu">map</span> { <span class="kw">case</span> <span class="fu">Row</span>(movieId: <span class="bu">String</span>, timestamp: <span class="bu">String</span>) =&gt; (movieId, timestamp) }</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">      .<span class="fu">sortBy</span> { <span class="kw">case</span> (movieId, timestamp) =&gt; timestamp }</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">      .<span class="fu">map</span> { <span class="kw">case</span> (movieId, timestamp) =&gt; movieId }</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">  })</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">  <span class="co">//把原始的rating数据处理成序列数据</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">  val userSeq = ratingSamples</a>
+<a class="sourceLine" id="cb3-18" data-line-number="18">    .<span class="fu">where</span>(<span class="fu">col</span>(<span class="st">&quot;rating&quot;</span>) &gt;= <span class="fl">3.5</span>)  <span class="co">//过滤掉评分在3.5一下的评分记录</span></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">    .<span class="fu">groupBy</span>(<span class="st">&quot;userId&quot;</span>)            <span class="co">//按照用户id分组</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">    .<span class="fu">agg</span>(<span class="fu">sortUdf</span>(<span class="fu">collect_list</span>(<span class="fu">struct</span>(<span class="st">&quot;movieId&quot;</span>, <span class="st">&quot;timestamp&quot;</span>))) as <span class="st">&quot;movieIds&quot;</span>)     <span class="co">//每个用户生成一个序列并用刚才定义好的udf函数按照timestamp排序</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">    .<span class="fu">withColumn</span>(<span class="st">&quot;movieIdStr&quot;</span>, <span class="fu">array_join</span>(<span class="fu">col</span>(<span class="st">&quot;movieIds&quot;</span>), <span class="st">&quot; &quot;</span>))</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">                <span class="co">//把所有id连接成一个String，方便后续word2vec模型处理</span></a>
+<a class="sourceLine" id="cb3-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb3-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb3-25" data-line-number="25">  <span class="co">//把序列数据筛选出来，丢掉其他过程数据</span></a>
+<a class="sourceLine" id="cb3-26" data-line-number="26">  userSeq.<span class="fu">select</span>(<span class="st">&quot;movieIdStr&quot;</span>).<span class="fu">rdd</span>.<span class="fu">map</span>(r =&gt; r.<span class="fu">getAs</span>[<span class="bu">String</span>](<span class="st">&quot;movieIdStr&quot;</span>).<span class="fu">split</span>(<span class="st">&quot; &quot;</span>).<span class="fu">toSeq</span>)</a></code></pre></div>
+<h3 id="item2vec模型训练">Item2vec模型训练</h3>
+<p>Item2vec：模型训练训练数据准备好了，就该进入我们这堂课的重头戏，模型训练了。手写 Item2vec 的整个训练过程肯定是一件让人比较“崩溃”的事情，好在 Spark MLlib 已经为我们准备好了方便调用的 Word2vec 模型接口。我先把训练的代码贴在下面，然后再带你一步步分析每一行代码是在做什么。</p>
+<p>从上面的代码中我们可以看出，Spark 的 Word2vec 模型训练过程非常简单，只需要四五行代码就可以完成。接下来，我就按照从上到下的顺序，依次给你解析其中 3 个关键的步骤。</p>
+<p>首先是创建 Word2vec 模型并设定模型参数。我们要清楚 Word2vec 模型的关键参数有 3 个，分别是 setVectorSize、setWindowSize 和 setNumIterations。其中，setVectorSize 用于设定生成的 Embedding 向量的维度，setWindowSize 用于设定在序列数据上采样的滑动窗口大小，setNumIterations 用于设定训练时的迭代次数。这些超参数的具体选择就要根据实际的训练效果来做调整了。</p>
+<p>其次，模型的训练过程非常简单，就是调用模型的 fit 接口。训练完成后，模型会返回一个包含了所有模型参数的对象。</p>
+<p>最后一步就是提取和保存 Embedding 向量，我们可以从最后的几行代码中看到，调用 getVectors 接口就可以提取出某个电影 ID 对应的 Embedding 向量，之后就可以把它们保存到文件或者其他数据库中，供其他模块使用了。在模型训练完成后，我们再来验证一下训练的结果是不是合理。我在代码中求取了 ID 为 592 电影的相似电影。这部电影叫 Batman 蝙蝠侠，我把通过 Item2vec 得到相似电影放到了下面，你可以从直观上判断一下这个结果是不是合理。</p>
+<h2 id="总结-2">总结</h2>
+<p>小结这节课，我们运用 Spark 实现了经典的 Embedding 方法 Item2vec 和 Deep Walk。它们的理论知识你应该已经在前两节课的学习中掌握了，这里我就总结一下实践中应该注意的几个要点。</p>
+<p>关于 Item2vec 的 Spark 实现，你应该注意的是训练 Word2vec 模型的几个参数 <code>VectorSize</code>、<code>WindowSize</code>、<code>NumIterations</code> 等，知道它们各自的作用。它们分别是用来<strong>设置 Embedding 向量的维度</strong>，在序列数据上采样的<strong>滑动窗口大小</strong>，以及训练时的<strong>迭代次数</strong>。</p>
+<p>而在 Deep Walk 的实现中，我们应该着重理解的是，<strong>生成物品间的转移概率矩阵的方法</strong>，以及<strong>通过随机游走生成训练样本过程</strong>。最后，我还是把这节课的重点知识总结在了一张表格中，希望能帮助你进一步巩固。</p>
+<p><img src="/img/in-post/20_07/02860ed1170d9376a65737df1294faa7.jpeg" alt="img" style="zoom:33%;" /></p>
+<h1 id="线上服务---如何提供高并发的推荐服务">线上服务 - 如何提供高并发的推荐服务</h1>
+<p>工业级推荐服务器的功能。</p>
+<figure>
+<img src="/img/in-post/20_07/c16ef5cbebc41008647425083b7b38ed.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<blockquote>
+<p>红色的部分就是我们要详细来讲的线上服务模块。</p>
+<p>可以看到，线上服务模块的功能非常繁杂，它不仅需要跟离线训练好的模型打交道，把离线模型进行上线，在线进行模型服务（Model Serving），还需要跟数据库打交道，把<strong>候选物品和离线处理好的特征</strong>载入到服务器。</p>
+<p>而且线上服务器内部的逻辑也十分地复杂，不仅包括了一些经典的过程，比如<strong>召回层和排序层</strong>，还包括一些业务逻辑，比如照顾推荐结果<strong>多样性，流行度</strong>的一些硬性的混合规则，甚至还包括了一些 AB 测试相关的测试代码。</p>
+</blockquote>
+<p>宏观来讲，高并发推荐服务的整体架构主要由三个重要机制支撑，它们分别是<strong>负载均衡、缓存、推荐服务降级</strong>机制。下面，我们一一来看。</p>
+<p><strong>“负载均衡”提升服务能力，“缓存”降低服务压力，“服务降级”机制保证故障时刻的服务不崩溃，压力不传导</strong>，这三点可以看成是一个成熟稳定的高并发推荐服务的基石。</p>
+<p><img src="/img/in-post/20_07/9f756f358d1806dc9b3463538567d7df.jpeg" alt="img" style="zoom:33%;" /></p>
+<h1 id="存储模块如何用redis解决推荐系统特征的存储问题">存储模块：如何用Redis解决推荐系统特征的存储问题？</h1>
+<p>小结今天我们学习了推荐系统存储模块的设计原则和具体的解决方案，并且利用 Sparrow Recsys 进行了实战。在设计推荐系统存储方案时，我们一般要遵循“分级存储”的原则，在开销和性能之间取得权衡。</p>
+<p>在 Sparrow Recsys 的实战中，我们安装并操作了内存数据库 Redis，你要记住 Redis 的特点“Key-value 形式存储”和“纯内存数据库”。在具体的特征存取过程中，我们应该熟悉利用 jedis 执行 SET，GET 等 Redis 常用操作的方法。</p>
+<p><img src="/img/in-post/20_07/5f76090e7742593928eaf118d72d2b08.jpeg" alt="img" style="zoom: 33%;" /></p>
+<p>对于搭建一套完整的推荐服务来说，我们已经迈过了两大难关，分别是用 <strong>Jetty Server 搭建推荐服务器</strong>问题，以及用 <strong>Redis 解决特征存储</strong>的问题。下节课，我们会一起来挑战线上服务召回层的设计。</p>
+<h1 id="召回层如何快速又准确地筛选掉不相关物品">召回层：如何快速又准确地筛选掉不相关物品？</h1>
+<p>那在推荐物品候选集规模非常大的时候，我们<u>该如何快速又准确地筛选掉不相关物品，从而节约排序时所消耗的计算资源呢？这其实就是<strong>推荐系统召回层要解决的问题</strong></u>。今天，我就从三个召回层技术方案入手，带你一起来解决这个问题。</p>
+<h3 id="不同层之间的功能特点有什么区别呢">不同层之间的功能特点有什么区别呢？</h3>
+<p>从技术架构的角度来说，“召回层”处于推荐系统的线上服务模块之中，推荐服务器从数据库或内存中拿到所有候选物品集合后，会依次经过召回层、排序层、再排序层（也被称为补充算法层），才能够产生用户最终看到的推荐列表。</p>
+<p>既然线上服务需要这么多“层”才能产生最终的结果，不同层之间的功能特点有什么区别呢？</p>
+<p><img src="/img/in-post/20_07/b1fd054eb2bbe0ec1237fc316byye66b.jpeg" alt="img" style="zoom:33%;" /></p>
+<p><strong>召回层</strong>就是要<strong>快速</strong>、准确地过滤出相关物品，缩小候选集，</p>
+<p>排序层则要以提升推荐效果为目标，作出<strong>精准</strong>的推荐列表排序。</p>
+<p>再详细一点说，我们可以从候选集规模、模型复杂程度、特征数量、处理速度、排序精度等几个角度来对比召回层和排序层的特点：</p>
+<p><img src="/img/in-post/20_07/5535a3d83534byy54ab201e865ec4a7e.jpeg" alt="img" style="zoom: 33%;" /></p>
+<p>需要注意的是，在我们设计召回层时，<u>计算速度和召回率其实是两个矛盾的指标</u>。怎么理解呢？比如说，为了提高计算速度，我们需要使召回策略尽量简单，而为了提高召回率或者说召回精度，让召回策略尽量把用户感兴趣的物品囊括在内，这又要求召回策略不能过于简单，否则召回物品就无法满足排序模型的要求。</p>
+<h3 id="什么是单策略召回方法">什么是单策略召回方法？</h3>
+<p>单策略召回指的是，通过<strong>制定一条规则或者利用一个简单模型来快速</strong>地召回可能的相关物品。</p>
+<blockquote>
+<p>这里的规则其实就是用户可能感兴趣的物品的特点，我们拿 SparrowRecSys 里面的电影推荐为例。在推荐电影的时候，我们首先要想到用户可能会喜欢什么电影。按照经验来说，很有可能是这三类，分别是<strong>大众口碑好的</strong>、<strong>近期非常火热的</strong>，以及跟我之前喜欢的<strong>电影风格类似的</strong>。</p>
+<p>基于其中任何一条，我们都可以快速实现一个单策略召回层。比如在 SparrowRecSys 中，我就制定了这样一条召回策略：如果用户对电影 <strong>A 的评分较高</strong>，比如超过 4 分，那么我们就将<strong>与 A 风格相同</strong>，并且<strong>平均评分在前 50 的电影召回</strong>，放入排序候选集中。</p>
+<p>计算速度一定是非常快的。</p>
+<p>就是它有很强的局限性，因为大多数时候用户的<strong>兴趣是非常多元的</strong>，他们不仅喜欢自己感兴趣的，也喜欢热门的，当然很多时候也喜欢新上映的。这时候，单一策略就难以满足用户的潜在需求了，那有没有更全面的召回策略呢？</p>
+</blockquote>
+<h3 id="如何理解多路召回方法">如何理解“多路召回”方法？</h3>
+<p>所谓“多路召回策略”，就是指<strong>采用不同的策略、特征或简单模型</strong>，<u>分别召回一部分候选集，然后把候选集混合在一起供后续排序模型使用的策略。</u></p>
+<p>其中，<strong>各简单策略保证候选集的快速召回</strong>，从不同角度设计的策略又能保证召回率接近理想的状态，不至于损害排序效果。所以，多路召回策略是在计算速度和召回率之间进行权衡的结果。</p>
+<blockquote>
+<p>我们还是以电影推荐为例来做进一步的解释。下面是我给出的电影推荐中常用的多路召回策略，包括<strong>热门电影、风格类型、高分评价、最新上映以及朋友喜欢</strong>等等。除此之外，我们也可以把一些<strong>推断速度比较快的简单模型</strong>（比如逻辑回归，协同过滤等）<strong>生成的推荐结果</strong>放入多路召回层中，形成综合性更好的候选集。具体的操作过程就是，我们分别执行这些策略，<strong>让每个策略选取 Top K 个物品</strong>，最后<strong>混合</strong>多个 Top K 物品，就形成了最终的多路召回候选集。整个过程就如下所示：</p>
+<p><img src="https://static001.geekbang.org/resource/image/c6/e6/c6cdccbb76a85f9d1bbda5c0e030dee6.jpeg" alt="img" style="zoom:33%;" /></p>
+</blockquote>
+<p>在 SparrowRecsys 中，我们就实现了由<strong>风格类型、高分评价、最新上映</strong>，这三路召回策略组成的多路召回方法，具体代码如下</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb4-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">public</span> <span class="dt">static</span> <span class="bu">List</span>&lt;Movie&gt; <span class="fu">multipleRetrievalCandidates</span>(<span class="bu">List</span>&lt;Movie&gt; userHistory){</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="bu">HashSet</span>&lt;<span class="bu">String</span>&gt; genres = <span class="kw">new</span> <span class="bu">HashSet</span>&lt;&gt;();</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="co">//根据用户看过的电影，统计用户喜欢的电影风格</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="kw">for</span> (Movie movie : userHistory){</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">        genres.<span class="fu">addAll</span>(movie.<span class="fu">getGenres</span>());</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">    }</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="co">//根据用户喜欢的风格召回电影候选集</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">    <span class="bu">HashMap</span>&lt;<span class="bu">Integer</span>, Movie&gt; candidateMap = <span class="kw">new</span> <span class="bu">HashMap</span>&lt;&gt;();</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">    <span class="kw">for</span> (<span class="bu">String</span> genre : genres){</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">        <span class="bu">List</span>&lt;Movie&gt; oneCandidates = DataManager.<span class="fu">getInstance</span>().<span class="fu">getMoviesByGenre</span>(genre, <span class="dv">20</span>, <span class="st">&quot;rating&quot;</span>);</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">        <span class="kw">for</span> (Movie candidate : oneCandidates){</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">            candidateMap.<span class="fu">put</span>(candidate.<span class="fu">getMovieId</span>(), candidate);</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">        }</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">    }</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">    <span class="co">//召回所有电影中排名最高的100部电影</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">    <span class="bu">List</span>&lt;Movie&gt; highRatingCandidates = DataManager.<span class="fu">getInstance</span>().<span class="fu">getMovies</span>(<span class="dv">100</span>, <span class="st">&quot;rating&quot;</span>);</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">    <span class="kw">for</span> (Movie candidate : highRatingCandidates){</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">        candidateMap.<span class="fu">put</span>(candidate.<span class="fu">getMovieId</span>(), candidate);</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">    }</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">    <span class="co">//召回最新上映的100部电影</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">    <span class="bu">List</span>&lt;Movie&gt; latestCandidates = DataManager.<span class="fu">getInstance</span>().<span class="fu">getMovies</span>(<span class="dv">100</span>, <span class="st">&quot;releaseYear&quot;</span>);</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23">    <span class="kw">for</span> (Movie candidate : latestCandidates){</a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">        candidateMap.<span class="fu">put</span>(candidate.<span class="fu">getMovieId</span>(), candidate);</a>
+<a class="sourceLine" id="cb4-25" data-line-number="25">    }</a>
+<a class="sourceLine" id="cb4-26" data-line-number="26">    <span class="co">//去除用户已经观看过的电影</span></a>
+<a class="sourceLine" id="cb4-27" data-line-number="27">    <span class="kw">for</span> (Movie movie : userHistory){</a>
+<a class="sourceLine" id="cb4-28" data-line-number="28">        candidateMap.<span class="fu">remove</span>(movie.<span class="fu">getMovieId</span>());</a>
+<a class="sourceLine" id="cb4-29" data-line-number="29">    }</a>
+<a class="sourceLine" id="cb4-30" data-line-number="30">    <span class="co">//形成最终的候选集</span></a>
+<a class="sourceLine" id="cb4-31" data-line-number="31">    <span class="kw">return</span> <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;(candidateMap.<span class="fu">values</span>());</a>
+<a class="sourceLine" id="cb4-32" data-line-number="32">}</a></code></pre></div>
+<p>在实现的过程中，为了进一步优化召回效率，我们还可以通过<strong>多线程并行、建立标签 / 特征索引、建立常用召回集缓存等</strong>方法来进一步完善它。</p>
+<p>不过，多路召回策略虽然能够比较全面地照顾到不同的召回方法，但也存在一些<strong>缺点</strong>。比如，在<strong>确定每一路的召回物品数量时，往往需要大量的人工参与和调整，具体的数值需要经过大量线上 AB 测试来决定</strong>。此外，因为策略之间的信息和数据是割裂的，所以我们很难综合考虑不同策略对一个物品的影响。</p>
+<h2 id="基于-embedding-的召回方法">基于 Embedding 的召回方法</h2>
+<p>在第 5 讲和第 6 讲中，我们已经介绍了多种离线生成物品 Embedding 的方案。事实上，利用物品和用户 Embedding 相似性来构建召回层，是深度学习推荐系统中非常经典的技术方案。我们可以把它的优势总结为三方面。</p>
+<p>一方面，多路召回中使用的<u>“兴趣标签”“热门度”“流行趋势”“物品属性”等信息都可以作为 Embedding 方法中的<strong>附加信息（Side Information），融合进最终的 Embedding 向量中</strong></u> 。因此，在利用 Embedding 召回的过程中，我们就相当于考虑到了多路召回的多种策略。</p>
+<p>另一方面，Embedding 召回的<strong>评分具有连续性。</strong>我们知道，多路召回中不同召回策略产生的相似度、热度等<strong><u>分值不具备可比性</strong>，所以我们无法据此来决定每个召回策略放回候选集的大小</u>。但是，<strong>Embedding 召回却可以把 Embedding 间的相似度作为唯一的判断标准</strong>，因此它可以<strong>随意限定召回的候选集大小</strong>。</p>
+<blockquote>
+<p>连续性指的是其评分是 <span class="math inline"><em>用</em><em>户</em><em>e</em><em>m</em><em>b</em><em>e</em><em>d</em><em>d</em><em>i</em><em>n</em><em>g</em><em>向</em><em>量</em> <em>内</em><em>积</em> <em>物</em><em>品</em><em>e</em><em>m</em><em>b</em><em>e</em><em>d</em><em>d</em><em>i</em><em>n</em><em>g</em><em>向</em><em>量</em></span>，其结果是连续的</p>
+</blockquote>
+<p>最后，在<strong>线上服务的过程</strong>中，Embedding 相似性的计算也相对简单和直接。通过<strong>简单的点积或余弦相似度的运算就能够得到相似度得分，便于线上的快速召回。</strong></p>
+<p>在 SparrowRecsys 中，我们也实现了基于 Embedding 的召回方法。我具体代码放在下面，你可以参考一下。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb5-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">public</span> <span class="dt">static</span> <span class="bu">List</span>&lt;Movie&gt; <span class="fu">retrievalCandidatesByEmbedding</span>(User user){</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">    <span class="kw">if</span> (<span class="kw">null</span> == user){</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">        <span class="kw">return</span> <span class="kw">null</span>;</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    }</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="co">//获取用户embedding向量</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">    <span class="dt">double</span>[] userEmbedding = DataManager.<span class="fu">getInstance</span>().<span class="fu">getUserEmbedding</span>(user.<span class="fu">getUserId</span>(), <span class="st">&quot;item2vec&quot;</span>);</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="kw">if</span> (<span class="kw">null</span> == userEmbedding){</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">        <span class="kw">return</span> <span class="kw">null</span>;</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    }</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">    <span class="co">//获取所有影片候选集(这里取评分排名前10000的影片作为全部候选集)</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    <span class="bu">List</span>&lt;Movie&gt; allCandidates = DataManager.<span class="fu">getInstance</span>().<span class="fu">getMovies</span>(<span class="dv">10000</span>, <span class="st">&quot;rating&quot;</span>);</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">    <span class="bu">HashMap</span>&lt;Movie,<span class="bu">Double</span>&gt; movieScoreMap = <span class="kw">new</span> <span class="bu">HashMap</span>&lt;&gt;();</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    <span class="co">//逐一获取电影embedding，并计算与用户embedding的相似度</span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    <span class="kw">for</span> (Movie candidate : allCandidates){</a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">        <span class="dt">double</span>[] itemEmbedding = DataManager.<span class="fu">getInstance</span>().<span class="fu">getItemEmbedding</span>(candidate.<span class="fu">getMovieId</span>(), <span class="st">&quot;item2vec&quot;</span>);</a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">        <span class="dt">double</span> similarity = <span class="fu">calculateEmbeddingSimilarity</span>(userEmbedding, itemEmbedding);</a>
+<a class="sourceLine" id="cb5-18" data-line-number="18">        movieScoreMap.<span class="fu">put</span>(candidate, similarity);</a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">    }</a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">   </a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">    <span class="bu">List</span>&lt;<span class="bu">Map</span>.<span class="fu">Entry</span>&lt;Movie,<span class="bu">Double</span>&gt;&gt; movieScoreList = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;(movieScoreMap.<span class="fu">entrySet</span>());</a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">    <span class="co">//按照用户-电影embedding相似度进行候选电影集排序</span></a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">    movieScoreList.<span class="fu">sort</span>(<span class="bu">Map</span>.<span class="fu">Entry</span>.<span class="fu">comparingByValue</span>());</a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">    <span class="co">//生成并返回最终的候选集</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">    <span class="bu">List</span>&lt;Movie&gt; candidates = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">    <span class="kw">for</span> (<span class="bu">Map</span>.<span class="fu">Entry</span>&lt;Movie,<span class="bu">Double</span>&gt; movieScoreEntry : movieScoreList){</a>
+<a class="sourceLine" id="cb5-27" data-line-number="27">        candidates.<span class="fu">add</span>(movieScoreEntry.<span class="fu">getKey</span>());</a>
+<a class="sourceLine" id="cb5-28" data-line-number="28">    }</a>
+<a class="sourceLine" id="cb5-29" data-line-number="29">    <span class="kw">return</span> candidates.<span class="fu">subList</span>(<span class="dv">0</span>, <span class="bu">Math</span>.<span class="fu">min</span>(candidates.<span class="fu">size</span>(), size));</a>
+<a class="sourceLine" id="cb5-30" data-line-number="30">}</a></code></pre></div>
+<h3 id="基于embedding的召回方法的实现思路是什么">基于embedding的召回方法的实现思路是什么？</h3>
+<p>这里，我再带你简单梳理一下整体的<strong>实现思路</strong>。总的来说，我们通过<strong>三步</strong>生成了最终的候选集。</p>
+<ol type="1">
+<li>第一步，我们获取<strong>用户的 Embedding</strong>。</li>
+<li>第二步，我们获取<strong>所有物品的候选集，并且逐一获取物品的 Embedding</strong>，计算物品 Embedding 和用户 Embedding 的<strong>相似度</strong>。</li>
+<li>第三步，我们<strong>根据相似度排序，返回规定大小的候选集</strong>。</li>
+</ol>
+<p>在这三步之中，<strong>最主要的时间开销在第二步</strong>，虽然它的时间复杂度是线性的，但当<strong>物品集过大时（比如达到了百万以上的规模），线性的运算也可能造成很大的时间开销</strong>。那有没有什么方法能进一步缩小 Embedding 召回层的运算时间呢？这个问题我们留到下节课来讨论。</p>
+<h2 id="小结-1">小结</h2>
+<p>今天，我们一起讨论了推荐系统中召回层的功能特点和实现方法。并且重点讲解了单策略召回、多路召回，以及深度学习推荐系统中常用的基于 Embedding 的召回。</p>
+<p><img src="/img/in-post/20_07/2fc1eyyefd964f7b65715de6f896c480.jpeg" alt="img" style="zoom:33%;" /></p>
+<p>总的来说，关于召回层的重要内容，我总结成了<strong>一个特点，三个方案</strong>。</p>
+<p>特点就是召回层的<strong>功能特点</strong>：<u>召回层要快速准确地过滤出相关物品，缩小候选集</u>。三个方案指的是实现召回层的<strong>三个技术方案</strong>：<u>简单快速的单策略召回、业界主流的多路召回、深度学习推荐系统中最常用的 Embedding 召回</u>。</p>
+<p>这三种方法基本囊括了现在业界推荐系统的主流召回方法，希望通过这节课的学习，你能掌握这一关键模块的实现方法。</p>
+<p>相信你也一定发现了，召回层技术的发展是循序渐进的，因此我希望你不仅能够学会应用它们，更能够站在前人的技术基础上，进一步推进它的发展，这也是工程师这份职业最大的魅力。</p>
+<h1 id="局部敏感哈希如何在常数时间内搜索embedding最近邻">局部敏感哈希：如何在常数时间内搜索Embedding最近邻？</h1>
+<p>在深度学习推荐系统中，我们经常采用 <strong>Embedding 召回</strong>这一准确又便捷的方法。但是，在面对百万甚至更高量级的候选集时，<strong>线性地逐一计算 Embedding 间的相似度</strong>，往往会造成极大的服务延迟。</p>
+<blockquote>
+<p>假设，用户和物品的 Embeding 都在一个 <em>k</em> 维的 Embedding 空间中，物品总数为 <em>n</em>，那么<u>遍历计算一个用户和所有物品向量相似度的时间复杂度是多少呢？不难算出是 <strong><em>O</em>(<em>k</em>×<em>n</em>)</strong>。</u>虽然这一复杂度是线性的，但物品总数 <em>n</em> 达到百万甚至千万量级时，线性的时间复杂度也是线上服务不能承受的。</p>
+</blockquote>
+<p>这个时候，我们要解决的问题就是，<strong>如何快速找到与一个 Embedding 最相似的 Embedding？</strong>这直接决定了召回层的执行速度，进而会影响推荐服务器的响应延迟。</p>
+<p><strong>业界解决近似 Embedding 搜索的主要方法，局部敏感哈希。</strong></p>
+<h2 id="使用聚类还是索引来搜索最近邻">使用“聚类”还是“索引”来搜索最近邻？</h2>
+<p><strong>一种是聚类</strong>，我们把相似的点聚类到一起，不就可以快速地找到彼此间的最近邻了吗？<strong>另一种是索引</strong>，比如，我们通过某种数据结构建立基于向量距离的索引，在查找最近邻的时候，通过索引快速缩小范围来降低复杂度。这两种想法可不可行呢？我们一一尝试一下。</p>
+<p>对于聚类问题，我想最经典的算法当属 <strong>K-means</strong>。它完成聚类的过程主要有以下几步：</p>
+<ol type="1">
+<li>随机指定 <strong>k 个中心点</strong>；</li>
+<li>每个中心点代表一个类，把<strong>所有的点按照距离的远近</strong>指定给距离最近的<strong>中心点代表的类</strong>；</li>
+<li>计算<strong>每个类包含点的平均值</strong>作为<strong>新的中心点位置</strong>；</li>
+<li>确定好新的中心点位置后，迭代进入第 2 步，<strong>直到中心点位置收敛</strong>，不再移动。</li>
+</ol>
+<p>到这里，整个 K-means 的迭代更新过程就完成了，你可以看下图 2。</p>
+<figure>
+<img src="/img/in-post/20_07/5d93557a390be7dabc82ffdd6baebc90.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>如果我们能够在离线计算好每个 Embedding 向量的类别，在线上我们<strong>只需要在同一个类别内的 Embedding 向量中搜索</strong>就可以了，这会大大缩小了 Embedding 的搜索范围，时间复杂度自然就下降了。</p>
+<p>但这个过程还是存在着一些<strong>边界情况</strong>。比如，</p>
+<ol type="1">
+<li>聚类边缘的点的最近邻往往会<strong>包括相邻聚类的点</strong>，如果我们只在类别内搜索，就会<strong>遗漏这些近似点</strong>。</li>
+<li>此外，<strong>中心点的数量 k 也不那么好确定</strong>，k 选得太大，离线迭代的过程就会非常慢，k 选得太小，在线搜索的范围还是很大，并没有减少太多搜索时间。</li>
+</ol>
+<p>所以基于聚类的搜索还是有一定局限性的，解决上面的问题也会增加过多冗余过程，得不偿失。</p>
+<p>既然聚类有局限性，那索引能不能奏效呢？我们这里可以尝试一下<strong>经典的向量空间索引方法 Kd-tree</strong>（K-dimension tree）。与聚类不同，它是为空间中的点 / 向量建立一个索引。这该怎么理解呢？</p>
+<blockquote>
+<p>举个例子，你可以看下图 3 中的点云，我们先用红色的线把点云一分为二，再用深蓝色的线把各自片区的点云一分为二，以此类推，直到每个片区只剩下一个点，这就完成了空间索引的构建。如果我们能够把这套索引“搬”到线上，就可以<strong>利用二叉树的结构快速找到邻接点</strong>。比如，希望找到点 q 的 m 个邻接点，我们就可以先搜索它相邻子树下的点，如果数量不够，我们可以向上回退一个层级，搜索它父片区下的其他点，直到数量凑够 m 个为止。</p>
+</blockquote>
+<p><img src="/img/in-post/20_07/dfb2c271d9eaa3a29054d2aea24b5e3f.jpeg" alt="img" style="zoom: 25%;" /></p>
+<blockquote>
+<p>图3 Kd-tree索引</p>
+</blockquote>
+<p>听上去 Kd-tree 索引似乎是一个完美的方案，但它还是无法完全解决边缘点最近邻的问题。</p>
+<ol type="1">
+<li>对于点 q 来说，它的邻接片区是右上角的片区，但是它的最近邻点却是深蓝色切分线下方的那个点。所以按照 Kd-tree 的索引方法，我们<strong>还是会遗漏掉最近邻点</strong>，它只能保证快速搜索到近似的最近邻点集合。</li>
+<li>而且 Kd-tree 索引的结构并不简单，离线和在线维护的过程也相对复杂，这些都是它的弊端。</li>
+</ol>
+<h2 id="局部敏感哈希locality-sensitive-hashinglsh的基本原理及多桶策略">局部敏感哈希（Locality Sensitive Hashing,LSH）的基本原理及多桶策略</h2>
+<p>它用简洁而高效的方法几乎完美地解决了这一问题。</p>
+<h3 id="局部敏感哈希的基本原理">局部敏感哈希的基本原理</h3>
+<p>局部敏感哈希的<strong>基本思想</strong>是<u>希望让相邻的点落入同一个“桶”，这样在进行最近邻搜索时，我们仅需要在一个桶内，或相邻几个桶内的元素中进行搜索即可。</u>如果<u>保持每个桶中的元素个数在一个常数附近</u>，我们就可以把最近邻搜索的时间复杂度<strong>降低到常数级别</strong>。</p>
+<h3 id="如何构建局部敏感哈希中的桶呢">如何构建局部敏感哈希中的“桶”呢？</h3>
+<p>下面，我们以<strong>基于欧式距离的最近邻搜索</strong>为例，来解释构建局部敏感哈希“桶”的过程。</p>
+<p><strong>欧式空间中，将高维空间的点映射到低维空间，原本接近的点在低维空间中肯定依然接近，但原本远离的点则有一定概率变成接近的点。</strong></p>
+<p><img src="https://static001.geekbang.org/resource/image/d9/55/d9476e92e9a6331274e18abc416db955.jpeg" alt="img" style="zoom:25%;" /></p>
+<p><strong>利用低维空间可以保留高维空间相近距离关系的性质</strong>，我们就可以构造局部敏感哈希“桶”。对于 Embedding 向量来说，由于 Embedding 大量使用内积操作计算相似度，因此我们<strong>也可以用内积操作来构建</strong>局部敏感哈希桶。那我们利用内积操作可以将 <em>v</em> 映射到一维空间，得到数值： <br /><span class="math display"><em>h</em>(<em>v</em>) = <em>v</em> ⋅ <em>x</em></span><br /></p>
+<blockquote>
+<p><u><em>v</em> 是高维空间中的 <strong>k 维 Embedding 向量</strong>，<em>x</em> 是随机生成的 <strong>k 维映射向量</strong></u>。</p>
+</blockquote>
+<p>而且，我们刚刚说了，一维空间也会部分保存高维空间的近似距离信息。因此，我们可以使用哈希函数 <em>h</em>(<em>v</em>) 进行分桶，公式为：</p>
+<figure>
+<img src="/img/in-post/20_07/image-20210530173728682.png" alt="image-20210530173728682" /><figcaption>image-20210530173728682</figcaption>
+</figure>
+<blockquote>
+<p>其中， ⌊⌋ 是向下取整操作， <em>w</em> 是分桶宽度，<em>b</em> 是 0 到 w 间的一个<strong>均匀分布随机变量</strong>，避免分桶边界固化。</p>
+</blockquote>
+<p>不过，映射操作会损失部分距离信息，如果我们仅采用一个哈希函数进行分桶，必然<strong>存在相近点误判的情况</strong>，因此，我们可以采用 <strong>m 个哈希函数同时进行分桶</strong>。如果两个点同时掉进了 m 个桶，那它们是相似点的概率将大大增加。通过分桶找到相邻点的候选集合后，我们就可以在有限的候选集合中通过遍历找到目标点真正的 K 近邻了。</p>
+<p>刚才我们讲的哈希策略是基于内积操作来制定的，内积相似度也是我们经常使用的相似度度量方法，事实上<strong>距离的定义有很多种</strong>，<u>比如“曼哈顿距离”“切比雪夫距离”“汉明距离”等等</u>。针对不同的距离定义，分桶函数的定义也有所不同，<strong>但局部敏感哈希通过分桶方式保留部分距离信息，大规模降低近邻点候选集的本质思想是通用的</strong>。</p>
+<h2 id="局部敏感哈希的多桶策略">2. 局部敏感哈希的多桶策略</h2>
+<h3 id="如果有多个分桶函数的话具体应该如何处理不同桶之间的关系呢">如果有多个分桶函数的话，具体应该如何处理不同桶之间的关系呢？</h3>
+<p>这就涉及局部敏感哈希的多桶策略。如果有多个分桶函数的话，具体应该如何处理不同桶之间的关系呢？这就涉及局部敏感哈希的多桶策略。</p>
+<p>假设有 A、B、C、D、E 五个点，有 h1和 h2两个分桶函数。使用 h1来分桶时，A 和 B 掉到了一个桶里，C、D、E 掉到了一个桶里；使用 h2来分桶时，A、C、D 掉到了一个桶里，B、E 在一个桶。那么请问如果我们想找点 C 的最近邻点，应该怎么利用两个分桶结果来计算呢？假设有 A、B、C、D、E 五个点，有 h1和 h2两个分桶函数。使用 h1来分桶时，A 和 B 掉到了一个桶里，C、D、E 掉到了一个桶里；使用 h2来分桶时，A、C、D 掉到了一个桶里，B、E 在一个桶。那么请问如果我们想找点 C 的最近邻点，应该怎么利用两个分桶结果来计算呢？</p>
+<p>用<strong>“且”操作作为多桶策略，可以最大程度地减少候选点数量</strong>。但是，由于哈希分桶函数不是一个绝对精确的操作，点 D 也只是最有可能的最近邻点，不是一定的最近邻点，因此，<strong>“且”操作其实也增大了漏掉最近邻点的概率。</strong></p>
+<p>采用<strong>“或”（Or）操作作为多桶策略，</strong>这个时候，我们可以看到候选集中会有三个点，分别是 A、D、E。这样一来，虽然我们增大了候选集的规模，<strong>减少了漏掉最近邻点的可能性，但增大了后续计算的开销。</strong></p>
+<h3 id="那么我们到底应该选择且操作还是或操作以及到底该选择使用几个分桶函数每个分桶函数分几个桶呢">那么，我们到底应该选择“且”操作还是“或”操作，以及到底该选择使用几个分桶函数，每个分桶函数分几个桶呢？</h3>
+<p>这些都还是工程上的权衡问题。我虽然不能给出具体的最佳数值，但可以给你一些取值的建议：</p>
+<p><strong>点数越多</strong>，我们越应该增加每个分桶函数中<strong>桶的个数</strong>；相反，点数越少，我们越应该减少桶的个数；</p>
+<p><strong>Embedding 向量的维度越大</strong>，我们越应该<strong>增加哈希函数的数量</strong>，尽量采用<strong>且的方式</strong>作为多桶策略；相反，Embedding 向量维度越小，我们越应该减少哈希函数的数量，多采用或的方式作为分桶策略。</p>
+<h3 id="局部敏感哈希能在常数时间得到最近邻的结果吗">局部敏感哈希能在常数时间得到最近邻的结果吗？</h3>
+<p>答案是可以的，如果我们能够精确地控制<strong>每个桶内的点的规模是 <em>C</em></strong>，假设<strong>每个 Embedding 的维度是 <em>N</em></strong>，那么找到最近邻点的时间开销将永远在 <strong><em>O</em>(<em>C</em>⋅<em>N</em>) 量级</strong>。采用多桶策略之后，</p>
+<p>假设<strong>分桶函数数量是 <em>K</em></strong>，那么时间开销也在 <strong><em>O</em>(<em>K</em>⋅<em>C</em>⋅<em>N</em>)</strong> 量级，这仍然是一个常数。</p>
+<h2 id="局部敏感哈希实践">局部敏感哈希实践</h2>
+<p>利用 Sparrow Recsys 训练好的物品 Embedding，来实现局部敏感哈希的快速搜索吧。为了保证跟 Embedding 部分的平台统一，这一次我们继续使用 Spark MLlib 完成 LSH 的实现。</p>
+<ol type="1">
+<li>在<strong>将电影 Embedding 数据转换成 dense Vector</strong> 的形式之后，</li>
+<li>我们使用 Spark MLlib 自带的 <strong>LSH 分桶模型</strong> BucketedRandomProjectionLSH（我们简称 LSH 模型）来进行 LSH 分桶。</li>
+<li>其中最关键的部分是设定 LSH 模型中的 <code>BucketLength</code> 和 <code>NumHashTables</code> 这两个参数。其中，BucketLength 指的就是分桶公式中的<strong>分桶宽度 w</strong>，NumHashTables 指的是多桶策略中的<strong>分桶次数</strong>。</li>
+<li>清楚了模型中的关键参数，执行的过程就跟我们讲过的其他 Spark MLlib 模型一样了，都是先调用 <code>fit</code> 函数<strong>训练模型</strong>，再调用 <code>transform</code> 函数<strong>完成分桶的过程</strong>，具体的实现你可以参考下面的代码。</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb6-1" data-line-number="1">def <span class="fu">embeddingLSH</span>(spark:SparkSession, movieEmbMap:<span class="bu">Map</span>[<span class="bu">String</span>, <span class="bu">Array</span>[<span class="bu">Float</span>]]): Unit ={</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="co">//将电影embedding数据转换成dense Vector的形式，便于之后处理</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  val movieEmbSeq = movieEmbMap.<span class="fu">toSeq</span>.<span class="fu">map</span>(item =&gt; (item._<span class="dv">1</span>, Vectors.<span class="fu">dense</span>(item._<span class="fl">2.</span><span class="fu">map</span>(f =&gt; f.<span class="fu">toDouble</span>))))</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">  val movieEmbDF = spark.<span class="fu">createDataFrame</span>(movieEmbSeq).<span class="fu">toDF</span>(<span class="st">&quot;movieId&quot;</span>, <span class="st">&quot;emb&quot;</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">  <span class="co">//利用Spark MLlib创建LSH分桶模型</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">  val bucketProjectionLSH = <span class="kw">new</span> <span class="fu">BucketedRandomProjectionLSH</span>()</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">    .<span class="fu">setBucketLength</span>(<span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    .<span class="fu">setNumHashTables</span>(<span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    .<span class="fu">setInputCol</span>(<span class="st">&quot;emb&quot;</span>)</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    .<span class="fu">setOutputCol</span>(<span class="st">&quot;bucketId&quot;</span>)</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">  <span class="co">//训练LSH分桶模型</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">  val bucketModel = bucketProjectionLSH.<span class="fu">fit</span>(movieEmbDF)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">  <span class="co">//进行分桶</span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">  val embBucketResult = bucketModel.<span class="fu">transform</span>(movieEmbDF)</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">  </a>
+<a class="sourceLine" id="cb6-16" data-line-number="16">  <span class="co">//打印分桶结果</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">  <span class="fu">println</span>(<span class="st">&quot;movieId, emb, bucketId schema:&quot;</span>)</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">  embBucketResult.<span class="fu">printSchema</span>()</a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">  <span class="fu">println</span>(<span class="st">&quot;movieId, emb, bucketId data result:&quot;</span>)</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">  embBucketResult.<span class="fu">show</span>(<span class="dv">10</span>, truncate = <span class="kw">false</span>)</a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">  </a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">  <span class="co">//尝试对一个示例Embedding查找最近邻</span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23">  <span class="fu">println</span>(<span class="st">&quot;Approximately searching for 5 nearest neighbors of the sample embedding:&quot;</span>)</a>
+<a class="sourceLine" id="cb6-24" data-line-number="24">  val sampleEmb = Vectors.<span class="fu">dense</span>(<span class="fl">0.795</span>,<span class="fl">0.583</span>,<span class="fl">1.120</span>,<span class="fl">0.850</span>,<span class="fl">0.174</span>,-<span class="fl">0.839</span>,-<span class="fl">0.0633</span>,<span class="fl">0.249</span>,<span class="fl">0.673</span>,-<span class="fl">0.237</span>)</a>
+<a class="sourceLine" id="cb6-25" data-line-number="25">  bucketModel.<span class="fu">approxNearestNeighbors</span>(movieEmbDF, sampleEmb, <span class="dv">5</span>).<span class="fu">show</span>(truncate = <span class="kw">false</span>)</a>
+<a class="sourceLine" id="cb6-26" data-line-number="26">}</a></code></pre></div>
+<p>使用 LSH 模型对电影 Embedding 进行分桶得到的五个结果打印了出来，如下所示：</p>
+<pre><code>+-------+-----------------------------+------------------+
+
+|movieId|emb                          |bucketId          |
+
++-------+-----------------------------+------------------------+
+
+|710    |[0.04211471602320671,..]     |[[-2.0], [14.0], [8.0]] |
+
+|205    |[0.6645985841751099,...]     |[[-4.0], [3.0], [5.0]]  |
+
+|45     |[0.4899883568286896,...]     |[[-6.0], [-1.0], [2.0]] |
+
+|515    |[0.6064003705978394,...]     |[[-3.0], [-1.0], [2.0]] |
+
+|574    |[0.5780771970748901,...]     |[[-5.0], [2.0], [0.0]]  |
+
++-------+-----------------------------+------------------------+</code></pre>
+<p>你可以看到在 BucketId 这一列，因为我们之前设置了 <code>NumHashTables</code> 参数为 3，所以每一个 Embedding 对应了 3 个 BucketId。在实际的最近邻搜索过程中，我们就可以利用刚才讲的多桶策略进行搜索了。</p>
+<p>事实上，在一些<u>超大规模的最近邻搜索问题中，索引、分桶的策略还能进一步复杂。如果你有兴趣深入学习，我推荐你去了解一下<strong>Facebook 的开源向量最近邻搜索库 FAISS</strong></u>，这是一个在业界广泛应用的开源解决方案。</p>
+<h3 id="trick">Trick</h3>
+<p>悄悄告诉大家：embedding层K值的初始判断，有个经验公式:K= Embedding维数开4次方 ,x=初始的维度数； 后续，K值调参按照2的倍数进行调整，例如：2，4，8，16；</p>
+<h2 id="小结-2">小结</h2>
+<p>本节课，我们一起<strong>解决了“Embedding 最近邻搜索”</strong>问题。</p>
+<p>事实上，<u>对于推荐系统来说，我们可以把召回最相似物品 Embedding 的问题，看成是在高维的向量空间内搜索最近邻点的过程</u>。遇到最近邻问题，我们一般会采用<strong>聚类</strong>和<strong>索引</strong>这两种方法。<u>但是聚类和索引都无法完全解决边缘点最近邻的问题，并且对于聚类来说，中心点的数量 k 也并不好确定，而对于 Kd-tree 索引来说，Kd-tree 索引的结构并不简单，离线和在线维护的过程也相对复杂。🚩？？</u></p>
+<p>因此，解决最近邻问题最“完美”的办法就是使用<strong>局部敏感哈希</strong>，在每个桶内点的数量接近时，它能够把最近邻查找的时间控制在常数级别。为了进一步提高最近邻搜索的效率或召回率，我们还可以采用<strong>多桶策略</strong>，首先是<strong>基于“且”操作</strong>的多桶策略能够进一步减少候选集规模，增加计算效率，其次是<strong>基于“或”操作</strong>的多桶策略则能够提高召回率，减少漏掉最近邻点的可能性。</p>
+<p>最后，我在下面列出了各种方法的优缺点，希望能帮助你做一个快速的复盘。</p>
+<p><img src="https://static001.geekbang.org/resource/image/40/b1/40yy632948cdd9090fe34d3957307eb1.jpeg" alt="img" style="zoom:33%;" /></p>
+<h1 id="模型服务怎样把你的离线模型部署到线上">模型服务：怎样把你的离线模型部署到线上？</h1>
+<h1 id="业界的主流模型服务方法">业界的主流模型服务方法</h1>
+<p>由于各个公司技术栈的特殊性，采用不同的机器学习平台，模型服务的方法会截然不同，不仅如此，使用不同的模型结构和模型存储方式，也会让模型服务的方法产生区别。总的来说，那<strong>业界主流的模型服务方法有 4 种</strong>，分别是<strong>预存推荐结果或 Embedding 结果、预训练 Embedding+ 轻量级线上模型、PMML 模型以及 TensorFlow Serving</strong>。接下来，我们就详细讲讲这些方法的实现原理，通过对比它们的优缺点，相信你会找到最合适自己业务场景的方法。</p>
+<h1 id="融会贯通sparrow-recsys中的电影相似推荐功能是如何实现的">🚩融会贯通：Sparrow RecSys中的电影相似推荐功能是如何实现的？</h1>
+<figure>
+<img src="/img/in-post/20_07/f408eeeeb04bccd127a6726b8bf91d4f.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h3 id="数据和模型部分">数据和模型部分</h3>
+<p>数据和模型部分的实现，其实和我们第 8 讲讲的 Embedding 的实战思路是一样的，我们可以选用 Item2vec、Deep Walk 等不同的 Embedding 方法，来生成物品 Embedding 向量。考虑到大数据条件下，数据处理与训练的一致性，在 Sparrow Recsys 中，我们会采用 Spark 进行数据处理，同时选择 Spark MLlib 进行 Embedding 的训练。这部分内容的代码，你可以参考项目中的_com.wzhe.sparrowrecsys.offline.spark.embedding.__Embedding_对象，它定义了所有项目中用到的 Embedding 方法。</p>
+<h3 id="怎么利用-redis-中的-embedding-数据进行相似电影推荐的呢-线上服务部分">怎么利用 Redis 中的 Embedding 数据进行相似电影推荐的呢？— 线上服务部分</h3>
+<p>线上服务部分是直接接收并处理用户推荐请求的部分，从架构图的最左边到最右边，我们可以看到三个主要步骤：<strong>候选物品库的建立、召回层的实现、排序层的实现</strong>。我们逐个来讲一讲。</p>
+<p>首先是候选物品库的建立。Sparrow Recsys 中候选物品库的建立采用了非常简单的方式，就是<strong>直接把 MovieLens 数据集中的物品数据载入到内存中。</strong>但对于<strong>业界</strong>比较复杂的推荐业务来说，候选集的选取往往是有很多条件的， 比如物品<strong>可不可用，有没有过期，有没有其他过滤条件</strong>等等，所以，工业级推荐系统往往会通过比较复杂的 SQL 查询，或者 API 查询来获取候选集。</p>
+<p>第二步是召回层的实现。我们在第 11 讲曾经详细学习了召回层的技术，这里终于可以学以致用了。因为物品的 <strong>Embedding 向量已经在离线生成</strong>，所以我们可以自然而然的使用 Embedding 召回的方法来完成召回层的实现。同时，Sparrow Recsys 也实现了基于物品 metadata（元信息）的多路召回方法，具体的实现你可以参照com.wzhe.sparrowrecsys.online.recprocess.SimilarMovieProcess类中的 <code>multipleRetrievalCandidates</code> 函数和 <code>retrievalCandidatesByEmbedding</code> 函数。</p>
+<p>第三步是排序层的实现。<strong>根据 Embedding 相似度来进行“相似物品推荐”</strong>，是深度学习推荐系统最主流的解决方案，所以在 Sparrow Recsys 中，我们当然也是先根据召回层过滤出候选集，再从 Redis 中取出相应的 Embedding 向量，然后计算目标物品和候选物品之间的相似度，最后进行排序就可以了。</p>
+<blockquote>
+<p>这里“相似度”的定义是多样的，可以是余弦相似度，也可以是内积相似度，还可以根据你训练 Embedding 时定义的不同相似度指标来确定。因为在 Word2vec 中，相似度的定义是内积相似度，所以, 这里我们也采用内积作为相似度的计算方法。同样，具体的实现，你可以参照 com.wzhe.sparrowrecsys.online.recprocess.SimilarMovieProcess 类中的 ranker 函数。</p>
+</blockquote>
+<p>经历了这三个主要的线上服务步骤，Sparrow Recsys 就可以向用户返回推荐列表了。所以接下来，我们要解决的问题就是，怎么把这些结果通过前端页面展示给用户。</p>
+<h3 id="前端部分">3. 前端部分</h3>
+<p>Sparrow Recsys 的前端部分采用了最简单的 HTML+AJAX 请求的方式。AJAX 的全称是 Asynchronous JavaScript and XML，异步 JavaScript 和 XML 请求。</p>
+<h2 id="相似电影推荐的结果和初步分析">相似电影推荐的结果和初步分析</h2>
+<p>Sparrow Recsys 开源项目中自带的 MovieLens 数据集是经过我采样后的<strong>缩小集</strong>，所以基于这个数据集训练出的模型的准确性和稳定性是比较低的。如果你有兴趣的话可以去MovieLens 官网选择 <strong>MovieLens 20M Dataset</strong> 下载并重新训练，相信会得到更准确的推荐结果。</p>
+<p>https://grouplens.org/datasets/movielens/</p>
+<h3 id="都有哪些评估方法">都有哪些评估方法</h3>
+<p><strong>方法一：人肉测试（SpotCheck）。</strong></p>
+<p>做一个抽样测试，看一看基于 Embedding 的相似推荐结果是不是符合你自己的常识。</p>
+<h3 id="出现的问题">出现的问题</h3>
+<p>直观上来看，《Free Willy》的推荐结果就非常不错，因为你可以看到相似电影中都是<strong>适合儿童看的</strong>，甚至这些电影都和动物相关。但是《玩具总动员》就不一样了，它的相似电影里不仅有动画片，还有《真实的谎言》（《True Lies》）、《阿甘正传》这类明显<strong>偏成人</strong>的电影。这明显不是一个非常好的推荐结果。</p>
+<p>为什么会出现这样的结果呢？我们来做一个推测。事实上，《玩具总动员》本身是一部<strong>非常流行的电影</strong>，跟它近似的也都是类似《真实的谎言》、《阿甘正传》这类很热门的电影。这就说明了一个问题，<strong>热门电影其实很容易跟其他大部分电影产生相似性，因为它们会出现在大多数用户的评分序列中。</strong></p>
+<p>针对这个问题，其实仅利用基于用户行为序列的 Embedding 方法是很难解决的。这需要我们引入<strong>更多内容型特征</strong>进行有针对性的改进，比如电影类型、海报风格，<strong>或者在训练中有意减少热门电影的样本权重，增大冷门电影的样本权重等等</strong>。总的来说，遇到推荐结果不合理的情况，我们需要做更多的调查研究，发掘这些结果出现的真实原因，才能找到改进方向。</p>
+<p><strong>方法二：指定 Ground truth（可以理解为标准答案）。</strong> 虽然我们说，相似影片的 Ground truth 因人而异。但如果只是为了进行初步评估，我们也可以指定一些比较权威的验证集。比如，对于相似影片来说，我们可以利用 <strong>IMDB 的 more like this 的结果</strong>去做验证我们的相似电影结果。当然要补充说明的是，要注意有些 Ground truth 数据集的可用范围，不能随意在商业用途中使用未经许可的数据集。</p>
+<p><strong>方法三：利用商业指标进行评估。</strong> 既然相似影片比较难以直接衡量，那我们不如换一个角度，来思考一下做相似影片这个功能的目的是什么。对于一个商业网站来说，<strong>无非是提高点击率，播放量等等</strong>。因此，我们完全可以跃过评估相似度这样一个过程，<strong>直接去评估它的终极商业指标。</strong></p>
+<blockquote>
+<p>举个例子，我们可以通过上线一个新的相似电影模型，让相似电影这个功能模块的点击率提高，假设提高了 5%，那这就是一个成功的模型改进。至于相似电影到底有没有那么“相似”，我们反而不用那么纠结了。</p>
+</blockquote>
+<h2 id="小结-3">小结</h2>
+<p>这节课，</p>
+<ol type="1">
+<li>我们使用 Embedding 方法准备好了食材，</li>
+<li>使用 Redis 把食材下锅，</li>
+<li>做菜的步骤稍微复杂一点，分为这 3 个步骤
+<ol type="1">
+<li>建立候选集、</li>
+<li>实现召回层、</li>
+<li>实现排序层。</li>
+</ol></li>
+<li>最后我们用 HTML+Ajax 的方式把相似电影推荐这盘菜呈现出来。</li>
+</ol>
+<p>既然有做菜的过程，当然也有品菜的阶段。针对相似物品推荐这一常见的功能，我们可以使用<strong>人肉测试、Ground truth 和商业指标评估</strong>这三种方法对得到的结果进行评估。也希望你能够在实际的业务场景中活学活用，用评估结果指导模型的下一步改进。</p>
+<p>我希望，通过这节课的总结和实战，能让你融会贯通的厘清我们学过的知识。所以我把你需要掌握的重要知识点，总结在了一张图里，你可以利用它复习巩固。</p>
+<figure>
+<img src="/img/in-post/20_07/dcbb6cf20283ee362235255841b00c9f.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h1 id="协同过滤最经典的推荐模型我们应该掌握什么">协同过滤：最经典的推荐模型，我们应该掌握什么？</h1>
+<h3 id="协同过滤算法的基本原理是什么">协同过滤算法的基本原理是什么？</h3>
+<p><strong>“用户行为数据是</strong>推荐系统最常用，也是最关键的数据。用户的潜在兴趣、用户对物品的评价好坏都反映在用户的行为历史中”。</p>
+<p>而协同过滤算法，就是一种<strong>完全依赖用户和物品之间行为关系</strong>的推荐算法。 <strong>“协同大家的反馈、评价和意见一起对海量的信息进行过滤，从中筛选出用户可能感兴趣的信息”</strong>。</p>
+<p><img src="/img/in-post/20_07/3960001f6c049652160cb16ff3ddee42.jpg" alt="img" style="zoom:33%;" /></p>
+<h3 id="如何确定相似用户">如何确定相似用户</h3>
+<blockquote>
+<p>从共现矩阵中我们可以知道，用户 B 和用户 C 由于跟用户 X 的行向量近似，被选为 Top n（这里假设 n 取 2）相似用户，</p>
+</blockquote>
+<p>计算用户相似度其实并不是什么难事，因为在共现矩阵中，每个用户对应的行向量其实就<strong>可以当作一个用户的 Embedding</strong> 向量。最经典的方法就是利用<strong>余弦相似度</strong>了，它衡量了用户向量 i 和用户向量 j 之间的向量夹角大小。夹角越小，余弦相似度越大，两个用户越相似，它的定义如下： <br /><span class="math display">$$
+sim(i,j)=cos(i,j)=\frac{i⋅j}{∣∣i∣∣×∥j∣∣}
+$$</span><br /> 除了最常用的余弦相似度之外，相似度的定义还有皮尔逊相关系数、欧式距离等等。</p>
+<h3 id="用户评分的预测">用户评分的预测</h3>
+<p>在获得 Top n 个相似用户之后，利用 Top n 用户生成最终的用户 <em>u</em> 对物品 <em>p</em> 的评分是一个比较直接的过程。这里，我们假设的是“目标用户与其相似用户的喜好是相似的”，根据这个假设，我们可以利用相似用户的已有评价对目标用户的偏好进行预测。最常用的方式是，<strong>利用用户相似度和相似用户评价的加权平均值，来获得目标用户的评价预测</strong>，公式如下所示</p>
+<figure>
+<img src="/img/in-post/20_07/image-20210531150917205.png" alt="image-20210531150917205" /><figcaption>image-20210531150917205</figcaption>
+</figure>
+<blockquote>
+<p>其中，权重 <em>w_u</em>,<em>s</em> 是用户 <em>u</em> 和用户 <em>s</em> 的<strong>相似度</strong>，<em>R_s,p</em> 是用户 <em>s</em> 对物品 <em>p</em> 的<strong>评分</strong>。</p>
+<p>在获得用户 <em>u</em> 对不同物品的评价预测后，<strong>最终的推荐列表根据评价预测得分进行排序</strong>即可得到。到这里，我们就完成了协同过滤的全部推荐过程。</p>
+</blockquote>
+<h2 id="矩阵分解算法的原理">矩阵分解算法的原理</h2>
+<p>协同过滤缺点，那就是共现矩阵往往<strong>非常稀疏</strong>，在<strong>用户历史行为很少的情况下</strong>，寻找相似用户的过程并不准确。</p>
+<p>Netflix 对协同过滤算法进行了改进，提出了矩阵分解算法，加强了模型处理稀疏矩阵的能力。</p>
+<p><img src="/img/in-post/20_07/63f52fe38288a9b31c2d8e7640f8c4f8.jpg" alt="img" style="zoom:33%;" /></p>
+<blockquote>
+<p>图2 “协同过滤（左a）”和“矩阵分解（右b）”的原理图</p>
+</blockquote>
+<p>如图 2(a) 所示，协同过滤算法找到用户可能喜欢的视频的方式很直观，就是利用用户的观看历史，找到跟目标用户 Joe 看过同样视频的相似用户，然后找到这些相似用户喜欢看的其他视频，推荐给目标用户 Joe。</p>
+<p>矩阵分解算法则是<strong>期望为每一个用户和视频生成一个隐向量</strong>，将用户和视频定位到隐向量的表示空间上（如图 2(b) 所示），距离相近的用户和视频表明兴趣特点接近，在推荐过程中，我们就应该把距离相近的视频推荐给目标用户。例如，如果希望为图 2(b) 中的用户 Dave 推荐视频，我们可以找到离 Dave 的用户向量最近的两个视频向量，它们分别是《Ocean’s 11》和《The Lion King》，然后我们可以<strong>根据向量距离由近到远的顺序生成 Dave 的推荐列表</strong>。</p>
+<p>个时候你肯定觉得，矩阵分解不就是相当于一种 Embedding 方法嘛。没错，<strong>矩阵分解的主要过程，就是先分解协同过滤生成的共现矩阵，生成用户和物品的隐向量，再通过用户和物品隐向量间的相似性进行推荐</strong>。</p>
+<blockquote>
+<p>那这个过程的关键就在于如何分解这个共现矩阵了。从形式上看，矩阵分解的过程是直观的，就是把一个 mxn 的共现矩阵，分解成一个 mxk 的用户矩阵和 kxn 的物品矩阵相乘的形式（如图 3）。</p>
+<figure>
+<img src="/img/in-post/20_07/604b312899bff7922528df4836c10cfb-20210531151622098.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>图3 矩阵分解示意图</p>
+<p>有了用户矩阵和物品矩阵，用户隐向量和物品隐向量就非常好提取了。用户隐向量就是用户矩阵相应的行向量，而物品隐向量就是物品矩阵相应的列向量。那这个过程的关键就在于如何分解这个共现矩阵了。从形式上看，矩阵分解的过程是直观的，就是把一个 mxn 的共现矩阵，分解成一个 mxk 的用户矩阵和 kxn 的物品矩阵相乘的形式（如图 3）。</p>
+<figure>
+<img src="/img/in-post/20_07/604b312899bff7922528df4836c10cfb-20210531151622098.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>图3 矩阵分解示意图</p>
+<p>有了用户矩阵和物品矩阵，用户隐向量和物品隐向量就非常好提取了。用户隐向量就是用户矩阵相应的行向量，而物品隐向量就是物品矩阵相应的列向量。</p>
+</blockquote>
+<h3 id="我们该通过什么方法把共现矩阵分解开呢">我们该通过什么方法把共现矩阵分解开呢？</h3>
+<p>最常用的方法就<strong>是梯度下降</strong>。梯度下降的原理我们在第 3 讲学习过，简单来说就是通过求取偏导的形式来更新权重。梯度更新的公式是 <br /><span class="math display">(<em>w</em> *  * <em>t</em> + 1 = <em>w</em> *  * <em>t</em> − <em>α</em> ∗ ∂<em>w</em>∂<em>L</em>)</span><br /> 。为了实现梯度下降，最重要的一步是<strong>定义损失函数 <em>L</em></strong>，定义好损失函数我们才能够通过求导的方式找到梯度方向，这里我们就给出<strong>矩阵分解损失函数</strong>的定义如下。</p>
+<p><img src="/img/in-post/20_07/3034f1205b8f9ce0d2f736957ff1933e.jpeg" alt="img" style="zoom:25%;" /></p>
+<blockquote>
+<p>这个目标函数里面，*r**_u**i* 是共现矩阵里面用户 <em>u</em> 对物品 <em>i</em> 的评分，*q_**i* 是物品向量，*p<strong>u* 是用户向量，K 是所有用户评分物品的全体集合。通过目标函数的定义我们可以看到，我们要求的物品向量和用户向量，是希望让物品向量和用户向量之积跟原始的评分之差的平方尽量小。简单来说就是，</strong>我们希望用户矩阵和物品矩阵的乘积尽量接近原来的共现矩阵。**</p>
+</blockquote>
+<p>在通过训练得到用户隐向量和物品隐向量之后，<strong>在服务器内部的推荐过程跟我们之前讲过的 Embedding 推荐是一样的</strong>，你也已经在 Sparrow RecSys 里面实践过，是这方面的专家了，我就不再多说了。</p>
+<h2 id="矩阵分解算法的-spark-实现">矩阵分解算法的 Spark 实现</h2>
+<p>我们可以看到，因为 Spark MLlib 已经帮我们封装好了模型，所以矩阵分解算法实现起来非常简单，还是通过我们熟悉的三步来完成，</p>
+<ol type="1">
+<li>分别是定义模型，</li>
+<li>使用 fit 函数训练模型，</li>
+<li>提取物品和用户向量。</li>
+</ol>
+<p>但是有一点我们需要注意，就是在模型中，我们需要在模型中<strong>指定训练样本中用户 ID 对应的列 userIdInt 和物品 ID 对应的列 movieIdInt</strong>，并且两个 ID 列对应的数据类型需要是 int 类型的。</p>
+<pre><code>// 建立矩阵分解模型
+val als = new ALS()
+  .setMaxIter(5)
+  .setRegParam(0.01)
+  .setUserCol(&quot;userIdInt&quot;)
+  .setItemCol(&quot;movieIdInt&quot;)
+  .setRatingCol(&quot;ratingFloat&quot;)
+//训练模型
+val model = als.fit(training)
+//得到物品向量和用户向量
+model.itemFactors.show(10, truncate = false)
+model.userFactors.show(10, truncate = false
+</code></pre>
+<h3 id="矩阵分解的结果怎么使用">矩阵分解的结果怎么使用？</h3>
+<p>其实，<strong>矩阵分解算法得出的结果，你完全可以把它当作 Embedding 来处理</strong>。具体怎么做呢？在讲 Redis 的时候，我们就已经实现过物品 Embedding 和用户 Embedding 的存储和线上预估的过程了，你可以直接参考它。最后，我建议你利用矩阵分解后的用户和物品隐向量，仿照其他 Embedding 的实现，在 Sparrow RecSys 中动手实现一下线上部署的过程，这样你就可以看到矩阵分解模型的实际效果了。</p>
+<h2 id="小结-4">小结</h2>
+<p>这节课我们一起学习了<strong>协同过滤算法</strong>，以及它的后续算法<strong>矩阵分解</strong>，它是最经典的推荐算法。</p>
+<p>总结来说，协同过滤是一种<strong>协同大家的反馈、评价和意见，对海量的信息进行过滤，从中筛选出用户感兴趣信息的一种推荐算法</strong>。它的实现过程主要有三步，</p>
+<ol type="1">
+<li>先根据用户行为历史创建<strong>共现矩阵</strong>，</li>
+<li>然后根据共现矩阵<strong>查找相似用户</strong>，</li>
+<li>再根据相似用户喜欢的物品，<strong>推荐目标用户喜欢的物品</strong>。</li>
+</ol>
+<p>但是协同过滤<strong>处理稀疏矩阵的能力比较差</strong>，因此，<strong>矩阵分解算法</strong>被提出了，它通过<strong>分解共现矩阵，生成用户向量矩阵和物品向量矩阵，进而得到用户隐向量和物品隐向量</strong>。你可以完全把最后的结果当作用户 Embedding 和物品 Embedding 来处理。</p>
+<p>针对这节课的重要知识点，我把它们都列在了下面的表格里，你可以看看。</p>
+<figure>
+<img src="/img/in-post/20_07/5f02442573af2202a85eb3e4bb895212.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h1 id="深度学习革命深度学习推荐模型发展的整体脉络是怎样的">深度学习革命：深度学习推荐模型发展的整体脉络是怎样的？</h1>
+<h3 id="深度学习给推荐系统带来了革命性的影响的优势"><strong>深度学习给推荐系统带来了革命性的影响的优势？</strong></h3>
+<p>能够显著提升推荐系统的效果，原因主要有两点，</p>
+<ol type="1">
+<li>一是深度学习极大地<strong>增强了推荐模型的拟合能力</strong>，</li>
+<li>二是深度学习模型可以利用模型结构<strong>模拟用户兴趣的变迁、用户注意力机制等不同的用户行为过程</strong>。</li>
+</ol>
+<h3 id="din和dien结构">DIN和DIEN结构</h3>
+<p>这其中典型的例子就是阿里巴巴的模型 DIN（深度兴趣网络）和 DIEN（深度兴趣进化网络）。它们通过在模型结构中引入注意力机制和<strong>模拟兴趣进化的序列模型</strong>，来更好地模拟用户的行为。</p>
+<figure>
+<img src="https://static001.geekbang.org/resource/image/20/32/202cfa968b1aa6fa4349722bb4ab4332.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>图4 DIN模型（左）和DIEN的模型（右）示意图</p>
+<p>我们重点关注图 4 的 DIN 模型，它在神经网络中增加了一个叫做<strong>“激活单元“</strong>的结构，这个单元就是为了模拟人类的<strong>注意力机制</strong>。</p>
+<blockquote>
+<p>举个例子来说，我们在购买电子产品，比如说笔记本电脑的时候，更容易拿之前购买电脑的经验，或者其他电子产品的经验来指导当前的购买行为，很少会借鉴购买衣服和鞋子的经验。这就是一个典型的注意力机制，我们<strong>只会注意到相关度更高</strong>的历史购买行为，而 DIN 模型就是模拟了人类的注意力特点。</p>
+</blockquote>
+<p>DIN 模型的改进版 DIEN 模型就更厉害了，它不仅引入了注意力机制，还<strong>模拟了用户兴趣随时间的演化过程</strong>。我们来看那些彩色的层，这一层层的序列结构模拟的正是用户兴趣变迁的历史，通过模拟变迁的历史，DIEN 模型可以更好地预测下一步用户会喜欢什么。</p>
+<h2 id="深度学习推荐模型的演化关系图">深度学习推荐模型的演化关系图</h2>
+<p><img src="/img/in-post/20_07/10e8105911823d96348dc7288d4d26c5.jpg" alt="img" style="zoom:33%;" /></p>
+<p>首先，我们来看整个演化图最中心部分，这是深度学习最基础的结构，我们叫它“多层神经网络”或者“多层感知机”，简称 MLP（MultiLayer Perceptron）。多层感知机的原理我们在第 3 讲中讲过，它就像一个黑盒，会对输入的特征进行深度地组合交叉，然后输出对兴趣值的预测。其他的深度推荐模型全都是在多层感知机的基础上，进行结构上的改进而生成的，所以<strong>“多层感知机”是整个演化图的核心</strong>。</p>
+<p>从多层感知机向上，还有一个重点模型我们需要知道，那就是 <strong>Deep Crossing</strong>。Deep Crossing 实际上是一类经典深度学习模型的代表，相比于 MLP，Deep Crossing 在原始特征和 MLP 之间加入了 Embedding 层。这样一来<u>，输入的稀疏特征先转换成稠密 Embedding 向量，再参与到 MLP 中进行训练，这就解决了 MLP 不善于处理稀疏特征的问题</u>。可以说，<strong>Embedding+MLP 的结构是最经典，也是应用最广的深度学习推荐模型结构</strong>。</p>
+<p>从 MLP 向下，我们看到了 Google 提出的推荐模型 <strong>Wide&amp;Deep</strong>。它<u>把深层的 MLP 和单层的神经网络结合起来，希望同时让网络具备很好的“记忆性”和“泛化性”。</u>对“记忆性”和“泛化性”这两个名词陌生的同学也不用着急，我们后面的课程会专门来讲解 Wide&amp;Deep。</p>
+<p>Wide&amp;Deep 提出以来，凭借着“易实现”“易落地”“易改造”的特点，获得了业界的广泛应用。围绕着 Wide&amp;Deep 还衍生出了诸多变种，比如，通过改造 Wide 部分提出的 Deep&amp;Cross 和 <strong>DeepFM</strong>，通过改造 Deep 部分提出的 AFM、NFM 等等。总之，<strong>Wide&amp;Deep 是业界又一得到广泛应用的深度推荐模型</strong>。</p>
+<p>除此之外，我们还可以看到经典的深度学习模型跟其他机器学习子领域的交叉。这里，我给你举 3 个比较著名的例子：第 1 个是深度学习和注意力机制的结合，诞生了阿里的深度兴趣网络 DIN，浙大和新加坡国立提出的 AFM 等等；第 2 个是把序列模型引入 MLP+Embedding 的经典结构，诞生了阿里的深度兴趣进化网络 DIEN；第 3 个是把深度学习和强化学习结合在一起，诞生了微软的深度强化学习网络 DRN，以及包括美团、阿里在内的非常有价值的业界应用。</p>
+<h3 id="模型的演化有什么规律可循吗">模型的演化有什么规律可循吗？</h3>
+<p>看了这诸多模型的演进过程，你肯定想问模型的演化有什么规律可循吗？接下来，我就把我总结出的，关于模型改进的四个方向告诉你 。</p>
+<p><strong>一是改变神经网络的复杂程度。</strong> 从最简单的单层神经网络模型 AutoRec，到经典的深度神经网络结构 Deep Crossing，它们主要的进化方式在于<u>增加了深度神经网络的层数和结构复杂度</u>。</p>
+<p><strong>二是改变特征交叉方式。</strong> 这种演进方式的要点在于大大提高了深度学习网络中特征交叉的能力。比如说，改变了用户向量和物品向量互操作方式的 NeuralCF，定义了<u>多种特征向量交叉操作的 PNN</u> 等等。</p>
+<p><strong>三是把多种模型组合应用。</strong> 组合模型主要指的就是以 Wide&amp;Deep 模型为代表的一系列把不同结构组合在一起的改进思路。它通过组合两种甚至多种不同特点、优势互补的深度学习网络，来提升模型的综合能力。</p>
+<p><strong>四是让深度推荐模型和其他领域进行交叉。</strong> 我们从 DIN、DIEN、DRN 等模型中可以看出，深度推荐模型无时无刻不在从其他研究领域汲取新的知识。事实上，这个过程从未停歇，我们从今年的推荐系统顶会 Recsys2020 中可以看到，NLP 领域的著名模型 Bert 又与推荐模型结合起来，并且产生了非常好的效果。一般来说，自然语言处理、图像处理、强化学习这些领域都是推荐系统经常汲取新知识的地方。</p>
+<h2 id="小结-5">小结</h2>
+<p>这节课，我们通过学习深度学习对推荐系统的影响要素，以及经典深度学习模型之间的关系，初步建立起了深度学习模型的知识库。</p>
+<p>我们知道，深度学习能够提升推荐系统的效果有<strong>两个关键因素</strong>，分别是它的<strong>“强拟合能力”和“结构的灵活性”。</strong></p>
+<p>对于“强拟合能力”来说，深度学习模型可以大大<strong>增加模型的“非线性”拟合能力</strong>，对复杂数据模型进行更准确的分类，<strong>避免“欠拟合”现象的发生</strong>，从而提升推荐效果。</p>
+<p>对于“结构的灵活性”来说，深度学习模型可以通过灵活调整自身的结构，更轻松恰当地模拟人们的思考过程和行为过程，<strong>把用户猜得更透</strong>。</p>
+<p>而整个深度学习推荐模型的演化过程，是<strong>从最经典的多层神经网络</strong>向不同方向开枝散叶，比如结合协同过滤发展出了 <strong>NerualCF</strong>，加入 Embedding 层发展出以 <strong>Deep Crossing</strong> 为代表的 Embedding+MLP 的结构，以及把深度神经网络和单层网络结合起来发展出 <strong>Wide&amp;Deep</strong> 模型等等。</p>
+<p>在这节课，我们可以先忽略每个模型的细节，着重建立一个整体的知识框架。之后的课程中，我不仅会带你一一揭晓它们的技术细节，还会利用 TensorFlow 实现其中几个经典的模型。期待继续与你一起学习！</p>
+<p>最后，我还是把这节课的重点知识梳理成了表格的形式，你可以借助它来复习巩固。</p>
+<p><img src="/img/in-post/20_07/be5a662d3abd6a8dd5411038718d6cce.jpeg" alt="img" style="zoom:33%;" /></p>
+<h1 id="模型特征训练样本的处理">模型特征、训练样本的处理</h1>
+<h3 id="物品和用户特征都有哪些"><font color="red">物品和用户特征都有哪些？</font></h3>
+<p>MovieLens 数据集中，可供我们提取特征的数据表有两个，分别是 movies 表和 ratings 表，它们的数据格式如下：</p>
+<figure>
+<img src="/img/in-post/20_07/87cd18e09550522e85ef81a8f30869b8.jpg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<p>图1 电影基本数据movies表（左），用户评分数据ratings表（右）</p>
+<p>接下来，我们按照“物品特征”“用户特征”“场景特征”，这三大类推荐系统特征的顺序，来看一看从这两张表中能提取出什么样的特征。</p>
+<p><strong>“物品特征”</strong>在我们的项目里指的就是电影特征了，从 movies 表中我们可以提取出电影的基本信息，包括 movieId、title（电影名）、releaseYear（发布年份）和 genre（风格类型）。除此之外，我们还可以利用 ratings 表为每个电影提取出一些统计类的特征，包括电影的平均评分、评分标准差等等。</p>
+<p>接下来是<strong>“用户特征”</strong>。乍一看，从 movies 和 ratings 表中，除了 userId 我们好像找不到其他直接可用的用户信息了。这个时候，千万不要忘了我们之前提到过的，用户特征最重要的部分就是<strong>历史行为特征</strong>。</p>
+<p>所以，从用户的评分历史中，我们其实可以提取出非常多有价值的特征。比如，我们可以根据 ratings 表的历史<strong>联合</strong> movies 表的电影信息，提取出<strong>用户统计类特征</strong>，它包括用户评分总数、用户平均评分、用户评分标准差、用户好评电影的发布年份均值、用户好评电影的发布年份标准差、用户最喜欢的电影风格，以及用户好评电影 ID 等等。</p>
+<p>最后是<strong>“场景特征”</strong>。我们可用的场景特征就一个，那就是<strong>评分的时间戳</strong>，我们把它作为代表时间场景的特征放到特征工程中。</p>
+<p><img src="/img/in-post/20_07/ae45f7d9020dcb406291b8519d0312d5.jpeg" alt="img" style="zoom:33%;" /></p>
+<p>com.wzhe.sparrowrecsys.offline.spark.featureeng.FeatureEngForRecModel 对象，里面包含了所有特征工程的代码。这里，我们只讲几个有代表性的统计型特征的处理方法。</p>
+<p>val movieRatingFeatures = samplesWithMovies3.groupBy(col(“movieId”))</p>
+<p>.agg(count(lit(1)).as(“movieRatingCount”),</p>
+<p>avg(col(“rating”)).as(“movieAvgRating”),</p>
+<p>stddev(col(“rating”)).as(“movieRatingStddev”))</p>
+<p>计算统计型特征的典型方法，就是利用 Spark 中的 groupBy 操作，将原始评分数据按照 movieId 分组，然后用 agg 聚合操作来计算一些统计型特征。比如，在上面的代码中，我们就分别使用了 count 内置聚合函数来统计电影评价次数（movieRatingCount），用 avg 函数来统计评分均值（movieAvgRating），以及使用 stddev 函数来计算评价分数的标准差（movieRatingStddev）。</p>
+<p>特征处理具体过程，我们就讲完了。不过，这里我还想和你多分享一些我的经验。<strong>一般来说，我们不会人为预设哪个特征有用，哪个特征无用，而是让模型自己去判断，如果一个特征的加入没有提升模型效果，我们再去除这个特征。就像我刚才虽然提取了不少特征，但并不是说每个模型都会使用全部的特征，而是根据模型结构、模型效果有针对性地部分使用它们。</strong>在接下来的课程中，我们还会详细探讨不同模型对这些特征的具体使用方法。</p>
+<h2 id="最终的训练样本是什么样的">最终的训练样本是什么样的？</h2>
+<h2 id="如何在生成样本时避免引入未来信息">如何在生成样本时避免引入“未来信息”？</h2>
+<p>我们可以看到，代码中有一个over(Window.partitionBy(“userId”).orderBy(col(“timestamp”)))操作，它的意思是，在做 rating 平均这个操作的时候，我们不要对这个 userId 下面的所有评分取平均值，而是要创建一个滑动窗口，先把这个用户下面的评分按照时间排序，再让这个滑动窗口一一滑动，滑动窗口的位置始终在当前 rating 前一个 rating 的位置。这样，我们再对滑动窗口内的分数做平均，就不会引入未来信息了。</p>
+<p>类似的操作，我使用在了所有与历史行为有关的特征中，你也可以在 SparrowRecsys 的源码中看到。</p>
+<h2 id="如何把特征数据存入线上供模型服务用">如何把特征数据存入线上供模型服务用？</h2>
+<p>在生成好特征和训练样本之后，还有一个问题需要我们解决，那就是特征的线上存储问题。因为训练样本是供离线训练使用的，而线上模型推断过程是要使用线上特征的。</p>
+<p>好在，特征数据库 Redis 已经为我们提供了解决办法。<strong>我们把用户特征和物品特征分别存入 Redis，线上推断的时候，再把所需的用户特征和物品特征分别取出，拼接成模型所需的特征向量就可以了。</strong></p>
+<p>FeatureEngForRecModel 中的 extractAndSaveUserFeaturesToRedis 函数给出了详细的 Redis 操作，我把其中的关键操作放在了下面。</p>
+<h2 id="小结-6">小结</h2>
+<p>这节课，我们选择 Spark 作为特征和样本处理的平台，是因为 Spark 更<strong>擅长海量数据的分布式处理</strong>，为 TensorFlow 减轻数据处理的负担。在选择具体特征的过程中，我们遵循了<strong>“物品特征”“用户特征”“场景特征”</strong>这三大类特征分类方式，基于 MovieLens 的 ratings 表和 movies 表完成了<strong>特征抽取。</strong></p>
+<p>在样本处理过程中，我们选用<strong>评分和基于评分生成的好评差评标识作为样本标签</strong>，并基于 ratings 表的每条数据，<strong>通过联合物品和用户数据生成训练样本</strong>。<font color="red">在训练样本的生成中，要特别注意<strong>“未来信息”</strong>的问题</font>，<strong>利用 Spark 中的 window 函数滑动生成历史行为相关特征。</strong>最后我们利用 Redis 的 hset 操作把线上推断用的特征存储 Redis。</p>
+<p>这些重点内容，我也都总结在了下面的表格里，你可以看一看。</p>
+<p><img src="/img/in-post/20_07/48e15afe48dba3d35bef1e6f69aee84d.jpg" alt="img" style="zoom: 15%;" /></p>
+<h1 id="embeddingmlp如何用tensorflow实现经典的深度学习模型">Embedding+MLP：如何用TensorFlow实现经典的深度学习模型？</h1>
+<h3 id="deep-crossing">Deep Crossing</h3>
+<figure>
+<img src="/img/in-post/20_07/5076071d3c69d3a9fff848a9e631f371.jpeg" alt="img" /><figcaption>img</figcaption>
+</figure>
+<h3 id="比如-feature1-向上连接到了-embedding-层而-feature2-就直接连接到了更上方的-stacking-层这是怎么回事呢">比如 Feature#1 向上连接到了 Embedding 层，而 Feature#2 就直接连接到了更上方的 Stacking 层。这是怎么~回事呢？</h3>
+<p>原因就在于 Feature#1 代表的是类别型特征经过 One-hot 编码后生成的特征向量，而 Feature#2 代表的是数值型特征。所以我们需要<u>通过连接到 Embedding 层的方式，把这个稀疏的 One-hot 向量转换成比较稠密的 Embedding 向量。</u></p>
+<h3 id="stacking-层的作用是什么">Stacking 层的作用是什么</h3>
+<p>Stacking 层中文名是堆叠层，我们也经常叫它连接（Concatenate）层。它的作用比较简单，就是<strong>把不同的 Embedding 特征和数值型特征拼接在一起，形成新的包含全部特征的特征向量</strong>。</p>
+<h3 id="mlp-层">MLP 层</h3>
+<p>MLP 层就是我们开头提到的多层神经网络层，在图 1 中指的是 Multiple Residual Units 层，中文叫多层残差网络。微软在实现 Deep Crossing 时针对特定的问题选择了残差神经元</p>
+<p>MLP 层的特点是全连接，就是不同层的神经元两两之间都有连接。</p>
+<p><strong>MLP 层的作用是让特征向量不同维度之间做充分的交叉</strong>，让模型能够抓取到更多的非线性特征和组合特征的信息，这就使深度学习模型在表达能力上较传统机器学习模型大为增强。</p>
+<h3 id="scoring-层">Scoring 层</h3>
+<p>最后是 Scoring 层，它也被称为输出层。虽然深度学习模型的结构可以非常复杂，但最终我们要预测的目标就是一个分类的概率。如果是点击率预估，就是一个二分类问题，那我们就可以采用逻辑回归作为输出层神经元，而如果是类似图像分类这样的多分类问题，我们往往在输出层采用 softmax 这样的多分类模型。</p>
+<h4 id="embeddingmlp-的五层结构">Embedding+MLP 的五层结构</h4>
+<p>到这里，我们就讲完了 Embedding+MLP 的五层结构。它的结构重点用一句话总结就是，<strong>对于类别特征，先利用 Embedding 层进行特征稠密化，再利用 Stacking 层连接其他特征，输入 MLP 的多层结构，最后用 Scoring 层预估结果。</strong></p>
+<h1 id="section"></h1>
+<h2 id="小结-7">小结</h2>
+<p>这节课是我们深度学习模型实践的第一课，我们要掌握<strong>两个重点内容</strong>，</p>
+<p>一是 <strong>Embedding+MLP 的模型结构</strong>，</p>
+<p>Embedding+MLP 主要是由 <strong>Embedding 部分</strong>和 <strong>MLP 部分</strong>这两部分组成，使用 <u>Embedding 层是为了将类别型特征转换成 Embedding 向量</u>，<u>MLP 部分是通过多层神经网络拟合优化目标</u>。</p>
+<blockquote>
+<p>具体来说，以微软的 Deep Crossing 为例，模型一共分为 5 层，从下到上分别是 <strong>Feature 层、Embedding 层、Stacking 层、MLP 层和 Scoring 层</strong>。</p>
+</blockquote>
+<p>二是 <strong>Embedding+MLP 模型的 TensorFlow 实现</strong>。</p>
+<p>在 TensorFlow 实践部分，我们利用上节课处理好的特征和训练数据，实现了 Sparrow Recsys 项目中的第一个深度学习模型。在实践过程中，我们要<strong>重点掌握类别型特征的处理方法，模型的定义方式和训练方式，以及最后的模型评估方法。</strong></p>
+<p>我也把这些重点知识总结在了一张表格里，你可以利用它来认真回顾。</p>
+<p><img src="/img/in-post/20_07/4e34e77589d386c8924542794dyy1867.jpg" alt="img" style="zoom:33%;" /></p>
+<p>今天，我们一起完成了 Embedding MLP 模型的实现。在之后的课程中，我们会进一步实现其他深度学习模型，通过模型的评估进行效果上的对比。另外，我们也会利用训练出的深度学习模型完成 Sparrow Recsys 的<strong>猜你喜欢</strong>功能，期待与你一起不断完善我们的项目。</p>
+<h3 id="特征选择和模型设计">特征选择和模型设计</h3>
+<p>在上一节的实践准备课程中，我们已经为模型训练准备好了可用的训练样本和特征。秉着“类别型特征 Embedding 化，数值型特征直接输入 MLP”的原则，我们选择 movieId、userId、movieGenre、userGenre 作为 Embedding 化的特征，选择物品和用户的统计型特征作为直接输入 MLP 的数值型特征，具体的特征选择你可以看看下面的表格：</p>
+<p><img src="/img/in-post/20_07/af3fabdcb119c9e06ddc0f7225bbc094.jpg" alt="img" style="zoom: 33%;" /></p>
+<p>选择好特征后，就是 MLP 部分的模型设计了。我们选择了一个三层的 MLP 结构，其中前两层是 128 维的全连接层。我们这里采用好评 / 差评标签作为样本标签，因此要解决的是一个类 CTR 预估的二分类问题，对于二分类问题，我们最后一层采用单个 sigmoid 神经元作为输出层就可以了。</p>
+<h3 id="比如为什么要选三层的-mlp-结构为什么要选-sigmoid-作为激活函数等等">比如为什么要选三层的 MLP 结构，为什么要选 sigmoid 作为激活函数等等。</h3>
+<p>其实，我们对模型层数和每个层内维度的选择是一个超参数调优的问题，这里的选择不能保证最优，我们需要在实战中需要根据模型的效果进行超参数的搜索，找到最适合的模型参数。</p>
+<h2 id="小结-8">小结</h2>
+<p>这节课，我们一起实现了业界影响力非常大的深度学习模型 Wide&amp;Deep，它是由 Wide 部分和 Deep 部分组成的。其中，<strong>Wide 部分主要是为了增强模型的“记忆能力”，让模型记住“如果 A，那么 B”这样的简单但数量非常多的规则</strong>。<strong>Deep 部分是为了增强模型的“泛化能力”，让模型具备对于稀缺样本、以及从未出现过的特征组合的预测能力。</strong>Wide&amp;Deep 正是通过这样取长补短的方式，让模型的综合能力提升。</p>
+<p>在具体实践的时候，我们继续使用 TensorFlow 的 Keras 接口实现了 Wide&amp;Deep 模型。相比上节课 Embedding MLP 模型的实现，我们新加入了“用户已好评电影”和“当前评价电影”组成的交叉特征 crossed_feature，让 Wide 部分学习“一个喜欢电影 A 的用户，也会喜欢电影 B”这样的规则。</p>
+<p>好了，这就是我们这节课的主要内容，同样，我也把重要的知识点总结在了表格里，你可以利用它来巩固复习。</p>
+<p><img src="/img/in-post/20_07/1d5985d8e9b7d92a87baa80f619a8a12.jpeg" alt="img" style="zoom:33%;" /></p>

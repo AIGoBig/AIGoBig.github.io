@@ -1,0 +1,714 @@
+<h1 id="reference">Reference</h1>
+<p><a href="https://www.runoob.com/cplusplus/cpp-environment-setup.html">菜鸟教程-c++教程</a></p>
+<h1 id="第一章-快速入门">第一章-快速入门</h1>
+<h2 id="环境配置">环境配置</h2>
+<h3 id="编译">编译</h3>
+<h4 id="查看c编译器">查看C编译器</h4>
+<pre><code>$ g++ -v</code></pre>
+<h4 id="编译方式">编译方式</h4>
+<ol type="1">
+<li>最简单、输出为a.out</li>
+</ol>
+<pre><code>g++ helloworld.cpp</code></pre>
+<p>运行</p>
+<pre><code>$ ./a.out</code></pre>
+<ol start="2" type="1">
+<li><p>gcc</p>
+<pre><code>gcc main.cpp -lstdc++ -o main</code></pre></li>
+<li><p>g++</p>
+<pre><code>g++ helloworld.cpp -o helloworld</code></pre></li>
+</ol>
+<h2 id="main函数">main函数</h2>
+<p>有四个必须部分:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="dt">int</span> main() <span class="co">//返回类型, 函数名, 形参(可省略)</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">{                       <span class="co">//函数体</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="cf">return</span> <span class="dv">0</span>; <span class="co">//注意有分号</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">}</a></code></pre></div>
+<p>大多数情况<code>main()</code>的返回值作为状态指示器: 其中返回0表示执行完毕, 返回非0值则有错误出现</p>
+<h2 id="输入输出">输入输出</h2>
+<p><code>IO库</code></p>
+<h4 id="iostream库"><code>iostream</code>库</h4>
+<p>处理格式化输入输出的库</p>
+<p>类型: <code>istream</code>, <code>ostream</code>: 输入流, 输出流</p>
+<p>4个io对象:</p>
+<ol type="1">
+<li>标准输入: cin
+<ol type="1">
+<li>istream对象,</li>
+</ol></li>
+<li>标准输出: cout
+<ol type="1">
+<li>ostream对象</li>
+</ol></li>
+<li>标准错误: cerr
+<ol type="1">
+<li>输出警告和错误信息</li>
+<li>ostream</li>
+</ol></li>
+<li>产生程序一般执行信息: clog
+<ol type="1">
+<li>ostream</li>
+</ol></li>
+</ol>
+<h4 id="例输入输出">[例]输入输出</h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="dt">int</span> main() {</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">    <span class="co">// 前缀 std:: 表明 cout 和 endl 是定义在命名空间 std 中的。</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">    <span class="co">// 操作数必须是 ostream 对象;右操作数是要输出的值。操作符将其右操作数写到作为其左操作数的 ostream 对象</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;Enter Your Number To Sum&quot;</span> &lt;&lt; <span class="bu">std::</span>endl;  <span class="co">//std 是包含了cin, cout 成员的类  std::endl 是换行</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">int</span> x,y;</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="co">// 输入操作符返回其左操作数作为结果。</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="bu">std::</span>cin &gt;&gt; x &gt;&gt; y;</a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;The Result is  &quot;</span> &lt;&lt; x+y &lt;&lt; <span class="bu">std::</span>endl;</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="cf">return</span> <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">}</a></code></pre></div>
+<h2 id="控制结构">控制结构</h2>
+<h3 id="while"><code>while</code></h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="cf">while</span>()</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">{</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">}</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">//or</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="cf">while</span>() </a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">  while_body;</a></code></pre></div>
+<h3 id="for"><code>for</code></h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="cf">for</span>(<span class="dt">int</span> val=<span class="dv">1</span>, val&lt;=<span class="dv">10</span>, ++val)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">  for_body;</a></code></pre></div>
+<h3 id="if"><code>if</code></h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="cf">if</span>()</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  if_body;</a></code></pre></div>
+<h3 id="读入未知数目的输入">读入未知数目的输入</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="cf">while</span> (<span class="bu">std::</span>cin &gt;&gt; x) y += x;</a></code></pre></div>
+<h2 id="类class">类Class</h2>
+<p>标准库的头文件用尖括号 &lt; &gt; 括起来,非标准库的头文件用双引号 &quot; &quot; 括起来。</p>
+<h4 id="对象">对象</h4>
+<p>一般而言,对象就是<strong>内存中具有类型的区域</strong>。说得更具体一些,计算左值表达式就会产生对象</p>
+<h1 id="第一部分-基本语言">###第一部分 基本语言</h1>
+<h1 id="第二章-变量和基本类型">第二章-变量和基本类型</h1>
+<h2 id="基本内置类型">基本内置类型</h2>
+<table>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>关键字</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>布尔型</td>
+<td>bool</td>
+</tr>
+<tr class="even">
+<td>字符型</td>
+<td>char</td>
+</tr>
+<tr class="odd">
+<td>整形</td>
+<td>int</td>
+</tr>
+<tr class="even">
+<td>浮点型</td>
+<td>float</td>
+</tr>
+<tr class="odd">
+<td>双浮点型</td>
+<td>double</td>
+</tr>
+<tr class="even">
+<td>无类型</td>
+<td>void</td>
+</tr>
+<tr class="odd">
+<td>宽字符型</td>
+<td>wchar_t</td>
+</tr>
+</tbody>
+</table>
+<h2 id="类型修饰符">类型修饰符</h2>
+<p>一些基本类型可以使用一个或多个<strong>类型修饰符</strong>进行修饰：</p>
+<ul>
+<li>signed</li>
+<li>unsigned</li>
+<li>short</li>
+<li>long</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 14%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">位</th>
+<th style="text-align: left;">范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">char</td>
+<td style="text-align: left;">1 个字节</td>
+<td style="text-align: left;">-128 到 127 或者 0 到 255</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">unsigned char</td>
+<td style="text-align: left;">1 个字节</td>
+<td style="text-align: left;">0 到 255</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">signed char</td>
+<td style="text-align: left;">1 个字节</td>
+<td style="text-align: left;">-128 到 127</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">4 个字节</td>
+<td style="text-align: left;">-2147483648 到 2147483647</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">unsigned int</td>
+<td style="text-align: left;">4 个字节</td>
+<td style="text-align: left;">0 到 4294967295</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">signed int</td>
+<td style="text-align: left;">4 个字节</td>
+<td style="text-align: left;">-2147483648 到 2147483647</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">short int</td>
+<td style="text-align: left;">2 个字节</td>
+<td style="text-align: left;">-32768 到 32767</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">unsigned short int</td>
+<td style="text-align: left;">2 个字节</td>
+<td style="text-align: left;">0 到 65,535</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">signed short int</td>
+<td style="text-align: left;">2 个字节</td>
+<td style="text-align: left;">-32768 到 32767</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">long int</td>
+<td style="text-align: left;">8 个字节</td>
+<td style="text-align: left;">-9,223,372,036,854,775,808 到 9,223,372,036,854,775,807</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">signed long int</td>
+<td style="text-align: left;">8 个字节</td>
+<td style="text-align: left;">-9,223,372,036,854,775,808 到 9,223,372,036,854,775,807</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">unsigned long int</td>
+<td style="text-align: left;">8 个字节</td>
+<td style="text-align: left;">0 到 18,446,744,073,709,551,615</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">float</td>
+<td style="text-align: left;">4 个字节</td>
+<td style="text-align: left;">精度型占4个字节（32位）内存空间，+/- 3.4e +/- 38 (~7 个数字)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">double</td>
+<td style="text-align: left;">8 个字节</td>
+<td style="text-align: left;">双精度型占8 个字节（64位）内存空间，+/- 1.7e +/- 308 (~15 个数字)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">long double</td>
+<td style="text-align: left;">16 个字节</td>
+<td style="text-align: left;">长双精度型 16 个字节（128位）内存空间，可提供18-19位有效数字。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">wchar_t</td>
+<td style="text-align: left;">2 或 4 个字节</td>
+<td style="text-align: left;">1 个宽字符</td>
+</tr>
+</tbody>
+</table>
+<h2 id="变量">变量</h2>
+<h3 id="c-变量作用域">C++ 变量作用域</h3>
+<p>作用域是程序的一个区域，一般来说有三个地方可以定义变量：</p>
+<ul>
+<li>在<strong>函数或一个代码块内部声明的变量，称为局部变量。</strong></li>
+<li>在函数参数的定义中声明的变量，称为形式参数。</li>
+<li>在所有<strong>函数外部声明的变量，称为全局变量。</strong></li>
+</ul>
+<h3 id="变量名">变量名</h3>
+<p>C++ 中的标识符都是<strong>大小写敏感的。</strong></p>
+<h3 id="变量类型">变量类型</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类型</th>
+<th style="text-align: left;">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;">存储值 true 或 false。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">char</td>
+<td style="text-align: left;">通常是一个字符（八位）。这是一个整数类型。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">对机器而言，整数的最自然的大小。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">float</td>
+<td style="text-align: left;"><strong>单精度浮点值</strong>。单精度是这样的格式，<strong>1位符号，8位指数，23位小数</strong>。<img src="https://www.runoob.com/wp-content/uploads/2014/09/v2-749cc641eb4d5dafd085e8c23f8826aa_hd.png" alt="img" /></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">double</td>
+<td style="text-align: left;"><strong>双精度浮点值</strong>。双精度是<strong>1位符号，11位指数，52位小数</strong>。<img src="https://www.runoob.com/wp-content/uploads/2014/09/v2-48240f0e1e0dd33ec89100cbe2d30707_hd.png" alt="img" /></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">void</td>
+<td style="text-align: left;">表示类型的缺失。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">wchar_t</td>
+<td style="text-align: left;">宽字符类型。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="初始化局部变量和全局变量">初始化局部变量和全局变量</h2>
+<p>当局部变量被定义时，系统不会对其初始化，您必须自行对其初始化。定义<strong>全局变量时，系统会自动初始化为下列值：</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">数据类型</th>
+<th style="text-align: left;">初始化默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">char</td>
+<td style="text-align: left;">‘\0’</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">float</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">double</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pointer</td>
+<td style="text-align: left;">NULL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c常量">C++常量</h2>
+<pre><code>30u        // 无符号整数 
+30l        // 长整数 
+30ul       // 无符号长整数</code></pre>
+<h2 id="c-存储类">C++ 存储类</h2>
+<p>存储类定义 C++ 程序中变量/函数的范围（可见性）和生命周期。这些说明符放置在它们所修饰的类型之前。下面列出 C++ 程序中可用的存储类：</p>
+<ul>
+<li>auto</li>
+<li>register</li>
+<li>static</li>
+<li>extern</li>
+<li>mutable</li>
+<li>thread_local (C++11)</li>
+</ul>
+<p>从 C++ 17 开始，auto 关键字不再是 C++ 存储类说明符，且 register 关键字被弃用。</p>
+<h3 id="auto-存储类">auto 存储类</h3>
+<p>自 C++ 11 以来，<strong>auto</strong> 关键字用于两种情况：声明变量时根据初始化表达式自动推断该变量的类型、声明函数时函数返回值的占位符。</p>
+<p>C++98标准中auto关键字用于自动变量的声明，但由于使用极少且多余，在C++11中已删除这一用法。</p>
+<p>根据初始化表达式自动推断被声明的变量的类型，如：</p>
+<p>auto f=3.14; //double auto s(“hello”); //const char* auto z = new auto(9); // int* auto x1 = 5, x2 = 5.0, x3=‘r’;//错误，必须是初始化为同一类型</p>
+<h2 id="c-中的运算符优先级">C++ 中的运算符优先级</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">类别</th>
+<th style="text-align: left;">运算符</th>
+<th style="text-align: left;">结合性</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">后缀</td>
+<td style="text-align: left;">() <a href="#section"></a> -&gt; . ++ - -</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">一元</td>
+<td style="text-align: left;">+ - ! ~ ++ - - (type)* &amp; sizeof</td>
+<td style="text-align: left;">从右到左</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">乘除</td>
+<td style="text-align: left;">* / %</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">加减</td>
+<td style="text-align: left;">+ -</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">移位</td>
+<td style="text-align: left;">&lt;&lt; &gt;&gt;</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">关系</td>
+<td style="text-align: left;">&lt; &lt;= &gt; &gt;=</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">相等</td>
+<td style="text-align: left;">== !=</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">位与 AND</td>
+<td style="text-align: left;">&amp;</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">位异或 XOR</td>
+<td style="text-align: left;">^</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">位或 OR</td>
+<td style="text-align: left;">|</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">逻辑与 AND</td>
+<td style="text-align: left;">&amp;&amp;</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">逻辑或 OR</td>
+<td style="text-align: left;">||</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">条件</td>
+<td style="text-align: left;">?:</td>
+<td style="text-align: left;">从右到左</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">赋值</td>
+<td style="text-align: left;">= += -= *= /= %=&gt;&gt;= &lt;&lt;= &amp;= ^= |=</td>
+<td style="text-align: left;">从右到左</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">逗号</td>
+<td style="text-align: left;">,</td>
+<td style="text-align: left;">从左到右</td>
+</tr>
+</tbody>
+</table>
+<h2 id="其他">其他</h2>
+<h3 id="c-关键字">C++ 关键字</h3>
+<figure>
+<img src="/img/in-post/20_03/image-20200406075700424.png" alt="image-20200406075700424" /><figcaption>image-20200406075700424</figcaption>
+</figure>
+<p><img src="/img/in-post/20_03/image-20200406103409436.png" alt="image-20200406103409436" style="zoom: 33%;" /></p>
+<h4 id="定义对象">定义对象</h4>
+<p><img src="/img/in-post/20_03/image-20200406080404200.png" alt="image-20200406080404200" style="zoom: 33%;" /></p>
+<p>每个定义都是以<strong>类型说明符</strong>开始, 后面紧跟着以逗号分开的含有一个或多个<strong>说明符的列表</strong>。<strong>分号</strong>结束定义。</p>
+<h4 id="初始化">初始化</h4>
+<p>复制初始化复制初始化和直接初始化。</p>
+<p><img src="/img/in-post/20_03/image-20200406081453460.png" alt="image-20200406081453460" style="zoom: 67%;" /></p>
+<p><code>警告:未初始化的变量引起运行问题</code>,建议每个内置类型的对象都要初始化。</p>
+<h4 id="声明和定义">声明和定义</h4>
+<p>为了让多个文件访问相同的变量,C++ 区分了声明和定义。</p>
+<p><strong>变量的定义用于为变量分配存储空间,还可以为变量指定初始值</strong>。在一个程序中,变量<strong>有且仅有一个定义</strong>。</p>
+<p><strong>声明</strong>用于向程序表明变量的类型和名字。定义也是声明:当定义变量时我们声明了它的类型和名字。可以通过使用 <code>extern</code> 关键字声明变量名而不定义它。</p>
+<p>不定义变量的声明包括对象名、对象类型和对象类型前的关键字 extern:</p>
+<p>extern int i; // declares but does not define i<br />
+int i; // declares and defines i</p>
+<p>extern 声明不是定义,也不分配存储空间。事实上,<strong>它只是说明变量定义在程序的其他地方。</strong>程序中变量可以声明多次,但只能定义一次。</p>
+<p><code>**如果声明有初始化式,那么它可被当作是定义**</code>,即使声明标记为 extern:</p>
+<p>extern double pi = 3.1416; // definition</p>
+<h2 id="const限定符">const限定符</h2>
+<p><strong>魔数 (magic number)</strong>: 会产生可读性和可维护性的问题</p>
+<p>解决这两个问题的方法是使用一个初始化为 512 的对象:</p>
+<pre><code>int bufSize = 512;    // input buffer size       
+for (int index = 0; index != bufSize; ++index) {           
+    // ... 
+}</code></pre>
+<h4 id="const-限定符"><strong>const 限定符</strong></h4>
+<p>提供了一个解决办法,<strong>它把一个对象转换成一个 不可修改的常量,</strong> const int bufSize = 512; // input buffer size</p>
+<h4 id="用extern更改const为全局变量"><strong>用extern更改const为全局变量</strong></h4>
+<p><strong>const默认为局部变量</strong>,<code>非const变量默认为全局变量</code>, 在做了合适的声明时其他文件也可用, 如下</p>
+<pre><code>// file_1.cc       
+int counter;  // definition       
+// file_2.cc       
+extern int counter; // uses counter from file_1       
+++counter;          // increments counter defined in file_1
+</code></pre>
+<p>通过指定 const 变更为 <strong>extern</strong>,就可以在整个程序中访问 const 对象:</p>
+<pre><code>extern const int bufSize = fcn();       
+// file_2.cc
+extern const int bufSize; // uses bufSize from file_1</code></pre>
+<h2 id="引用">引用</h2>
+<p>引用就是对象的另一个名字。 在实际程序中, 引用主要用作函数的<strong>形式参数</strong>。</p>
+<p>引用是一种复合类型,通过在<strong>变量名前添加“&amp;”</strong>符号来定义。</p>
+<p><strong>复合类型</strong>是指用其他类型定义的类型。 在引用的情况下, 每一种引用类型都“关联到”某一其他类型。不能定义引用类型的引用,但可以定义任何其他类型的引用。</p>
+<p>引用必须<strong>用与该引用同类型的对象初始化</strong>:</p>
+<pre><code>int ival = 1024;       
+int &amp;refVal = ival; // ok: refVal refers to ival       
+int &amp;refVal2;       // error: a reference must be initialized       int &amp;refVal3 = 10;  // error: initializer must be an object</code></pre>
+<h4 id="引用是别名">引用是别名</h4>
+<p>因为引用只是它绑定的对象的另一名字,作用在引用上的所有操作事实上都是作用在该引用绑定的对象上</p>
+<h4 id="定义多个引用">定义多个引用</h4>
+<p>可以在一个类型定义行中定义多个引用。必须在每个引用标识符前添加“&amp;”符号:</p>
+<h4 id="const-引用">const 引用</h4>
+<p>const 引用是指向 const 对象的引用: <strong>必须加上const</strong></p>
+<pre><code>const int ival = 1024;       
+const int &amp;refVal = ival; // ok: both reference and object are const       
+int &amp;ref2 = ival;          // error: non const reference to a const object</code></pre>
+<h2 id="typedef-名字">typedef 名字</h2>
+<p>typedef 可以用来定义类型的同义词:</p>
+<p>typedef double wages; // wages is a synonym for double</p>
+<h2 id="枚举">枚举</h2>
+<h4 id="定义和初始化枚举">定义和初始化枚举</h4>
+<p>枚举的定义包括关键字 <code>enum</code>,其后是一个可选的枚举类型名,和一个用花括号括起来、用逗号分开的枚举成员列表。</p>
+<pre><code>// input is 0, output is 1, and append is 2      
+enum open_modes {input, output, append};</code></pre>
+<h4 id="枚举成员是常量">枚举成员是常量</h4>
+<h4 id="唯一的类型">唯一的类型</h4>
+<p>每个 enum 都定义一种唯一的类型</p>
+<h2 id="类类型">类类型</h2>
+<h4 id="定义-sales_item-类">定义 Sales_item 类</h4>
+<pre><code>class Sales_item {      
+public:          
+    // operations on Sales_item objects will go here      
+private:          
+    std::string isbn;          
+    unsigned units_sold;          
+    double revenue;      
+};  // 注意有;
+</code></pre>
+<p>类体定义了组成该类型的数据和操作。这些操作和数据是类的一部分,也称为<strong>类的成员</strong>。操作称为<strong>成员函数</strong>(第 1.5.2 节),而数据则称为<strong>数据成员</strong>。</p>
+<h4 id="访问标号">访问标号</h4>
+<p>访问标号负责控制使用该类的代码是否可以使用给定的成员。类的成员函数可以使用类的任何成员,而不管其访问级别。访问标号 public、private 可以多次出现在类定义中。给定的访问标号应用到下一个访问标号出现时为止。</p>
+<p>类中 <strong>public</strong> 部分定义的成员在程序的任何部分都可以访问。</p>
+<p>不是类的组成部分的代码不能访问 <strong>private</strong> 成员。Sales_item 类型的对象可以执行那些操作,但是不能直接修改这些数据。</p>
+<h4 id="使用-struct-关键字">使用 struct 关键字</h4>
+<p>C++ 支持另一个关键字 struct,它也可以定义类类型。</p>
+<p>可以等效地定义 Sales_item 类为:</p>
+<pre><code>struct Sales_item {          
+// no need for public label, members are public by default          // operations on Sales_item objects      
+private:        
+    std::string isbn;          
+    unsigned units_sold;       
+    double revenue;     
+};</code></pre>
+<p>注意:</p>
+<ol type="1">
+<li>成员默认为public, 不需要加public关键字</li>
+<li><code>用 class 和 struct 关键字定义类的唯一差别在于默认访问级别:默认情况下,struct 的成员为 public,而 class 的成员为 private。</code></li>
+</ol>
+<h2 id="编写自己的头文件">编写自己的头文件</h2>
+<p>我们已经从第 1.5 节了解到,一般类定义都会放入头文件。编写自己的头文件 我们已经从第 1.5 节了解到,一般类定义都会放入头文件。</p>
+<h4 id="编译和链接多个源文件">编译和链接多个源文件</h4>
+<p>$ CC -c main.cc Sales_item.cc -o main</p>
+<h4 id="头文件用于声明而不是用于定义">头文件用于声明而不是用于定义</h4>
+<p>当设计头文件时, 记住定义和声明的区别是很重要的。 定义只可以出现一次, 而声明则可以出现多次(第 2.3.5 节)。<strong>下列语句是一些定义,所以不应该放在头文件里</strong>:</p>
+<pre><code>extern int ival = 10;      // initializer, so it&#39;s a definition      double fica_rate;          // no extern, so it&#39;s a definition</code></pre>
+<p>对于头文件不应该含有定义这一规则,有三个例外。<strong>头文件可以定义类、值在编译时就已知道的 const 对象和 inline 函数</strong>(第 7.6 节介绍 inline 函数)。这些实体可在多个源文件中定义,只要每个源文件中的定义是相同的。</p>
+<h4 id="一些-const-对象定义在头文件中">一些 const 对象定义在头文件中</h4>
+<p>C++ 中的<strong>任何变量都只能定义一次</strong>(第 2.3.5 节)。定义会分配存储空间,而所有对该变量的使用都关联到同一存储空间。</p>
+<p>如果 const 变量不是用常量表达式初始化,那么它就不应该在头文件中定义。相反,和其他的变量一样,该 const 变量应该在一个源文件中定义并初始化。应在头文件中为它添加 extern 声明,以使其能被多个文件共享。</p>
+<h4 id="预处理器的简单介绍">预处理器的简单介绍</h4>
+<p>#include 设施是 C++ 预处理器的一部分。预处理器处理程序的源代码,在编译器之前运行。</p>
+<h4 id="避免多重包含">避免多重包含</h4>
+<p>在编写头文件之前,我们需要引入一些额外的预处理器设施。预处理器允许我们自定义变量。 预处理器变量 的名字在程序中必须是唯一的。任何与预处理器变量相匹配的名字的使用都关联到该预处理器变量。</p>
+<p><strong>为了避免名字冲突,预处理器变量经常用全大写字母表示</strong></p>
+<p>可以使用这些设施来预防多次包含同一头文件:</p>
+<pre><code> #ifndef SALESITEM_H      
+ #define SALESITEM_H      
+ // Definition of Sales_itemclass and related functions goes here      #endif</code></pre>
+<p>使用自定义的头文件</p>
+<p>#include 指示接受以下两种形式:</p>
+<pre><code> #include &lt;standard_header&gt;      
+ #include &quot;my_file.h&quot; </code></pre>
+<p>如果头文件名括在尖括号(&lt; &gt;)里,那么认为该头文件是<strong>标准头文件</strong>。编译器将会在预定义的位置集查找该头文件, 这些预定义的位置可以通过设置查找路径环境变量或者通过命令行选项来修改。</p>
+<p>如果头文件名括在一对引号里, 那么认为它是<strong>非系统头文件</strong>, 非系统头文件的查找通常开始于源文件所在的路径。</p>
+<h2 id="小结">小结</h2>
+<p>类型可以为 const 或非 const;const 对象必须要初始化,且其值不能被修改。</p>
+<p>C++ 是一种静态类型语言:变量和函数在使用前必须先声明。变量可以声明多次但是只能定义一次。定义变量时就进行初始化几乎总是个好主意。</p>
+<h4 id="例子头文件内的函数使用">[例子]头文件内的函数使用</h4>
+<div class="sourceCode" id="cb24"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="dt">int</span> main() {</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">    <span class="co">// 前缀 std:: 表明 cout 和 endl 是定义在命名空间 std 中的。</span></a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">    <span class="bu">std::</span>cout &lt;&lt; <span class="st">&quot;Hello, World!&quot;</span> &lt;&lt; <span class="bu">std::</span>endl;  <span class="co">//std 是包含了cin, cout 成员的类  std::endl 是换行</span></a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">    f();</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">    <span class="cf">return</span> <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">   <span class="co">// 好的呀</span></a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">}</a></code></pre></div>
+<h1 id="第三章-标准库类型">第三章 标准库类型</h1>
+<p>两种最重要的标准库类型是 <strong>string 和 vector</strong>。</p>
+<h2 id="命名空间的-using-声明">命名空间的 using 声明</h2>
+<p>使用 using 声明可以在不需要加前缀 namespace_name:: 的情况下访问命名空间中的名字。using 声明的形式如下:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">using</span> <span class="bu">std::</span>cin;      </a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="kw">using</span> <span class="bu">std::</span>string;      </a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="dt">int</span> main()      </a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">{       </a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">  string s;       <span class="co">// ok: string is now a synonym for std::string  </span></a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">  cin &gt;&gt; s;       <span class="co">// ok: cin is now a synonym for std::cin</span></a></code></pre></div>
+<p>一次只能声明一个命名空间成员:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span><span class="pp">      </span><span class="co">// using declarations for names from the standard library      </span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">using</span> <span class="bu">std::</span>cin;      </a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">using</span> <span class="bu">std::</span>cout;      </a>
+<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw">using</span> <span class="bu">std::</span>endl;</a></code></pre></div>
+<h2 id="标准库-string-类型">标准库 string 类型</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="pp">#include </span><span class="im">&lt;string&gt;</span><span class="pp">      </span></a>
+<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="kw">using</span> <span class="bu">std::</span>string;</a></code></pre></div>
+<h3 id="初始化-1">初始化</h3>
+<p>表 3.1. 几种初始化 string 对象的方式</p>
+<p><img src="/img/in-post/20_03/image-20200407200130332.png" alt="image-20200407200130332" style="zoom: 33%;" /></p>
+<h2 id="标准库-vector-类型">标准库 vector 类型</h2>
+<p>vector 是同一种类型的对象的<strong>集合</strong>,每个对象都有一个对应的整数索引值。 和 string 对象一样, 标准库将负责管理与存储元素相关的内存。 <strong>我们把 vector 称为容器, 是因为它可以包含其他对象。</strong> 一个容器中的所有对象都必须是同一种类型的。我们将在第九章更详细地介绍容器。</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="pp">#include </span><span class="im">&lt;vector&gt;</span><span class="pp">      </span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw">using</span> <span class="bu">std::</span>vector;</a></code></pre></div>
+<p>vector 是一个类模板(class template)。使用模板可以编写一个类定义或函数定义,而用于多个不同的数据类型。</p>
+<h3 id="vector-对象的定义和初始化">vector 对象的定义和初始化</h3>
+<p><img src="/img/in-post/20_03/image-20200407212100721.png" alt="image-20200407212100721" style="zoom: 67%;" /></p>
+<h2 id="迭代器简介">迭代器简介</h2>
+<h2 id="标准库-bitset">标准库 bitset</h2>
+<h1 id="section"></h1>
+<h1 id="第四章-数组和指针">第四章 数组和指针</h1>
+<h2 id="声明数组">声明数组</h2>
+<p>在 C++ 中要声明一个数组，需要指定元素的类型和元素的数量，如下所示：</p>
+<pre><code>type arrayName [ arraySize ];</code></pre>
+<p>这叫做一维数组。<strong>arraySize</strong> 必须是一个大于零的整数常量，<strong>type</strong> 可以是任意有效的 C++ 数据类型。例如，要声明一个类型为 double 的包含 10 个元素的数组 <strong>balance</strong>，声明语句如下：</p>
+<pre><code>double balance[10];</code></pre>
+<p><strong>初始化数组</strong></p>
+<p>在 C++ 中，您可以逐个初始化数组，也可以使用一个初始化语句，如下所示：</p>
+<pre><code>double balance[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};</code></pre>
+<h2 id="c-中的-string-类">C++ 中的 String 类</h2>
+<pre><code>   string str1 = &quot;runoob&quot;;</code></pre>
+<h1 id="比赛学习">&lt; 比赛学习 &gt;</h1>
+<h3 id="map"><code>map()</code></h3>
+<p><code>map&lt;int, vector&lt;int&gt; &gt; graph;</code></p>
+<p>C++中map提供的是一种键值对容器，里面的数据都是成对出现的,如下图：</p>
+<figure>
+<img src="/img/in-post/20_03/map-example.png" alt="http://www.studytonight.com/cpp/images/map-example.png" /><figcaption>http://www.studytonight.com/cpp/images/map-example.png</figcaption>
+</figure>
+<h4 id="findmap的查字典">find–map的查字典</h4>
+<p>用find函数来定位数据出现位置，它返回的一个迭代器，当数据出现时，它返回数据所在位置的迭代器，如果map中没有要查找的数据，它返回的迭代器等于end函数返回的迭代器。</p>
+<h4 id="打印mapint-vector-int">打印map&lt;int, vector &lt;int&gt; &gt;</h4>
+<div class="sourceCode" id="cb33"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="pp">#include</span><span class="im">&lt;iostream&gt;</span></a>
+<a class="sourceLine" id="cb33-2" data-line-number="2"><span class="pp">#include</span><span class="im">&lt;map&gt;</span></a>
+<a class="sourceLine" id="cb33-3" data-line-number="3"><span class="pp">#include</span><span class="im">&lt;string&gt;</span></a>
+<a class="sourceLine" id="cb33-4" data-line-number="4"><span class="pp">#include </span><span class="im">&lt;vector&gt;</span></a>
+<a class="sourceLine" id="cb33-5" data-line-number="5"><span class="pp">#include </span><span class="im">&lt;iterator&gt;</span></a>
+<a class="sourceLine" id="cb33-6" data-line-number="6"><span class="co">//#include &lt;algorithm&gt;</span></a>
+<a class="sourceLine" id="cb33-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb33-8" data-line-number="8"><span class="kw">using</span> <span class="kw">namespace</span> std;</a>
+<a class="sourceLine" id="cb33-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb33-10" data-line-number="10"><span class="dt">int</span> main() {</a>
+<a class="sourceLine" id="cb33-11" data-line-number="11">    map&lt;<span class="dt">int</span>, vector&lt;<span class="dt">int</span>&gt; &gt; t;</a>
+<a class="sourceLine" id="cb33-12" data-line-number="12">    t[<span class="dv">0</span>] = {<span class="dv">1</span>};</a>
+<a class="sourceLine" id="cb33-13" data-line-number="13">    t[<span class="dv">1</span>] = {<span class="dv">18</span>, <span class="dv">1</span>};</a>
+<a class="sourceLine" id="cb33-14" data-line-number="14">    map&lt;<span class="dt">int</span>, vector&lt;<span class="dt">int</span>&gt;&gt;::iterator iter;</a>
+<a class="sourceLine" id="cb33-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb33-16" data-line-number="16">    <span class="dt">int</span> c = getchar();   <span class="co">// 显示暂停程序 注意</span></a>
+<a class="sourceLine" id="cb33-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb33-18" data-line-number="18">    <span class="cf">for</span> (iter = t.begin(); iter != t.end(); iter++) {</a>
+<a class="sourceLine" id="cb33-19" data-line-number="19"><span class="co">//        cout &lt;&lt; iter-&gt;first &lt;&lt; &quot;-&gt;&quot; &lt;&lt; iter-&gt;second &lt;&lt; endl;</span></a>
+<a class="sourceLine" id="cb33-20" data-line-number="20">        cout &lt;&lt; iter-&gt;first &lt;&lt; <span class="st">&quot;-&gt;&quot;</span> ;</a>
+<a class="sourceLine" id="cb33-21" data-line-number="21">        copy (iter-&gt;second.begin(), iter-&gt;second.end(), ostream_iterator&lt;<span class="dt">int</span>&gt; (cout, <span class="st">&quot;,&quot;</span>));</a>
+<a class="sourceLine" id="cb33-22" data-line-number="22">        cout &lt;&lt; <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>;</a>
+<a class="sourceLine" id="cb33-23" data-line-number="23">    }</a>
+<a class="sourceLine" id="cb33-24" data-line-number="24">    <span class="cf">return</span> <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb33-25" data-line-number="25">}</a></code></pre></div>
+<h3 id="迭代器-iter">迭代器 iter</h3>
+<h3 id="vector-类">vector 类</h3>
+<p><code>vector&lt;int&gt; single_result;</code></p>
+<p>向量是一个封装了动态大小数组的顺序容器, 与其他类型容器相同, 它可以存放各种类型的对象</p>
+<p>简单认为, 向量是一个能够存放任意类型的动态数组</p>
+<h4 id="打印向量">打印向量</h4>
+<div class="sourceCode" id="cb34"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb34-1" data-line-number="1">copy (res1.begin(), res1.end(), ostream_iterator&lt;<span class="dt">int</span>&gt; (cout, <span class="st">&quot;,&quot;</span>));  <span class="co">//打印向量vector&lt;int&gt; res1</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">cout &lt;&lt; <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>;</a></code></pre></div>
+<h4 id="函数">函数</h4>
+<p><strong>增加函数</strong></p>
+<p>void push_back(const T&amp; x):向量尾部增加一个元素X</p>
+<p>1.push_back 在数组的最后添加一个数据</p>
+<p>2.pop_back 去掉数组的最后一个数据</p>
+<p>3.at 得到编号位置的数据</p>
+<p>4.begin 得到数组头的指针</p>
+<p>5.end 得到数组的最后一个单元+1的指针</p>
+<p>6．front 得到数组头的引用</p>
+<p>7.back 得到数组的最后一个单元的引用</p>
+<p>8.max_size 得到vector最大可以是多大</p>
+<p>9.capacity 当前vector分配的大小</p>
+<p>10.size 当前使用数据的大小</p>
+<p>11.resize 改变当前使用数据的大小，如果它比当前使用的大，者填充默认值</p>
+<p>12.reserve 改变当前vecotr所分配空间的大小</p>
+<p>13.erase 删除指针指向的数据项</p>
+<p><strong>14.clear 清空当前的vector</strong></p>
+<p>15.rbegin 将vector反转后的开始指针返回(其实就是原来的end-1)</p>
+<p>16.rend 将vector反转构的结束指针返回(其实就是原来的begin-1)</p>
+<p>17.empty 判断vector是否为空</p>
+<p>18.swap 与另一个vector交换数据</p>
+<h4 id="基本用法"><strong>基本用法</strong></h4>
+<pre><code>#include &lt; vector&gt; 
+using namespace std;</code></pre>
+<h3 id="暂停程序">暂停程序</h3>
+<p>当程序看不到输出直接返回code0时,在前面加上</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb36-1" data-line-number="1">    <span class="co">// &quot;entering any character to continue.&quot;</span></a>
+<a class="sourceLine" id="cb36-2" data-line-number="2">    cout &lt;&lt; <span class="st">&quot;entering any character to continue.&quot;</span> &lt;&lt; endl;</a>
+<a class="sourceLine" id="cb36-3" data-line-number="3">    <span class="dt">int</span> c = getchar();   <span class="co">// 显示暂停程序 注意</span></a></code></pre></div>
+<h3 id="去重操作如vector">去重操作(如vector)</h3>
+<div class="sourceCode" id="cb37"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">auto</span> tmp = inputs;</a>
+<a class="sourceLine" id="cb37-2" data-line-number="2"><span class="co">//以下2行: 删除重复项 -- ①sort()排序 ②unique()重复项移至末尾并返回地址 ③容器操作,删除元素</span></a>
+<a class="sourceLine" id="cb37-3" data-line-number="3">sort(tmp.begin(), tmp.end());  <span class="co">//对输入排序</span></a>
+<a class="sourceLine" id="cb37-4" data-line-number="4">tmp.erase(unique(tmp.begin(), tmp.end()), tmp.end()); <span class="co">//erase(): 容器操作, 删除元素  unique(): 去重函数, 将重复项移至最后, 并返回最后一个元素的地址</span></a></code></pre></div>
+<h3 id="哈希表容器-unordered_map">哈希表容器 <code>unordered_map</code></h3>
+<p>哈希表是根据关键码值(key value)而直接进行访问的数据结构。也就是说，它<strong>通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度，这个映射函数叫做散列函数。</strong></p>
+<p>哈希表的一个重要问题就是如何解决映射冲突的问题。常用的有两种：<strong>开放地址法</strong> 和 <strong>链地址法</strong>。</p>
+<h4 id="与-map-的区别">与 map 的区别</h4>
+<p>STL中，<code>map</code> 对应的数据结构是 <strong>红黑树</strong>。红黑树是一种近似于平衡的二叉查找树，里面的数据是有序的。在红黑树上做查找操作的时间复杂度为 <strong>O(logN)</strong>。<code>而unordered_map</code> 对应 <strong>哈希表</strong>，哈希表的特点就是查找效率高，时间复杂度为常数级别 <strong>O(1)</strong>， 而额外空间复杂度则要高出许多。</p>
+<p>所以对于需要高效率查询的情况，使用 <code>unordered_map</code> 容器。而如果对内存大小比较敏感或者数据存储要求有序的话，则可以用 <code>map</code> 容器。</p>
+<h3 id="指针">指针</h3>
+<p>C++ 提供了两种指针运算符</p>
+<p>指针是一个包含了另一个变量地址的变量，<strong>您可以把一个包含了另一个变量地址的变量说成是“指向”另一个变量。</strong>变量可以是任意的数据类型，包括对象、结构或者指针。</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode c++"><code class="sourceCode cpp"><a class="sourceLine" id="cb38-1" data-line-number="1">a -&gt; b <span class="co">// a包含b变量的地址, </span></a>
+<a class="sourceLine" id="cb38-2" data-line-number="2">            <span class="co">//此时:  *a = b,  a = &amp;b</span></a></code></pre></div>
+<h4 id="取地址运算符"><code>&amp;</code> – 取地址运算符</h4>
+<p>&amp; 是一元运算符，返回操作数的内存地址。例如，如果 var 是一个整型变量，则 &amp;var 是它的地址。</p>
+<p>您可以把 &amp; 运算符读作<strong>“取地址运算符”</strong>，这意味着，<strong>&amp;var</strong> 读作“var 的地址”。</p>
+<h4 id="取地址的内容-间接寻址"><code>*</code> – 取地址的内容 (间接寻址)</h4>
+<p>第二个运算符是间接寻址运算符 <em>，它是 &amp; 运算符的补充。</em> 是一元运算符，返回操作数所指定地址的变量的值。</p>
+<h4 id="注意">注意</h4>
+<p>调用时变量前加 “&amp;” ——-返回该变量的地址</p>
+<p>**声明时变量前加 &quot;基本类型 *&quot; ——-该指针变量表示另一个普通变量的地址** eg:int * 或 char *</p>
+<p>调用时变量前加 &quot;*&quot;——-表示取该地址的内容</p>
+<p>声明时变量前加 &quot;基本类型 **“——-该二级指针变量表示另一个一级”基本类型 *&quot;指针变量地址</p>
+<p><code>(int &amp;x : path)  // int &amp;x -- path的变量地址</code></p>
+<h1 id="第五章-表达式">第五章 表达式</h1>
+<h1 id="第六章-语句">第六章 语句</h1>
+<h1 id="第七章-函数">第七章 函数</h1>
+<h1 id="第八章-标准-io-库">第八章 标准 IO 库</h1>
+<h1 id="第二部分容器和算法">&lt; 第二部分:容器和算法 &gt;</h1>
+<h1 id="第九章.-顺序容器">第九章. 顺序容器</h1>
+<h1 id="第十章-关联容器">第十章 关联容器</h1>
+<h1 id="第十一章-泛型算法">第十一章 泛型算法</h1>
+<h1 id="第三部分类和数据抽象">&lt; 第三部分:类和数据抽象 &gt;</h1>
+<h1 id="第十二章-类.">第十二章 类.</h1>
+<h1 id="第十三章-复制控制">第十三章 复制控制</h1>
+<h1 id="第十四章-重载操作符与转换">第十四章 重载操作符与转换</h1>
+<h1 id="第十五章.-面向对象编程">第十五章. 面向对象编程</h1>
+<h1 id="第十六章-模板和泛型编程">第十六章 模板和泛型编程</h1>
+<h1 id="第十七章-用于大型程序的工具">第十七章 用于大型程序的工具</h1>
+<h1 id="第十八章-特殊工具与技术">第十八章 特殊工具与技术</h1>
+<h1 id="附录-a.-标准库">&lt; 附录 A. 标准库 &gt;</h1>

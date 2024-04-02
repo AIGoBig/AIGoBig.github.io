@@ -1,0 +1,74 @@
+<h1 id="前置知识介绍">前置知识介绍</h1>
+<h2 id="介绍">介绍</h2>
+<p>爬虫： 自动抓取互联网信息，获取对我们有价值的信息</p>
+<blockquote>
+<p>比如说搜索引擎 (<a href="https://www.google.com/">Google</a>, <a href="http://www.baidu.com/">百度</a>), 他们能为你提供这么多搜索结果, 也都是因为它们爬了很多信息, 然后展示给你. 再来说一些商业爬虫, 比如爬爬淘宝的同类商品的价格信息, 好为自己的商品挑选合适的价格. 爬虫的用途很多很多, 如果你搞机器学习, 爬虫就是你获取数据的一种途径, 网上的信息成百上千, 只要你懂爬虫, 你都能轻松获取.</p>
+</blockquote>
+<p><img src="/img/in-post/20_03/1-1-0.png" alt="Why?" style="zoom:33%;" /></p>
+<h2 id="架构">架构</h2>
+<ol type="1">
+<li><p>调度器 – 负责调度URL管理器、下载器、解析器之间的协调工作。</p></li>
+<li><p>URL管理器 – 管理待爬取的URL地址和已爬取的URL地址</p></li>
+<li><p>网页下载器 – 传入一个URL下载网页, 讲网页转换成字符串</p>
+<blockquote>
+<p>如urllib2(官方基础模块), 包括需要登录, 代理, cookie, requests</p>
+</blockquote></li>
+<li><p>网页解析器 – 讲网页字符串或DOM树进行解析</p>
+<blockquote>
+<p>网页解析器有<strong>正则表达式</strong>（直观，将网页转成字符串通过模糊匹配的方式来提取有价值的信息，当文档比较复杂的时候，该方法提取数据的时候就会非常的困难）、<strong>html.parser</strong>（Python自带的）、<strong>beautifulsoup</strong>（第三方插件，可以使用Python自带的html.parser进行解析，也可以使用lxml进行解析，相对于其他几种来说要强大一些）、<strong>lxml</strong>（第三方插件，可以解析 xml 和 HTML），<strong>html.parser 和 beautifulsoup 以及 lxml 都是以 DOM 树的方式进行解析的。</strong></p>
+</blockquote></li>
+<li><p>应用程序</p>
+<figure>
+<img src="/img/in-post/20_03/20170427113109368.png" alt="20170427113109368" /><figcaption>20170427113109368</figcaption>
+</figure></li>
+</ol>
+<h2 id="html">HTML</h2>
+<p><a href="https://www.runoob.com/try/try.php?filename=tryhtml_intro">HTML在线编程网页-菜鸟工具</a></p>
+<p>HTML是一种<strong>用于创建网页的标记语言</strong>，里面嵌入了文本、图像等数据，可以被浏览器读取，并渲染成我们看到的网页样子。</p>
+<p>HTML标记包含<strong>标签（及其属性）、基于字符的数据类型、字符引用和实体引用</strong>等几个关键部分。</p>
+<p><strong>标签</strong>是最常见的，通常成对出现，比如<code>&lt;h1&gt;</code>与<code>&lt;/h1&gt;</code>。</p>
+<p>这些成对出现的标签中，第一个标签是<strong>开始标签</strong>，第二个标签是<strong>结束标签</strong>。两个标签之间为元素的<strong>内容</strong>（文本、图像等），有些标签没有内容，为空元素，如<code>&lt;img&gt;</code>。 <br /><span class="math display"> &lt; <em>开</em><em>始</em><em>标</em><em>签</em> &gt; <em>内</em><em>容</em> &lt; /<em>结</em><em>束</em><em>标</em><em>签</em>&gt;</span><br /> 以下是一个经典的<a href="https://link.zhihu.com/?target=https%3A//zh.wikipedia.org/wiki/Hello_World">Hello World</a>程序的例子：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">    <span class="kw">&lt;title&gt;</span>This is a title<span class="kw">&lt;/title&gt;</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="kw">&lt;/head&gt;</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">    <span class="kw">&lt;p&gt;</span>Hello world!<span class="kw">&lt;/p&gt;</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="kw">&lt;/body&gt;</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">&lt;/html&gt;</span></a></code></pre></div>
+<h2 id="python网络爬虫的基本原理">python网络爬虫的基本原理</h2>
+<p>在编写python爬虫程序时，只需要做以下两件事：</p>
+<ul>
+<li><strong>发送GET请求，获取HTML</strong></li>
+<li><strong>解析HTML，获取数据</strong></li>
+</ul>
+<p>这两件事，python都有相应的库帮你去做，你只需要知道如何去用它们就可以了。</p>
+<h1 id="快速入门-提取百度logo-demo">快速入门 — 提取百度logo demo</h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="im">from</span> urllib.request <span class="im">import</span> urlopen</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup <span class="im">as</span> bf</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="im">from</span> urllib.request <span class="im">import</span> urlretrieve</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># 获取HTML</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">html <span class="op">=</span> urlopen(<span class="st">&quot;http://www.baidu.com/&quot;</span>)  <span class="co"># 发出请求，获取html</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># html_text = bytes.decode(html.read())  # 获取的html内容是字节，将其转化为字符串</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># print(html_text)</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># 解析HTML</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">obj <span class="op">=</span> bf(html.read(), <span class="st">&#39;html.parser&#39;</span>)  <span class="co"># 用BeautifulSoup解析html</span></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">title <span class="op">=</span> obj.head.title  <span class="co"># 从标签head、title里提取标题</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="bu">print</span>(title)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="co"># 获取信息, 我们通过findAll(&quot;img&quot;)就可以获取到所有图片的信息了。</span></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">pic_info <span class="op">=</span> obj.find_all(<span class="st">&#39;img&#39;</span>)</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="cf">for</span> i <span class="kw">in</span> pic_info:  <span class="co"># 分别打印每个图片的信息</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">    <span class="bu">print</span>(i)</a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co"># 只提取logo图片的信息, 使用class_方法</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">logo_pic_info <span class="op">=</span> obj.find_all(<span class="st">&#39;img&#39;</span>,class_<span class="op">=</span><span class="st">&quot;index-logo-src&quot;</span>)</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">logo_url <span class="op">=</span> <span class="st">&quot;https:&quot;</span><span class="op">+</span>logo_pic_info[<span class="dv">0</span>][<span class="st">&#39;src&#39;</span>]  <span class="co"># 提取logo图片的链接</span></a>
+<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="bu">print</span>(logo_url)</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co"># 使用urlretrieve下载图片</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">urlretrieve(logo_url, <span class="st">&#39;logo.png&#39;</span>)</a></code></pre></div>

@@ -1,0 +1,50 @@
+<h2 id="监督学习无监督学习半监督学习强化学习自监督学习">监督学习、无监督学习、半监督学习、强化学习、自监督学习</h2>
+<p>Reference</p>
+<p><a href="https://blog.csdn.net/gdengden/article/details/84196883">监督学习、无监督学习、半监督学习、强化学习、自监督学习</a></p>
+<h1 id="监督学习supervised-learning">监督学习（Supervised Learning）</h1>
+<p>监督学习是使用已知正确答案的示例来训练网络的。</p>
+<p>步骤1：数据集的创建和分类</p>
+<p>步骤2：训练</p>
+<p>步骤3：验证</p>
+<p>步骤4：使用</p>
+<h1 id="无监督学习unsupervised-learning">无监督学习（Unsupervised Learning）</h1>
+<p>无监督学习适用于你具有数据集但无标签的情况。无监督学习采用输入集，并尝试查找数据中的<strong>模式</strong>。比如，将其组织成群（聚类）或查找异常值（异常检测）。</p>
+<p>一些无监督的学习技术包括：</p>
+<p>自编码（Autoencoding）</p>
+<p>主成分分析（Principal components analysis）</p>
+<p>随机森林（Random forests）</p>
+<p>K均值聚类（K-means clustering）</p>
+<p>如果你想要了解有关无监督学习的更多信息，可以观看Udacity的课程。</p>
+<p>无监督学习中最有前景的最新发展之一是Ian Goodfellow（当时在Yoshua Bengio的实验室工作时提出）的一个想法，称为<strong>“生成对抗网络（generative adversarial networks）”</strong>，其中我们将两个神经网络相互联系：一个网络，我们称之为生成器，负责生成旨在尝试欺骗另一个网络的数据，而这个网络，我们称为鉴别器。这种方法实现了一些令人惊奇的结果，例如可以从文本字符串或手绘草图生成如照片版逼真图片的AI技术。</p>
+<h1 id="半监督学习semi-supervised-learning">半监督学习（Semi-supervised Learning）</h1>
+<p>半监督学习在训练阶段结合了<strong>大量未标记的数据和少量标签数据</strong>。与使用所有标签数据的模型相比，使用训练集的训练模型在训练时可以更为准确，而且训练成本更低。</p>
+<p><code>为什么使用未标记数据有时可以帮助模型更准确，关于这一点的体会就是：即使你不知道答案，但你也可以通过学习来知晓，有关可能的值是多少以及特定值出现的频率。?????</code></p>
+<h1 id="强化学习reinforcement-learning">强化学习（Reinforcement Learning）</h1>
+<p>强化学习是针对你再次没有标注数据集的情况而言的，但你还是有办法来区分是否越来越接近目标（回报函数（reward function））</p>
+<blockquote>
+<p>DeepMind在Nature上发表了一篇文章，描述了一个将强化学习与深度学习结合起来的系统，该系统学会该如何去玩一套Atari视频游戏，一些取得了巨大成功（如Breakout），而另一些就没那么幸运了（如Montezuma’s Revenge（蒙特祖玛的复仇））。</p>
+<p>Nervana团队（现在在英特尔）发表了一个很好的解惑性博客文章，对这些技术进行了详细介绍，大家有兴趣可以阅读一番。</p>
+</blockquote>
+<h1 id="自监督学习">自监督学习</h1>
+<h4 id="创新点-提出辅助任务"><code>创新点: 提出辅助任务</code></h4>
+<p><code>Yan Lecun 自监督学习：机器能像人一样学习吗？ 110页PPT+视频</code></p>
+<p>提出者：Yann LeCun</p>
+<ol type="1">
+<li>自监督学习的<strong>核心</strong>，在于<strong>如何自动为数据产生标签</strong>。</li>
+</ol>
+<blockquote>
+<p>如随机旋转, 均匀分割而自动产生的标注</p>
+</blockquote>
+<ol start="2" type="1">
+<li><strong>性能评价</strong>–主要通过模型学出来的<strong>feature的质量</strong>来评价. feature质量的高低，主要是通过迁移学习的方式，把feature用到其它视觉任务中（分类、分割、物体检测…），然后通过视觉任务的结果的好坏来评价。</li>
+<li><code>**研究**--提出辅助任务</code></li>
+<li>自监督学习的 <strong>“标注”</strong> 通常来自于数据本身: 即模型直接从无标签数据中自行学习，无需标注数据。</li>
+<li><strong>训练</strong>–通过使用各种辅助任务 (auxiliary task ) 来提高学习表征 (representation) 的质量.</li>
+<li>vs 监督学习</li>
+</ol>
+<p>自我监督学习（SSL）是监督学习的一个特例，<strong>其中训练数据集不是由人手动标记的，但是标签（对于每个训练样本）是通过利用输入的相关性或在不同的输入之间生成的</strong>（如来自不同的传感器模式）。</p>
+<blockquote>
+<p>例如，在机器人技术的背景下，机器人可以在不同位置配备相同的传感器, 或者配备不同的传感器。这些传感器的输出可以相关。</p>
+</blockquote>
+<p>自我监督学习还可以指<strong>用于查找未标记数据的特征</strong>的无监督学习（该任务被称为“表示学习”），其用于“标记”相同的未标记数据。</p>
+<h4 id="q-与上一篇度量学习论文有什么联系">Q: 与上一篇度量学习论文有什么联系?</h4>
